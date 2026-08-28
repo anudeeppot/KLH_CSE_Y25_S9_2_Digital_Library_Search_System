@@ -1,5 +1,0 @@
-Title: Book Catalog Metadata
-Author: Library Metadata Group
-Category: Catalog
-Year: 2026
-Content: A digital library record can contain title, author, ISBN, category, publication year, and description. Keeping metadata in separate text files makes the corpus easy to extend. New resources can be added without changing the Java source code.
