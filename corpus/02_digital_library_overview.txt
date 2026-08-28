@@ -1,0 +1,5 @@
+Title: Digital Library Search System Overview
+Author: Digital Library Project Team
+Category: Digital Library
+Year: 2026
+Content: The Digital Library Search System provides a searchable corpus of books, journals, magazines, research papers, and project documents. Each text document contains metadata and descriptive content. A user submits a keyword or phrase and the system searches the corpus using KMP pattern matching.

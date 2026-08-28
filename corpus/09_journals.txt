@@ -1,0 +1,5 @@
+Title: Journal Collection
+Author: Academic Resources Group
+Category: Journals
+Year: 2026
+Content: Journals contain collections of scholarly articles organized by subject and publication year. A text based corpus allows the search engine to scan journal metadata and article descriptions using the KMP matching routine.

@@ -1,0 +1,5 @@
+Title: Knuth Morris Pratt Pattern Matching
+Author: Algorithm Research Collection
+Category: String Algorithms
+Year: 2026
+Content: Knuth Morris Pratt is a linear time string matching algorithm. It preprocesses a search pattern using the longest proper prefix that is also a suffix. The resulting LPS table allows the search to continue after a mismatch without restarting the pattern from the beginning. In the digital library project, KMP is used to locate a user query inside titles, authors, categories, keywords, and document content.
