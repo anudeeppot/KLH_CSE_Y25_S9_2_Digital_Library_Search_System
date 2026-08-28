@@ -1,5 +1,0 @@
-Title: Magazine Archive
-Author: Library Archive Group
-Category: Magazines
-Year: 2026
-Content: A magazine archive may contain technology, science, education, and general interest publications. Users should be able to search the archive using words appearing in titles, authors, categories, or descriptions.
