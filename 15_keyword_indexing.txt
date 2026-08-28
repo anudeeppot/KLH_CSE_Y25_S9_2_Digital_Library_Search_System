@@ -1,5 +1,0 @@
-Title: Keyword Search in Library Documents
-Author: Information Retrieval Group
-Category: Search
-Year: 2026
-Content: Keywords can occur in the title, author, category, abstract, description, or other content. The project demonstrates direct pattern matching over these fields. KMP provides a deterministic linear time search procedure after pattern preprocessing.
