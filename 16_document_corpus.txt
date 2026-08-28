@@ -1,5 +1,0 @@
-Title: Building a Text Corpus
-Author: Digital Library Project Team
-Category: Corpus Management
-Year: 2026
-Content: A corpus is a collection of documents that can be processed by a search system. Storing each resource in an individual text file keeps the corpus modular. The folder can contain many documents and the program can load every text file automatically.
