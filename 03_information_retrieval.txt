@@ -1,5 +1,0 @@
-Title: Information Retrieval in Digital Libraries
-Author: Information Systems Group
-Category: Information Retrieval
-Year: 2026
-Content: Information retrieval focuses on finding relevant documents from a collection. A digital library search engine needs efficient text matching across many documents. Pattern searching can be performed over document titles, authors, categories, and content so that users can quickly discover relevant resources.
