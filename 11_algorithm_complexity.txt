@@ -1,0 +1,5 @@
+Title: Complexity of KMP
+Author: Algorithms Teaching Group
+Category: Complexity Analysis
+Year: 2026
+Content: KMP constructs the LPS array in linear time with respect to pattern length. The search runs in O(n plus m), where n is the text length and m is the pattern length. The LPS table requires O(m) auxiliary space.

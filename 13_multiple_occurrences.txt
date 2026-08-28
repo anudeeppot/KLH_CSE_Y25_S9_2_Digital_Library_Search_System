@@ -1,0 +1,5 @@
+Title: Finding Multiple Pattern Occurrences
+Author: String Processing Research Group
+Category: String Algorithms
+Year: 2026
+Content: A pattern may occur several times in one document. After KMP finds an occurrence, it uses the corresponding LPS value and continues searching. The search result can therefore report every starting position and the total number of matches.

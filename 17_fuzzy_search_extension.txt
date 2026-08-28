@@ -1,0 +1,5 @@
+Title: Future Search Extensions
+Author: Digital Library Project Team
+Category: Future Work
+Year: 2026
+Content: The current CO2 implementation focuses on exact pattern matching with KMP. Future project modules may add other search capabilities according to the syllabus. The KMP component is kept independent so that later features do not require rewriting the core string matching method.
