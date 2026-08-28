@@ -1,0 +1,5 @@
+Title: Search Query Processing
+Author: Digital Library Project Team
+Category: Query Processing
+Year: 2026
+Content: Users may search with a book title, author name, ISBN, category, or keyword. The search component normalizes the query for case independent matching and then applies KMP to the text fields of each corpus document. The result contains the document name and the fields in which the query occurred.

@@ -1,0 +1,5 @@
+Title: Efficient Text Search
+Author: Text Processing Research Group
+Category: Text Search
+Year: 2026
+Content: Text search is the process of locating a pattern inside a larger body of text. Large digital collections make repeated comparison expensive. KMP reduces unnecessary comparisons by using information already obtained from the pattern during preprocessing.

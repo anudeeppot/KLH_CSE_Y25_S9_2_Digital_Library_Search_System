@@ -1,0 +1,5 @@
+Title: Longest Prefix Suffix Table
+Author: Algorithm Research Collection
+Category: String Algorithms
+Year: 2026
+Content: The LPS table stores the length of the longest proper prefix of the pattern that is also a suffix for every pattern position. When two characters mismatch, the search uses the previous LPS value to decide how far the pattern can move. This is the central preprocessing step of KMP.
