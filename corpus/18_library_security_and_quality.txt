@@ -1,0 +1,5 @@
+Title: Corpus Data Quality
+Author: Library Systems Group
+Category: Data Quality
+Year: 2026
+Content: Search quality depends on clean and consistent resource files. Each corpus document uses clearly labeled metadata fields and descriptive content. Missing fields are handled safely by the file reader so that one malformed document does not stop the complete search.

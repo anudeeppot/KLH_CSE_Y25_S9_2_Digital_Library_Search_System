@@ -1,0 +1,5 @@
+Title: Digital Library Search Architecture
+Author: Digital Library Project Team
+Category: Software Architecture
+Year: 2026
+Content: The application separates the corpus, file reader, KMP algorithm, search engine, and main interface. The corpus is external data. The file reader loads documents, the search engine requests KMP searches, and the main class controls user interaction. This separation makes future expansion easier.

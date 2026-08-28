@@ -1,0 +1,5 @@
+Title: Digital Library Project Demonstration
+Author: Digital Library Project Team
+Category: Project Demonstration
+Year: 2026
+Content: During a project demonstration, the user can search for a term such as algorithm, library, research, or KMP. The system loads multiple documents and reports matching filenames and fields. A separate KMP demonstration can show the pattern, LPS table, match positions, and number of occurrences.

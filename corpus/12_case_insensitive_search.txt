@@ -1,0 +1,5 @@
+Title: Case Independent Library Search
+Author: Digital Library Project Team
+Category: Search Features
+Year: 2026
+Content: A user may enter Algorithm, algorithm, or ALGORITHM. The search system can normalize both the query and the document text to lower case before applying KMP. The matching operation itself remains the KMP algorithm.
