@@ -1,5 +1,0 @@
-Title: Research Paper Corpus
-Author: Academic Resources Group
-Category: Research Papers
-Year: 2026
-Content: Research papers form an important part of a digital library corpus. Titles, authors, abstracts, keywords, and references can be searched. KMP can find occurrences of a query in the textual fields stored in each paper document.
