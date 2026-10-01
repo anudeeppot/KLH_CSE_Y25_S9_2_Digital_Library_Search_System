@@ -1,0 +1,10 @@
+Title: Machine Learning in Healthcare
+Author: David Sontag, Suchi Saria, Ziad Obermeyer
+Category: Machine Learning
+Year: 2021
+ISBN: 978-0198845620
+Type: Research Paper
+Keywords: machine learning, healthcare, clinical analytics, diagnostic models, medicine, patient outcomes, risk stratification
+Abstract: This paper investigates the application of machine learning in healthcare for early clinical diagnosis, risk stratification, and automated electronic health record analysis.
+Citations: 12_deep_learning_goodfellow.txt, 13_attention_is_all_you_need.txt, 22_ai_in_healthcare.txt
+Content: Machine learning in healthcare provides automated diagnostic models and predictive clinical analytics for patient monitoring. By applying statistical machine learning techniques and supervised learning to longitudinal medical data, healthcare systems can anticipate adverse events and tailor patient interventions. The study evaluates feature extraction, survival analysis, and cross-validation across massive clinical health datasets.

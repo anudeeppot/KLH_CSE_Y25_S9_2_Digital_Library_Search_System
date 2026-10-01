@@ -1,0 +1,10 @@
+Title: Randomized Algorithms in Information Retrieval
+Author: Rajeev Motwani, Prabhakar Raghavan
+Category: Randomized Algorithms
+Year: 1995
+ISBN: 978-0521474658
+Type: Book
+Keywords: randomized algorithms, reservoir sampling, hashing, probability, monte carlo, las vegas
+Abstract: A comprehensive examination of randomized algorithms and probabilistic analysis in sorting, graph cuts, hashing, reservoir sampling, and pattern searching.
+Citations: 02_rabin_karp_hashing.txt, 08_introduction_to_algorithms.txt
+Content: Randomized algorithms introduce controlled randomness into execution to achieve simplicity, efficiency, and robustness against worst-case inputs. This text examines Monte Carlo and Las Vegas algorithmic paradigms, universal hashing, min-hash signatures for near-duplicate document detection, and reservoir sampling for extracting uniform random samples from massive document streams without knowing the stream length in advance.

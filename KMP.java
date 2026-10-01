@@ -1,71 +1,77 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Scanner;
 
 public class KMP {
 
-    // CO2: Build the LPS (Longest Proper Prefix which is also Suffix) array.
-    public int[] buildLPS(String pattern) {
-        int[] lps = new int[pattern.length()];
-        int length = 0;
+    static void computeLPS(String pattern, int[] lps) {
+        int len = 0;
         int i = 1;
 
         while (i < pattern.length()) {
-            if (pattern.charAt(i) == pattern.charAt(length)) {
-                length++;
-                lps[i] = length;
+            if (pattern.charAt(i) == pattern.charAt(len)) {
+                len++;
+                lps[i] = len;
                 i++;
-            } else if (length != 0) {
-                length = lps[length - 1];
             } else {
-                lps[i] = 0;
-                i++;
+                if (len != 0) {
+                    len = lps[len - 1];
+                } else {
+                    lps[i] = 0;
+                    i++;
+                }
             }
         }
-
-        return lps;
     }
 
-    // CO2: Actual KMP pattern matching. No built-in search method is used.
-    public List<Integer> search(String text, String pattern) {
-        List<Integer> positions = new ArrayList<>();
+    static void search(StringBuilder text, String pattern) {
 
-        if (text == null || pattern == null ||
-                text.length() == 0 || pattern.length() == 0) {
-            return positions;
-        }
+        int n = text.length();
+        int m = pattern.length();
 
-        String searchText = text.toLowerCase();
-        String searchPattern = pattern.toLowerCase();
+        int[] lps = new int[m];
 
-        if (searchPattern.length() > searchText.length()) {
-            return positions;
-        }
-
-        int[] lps = buildLPS(searchPattern);
+        // Create LPS array
+        computeLPS(pattern, lps);
 
         int i = 0;
         int j = 0;
 
-        while (i < searchText.length()) {
-            if (searchText.charAt(i) == searchPattern.charAt(j)) {
+        while (i < n) {
+
+            // Compare text and pattern
+            if (text.charAt(i) == pattern.charAt(j)) {
                 i++;
                 j++;
+            }
 
-                if (j == searchPattern.length()) {
-                    positions.add(i - j);
-                    j = lps[j - 1];
-                }
-            } else if (j != 0) {
+            // Pattern found
+            if (j == m) {
+                System.out.println("Pattern found at index: " + (i - j));
                 j = lps[j - 1];
-            } else {
-                i++;
+            }
+
+            // Mismatch
+            else if (i < n && text.charAt(i) != pattern.charAt(j)) {
+
+                if (j != 0)
+                    j = lps[j - 1];
+                else
+                    i++;
             }
         }
-
-        return positions;
     }
 
-    public boolean found(String text, String pattern) {
-        return !search(text, pattern).isEmpty();
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter content: ");
+        StringBuilder content = new StringBuilder(sc.nextLine());
+
+        System.out.print("Enter pattern: ");
+        String pattern = sc.nextLine();
+
+        search(content, pattern);
+
+        sc.close();
     }
 }

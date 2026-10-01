@@ -1,0 +1,10 @@
+Title: Multimodal Knowledge Graphs and Hybrid Text Retrieval
+Author: Jiawei Han, Christos Faloutsos
+Category: Information Systems
+Year: 2023
+ISBN: 978-0131106228
+Type: Journal
+Keywords: knowledge graphs, hybrid search, graph traversal, multi-relational graphs, entity resolution
+Abstract: An in-depth journal article presenting hybrid retrieval frameworks that seamlessly blend keyword matching, vector space similarity, and graph-theoretic path traversal.
+Citations: 06_tf_idf_similarity.txt, 07_citation_graph_analysis.txt, 16_web_search_pagerank.txt
+Content: IEEE Transactions on Knowledge and Data Engineering presents an integrated framework for digital library search that unites three classical algorithmic paradigms: exact string matching (KMP and Boyer-Moore) for high-precision entity lookups, TF-IDF cosine vector similarity for conceptual relevance, and graph traversal algorithms (BFS and DFS) over citation networks to discover cross-disciplinary connections.

@@ -1,0 +1,10 @@
+Title: Database Internals: A Deep Dive into Distributed Systems
+Author: Alex Petrov
+Category: Database Systems
+Year: 2019
+ISBN: 978-1492040347
+Type: Book
+Keywords: database internals, b-trees, indexing, storage engines, transactions, concurrency
+Abstract: A comprehensive technical guide analyzing storage engines, buffer pool managers, concurrency control, B+ trees, and distributed consensus algorithms.
+Citations: 09_designing_data_intensive_apps.txt
+Content: Database Internals explores how database engines organize, retrieve, and store records on disk and in memory. It details indexing data structures such as B-Trees, B+ Trees, Suffix Trees, and hash indexes. Petrov explains index scans, range queries, write-ahead logging, and caching strategies that ensure rapid query execution. This knowledge informs the indexing and search caching mechanisms employed across digital library catalogs.

@@ -1,0 +1,10 @@
+Title: Introduction to Algorithms
+Author: Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein
+Category: Computer Science
+Year: 2009
+ISBN: 978-0262033848
+Type: Book
+Keywords: CLRS, algorithms, data structures, dynamic programming, graph algorithms, sorting
+Abstract: The definitive textbook covering core algorithms and data structures including sorting, search trees, dynamic programming, greedy algorithms, graph traversal, and NP-completeness.
+Citations: 01_kmp_algorithm.txt, 02_rabin_karp_hashing.txt, 03_boyer_moore_search.txt, 07_citation_graph_analysis.txt
+Content: Introduction to Algorithms, commonly known as CLRS, provides a rigorous and comprehensive survey of modern computer algorithms and data structures. It details algorithmic design paradigms such as divide-and-conquer, greedy techniques, and dynamic programming. The text thoroughly analyzes string matching algorithms including KMP, Rabin-Karp, and finite automata, alongside essential graph algorithms like Breadth-First Search, Depth-First Search, Dijkstra, and Bellman-Ford.

@@ -1,0 +1,10 @@
+Title: Deep Learning and Machine Learning Foundations
+Author: Ian Goodfellow, Yoshua Bengio, Aaron Courville
+Category: Machine Learning
+Year: 2016
+ISBN: 978-0262035613
+Type: Book
+Keywords: machine learning, deep learning, neural networks, backpropagation, optimization, computer vision, representations
+Abstract: The foundational deep learning and machine learning textbook offering mathematical treatment of linear algebra, probability, feedforward networks, convolutional architectures, and generative modeling.
+Citations: 08_introduction_to_algorithms.txt, 13_attention_is_all_you_need.txt
+Content: Machine learning and deep learning cover the mathematical theories and computational methods driving modern artificial intelligence. The book covers linear algebra, probability theory, numerical optimization, deep feedforward networks, regularization, convolutional neural networks, and sequence models. The authors discuss representation learning and latent semantic representations, which enable advanced semantic search and neural document ranking in next-generation library platforms.

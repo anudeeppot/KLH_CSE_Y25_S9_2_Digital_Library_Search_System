@@ -1,0 +1,10 @@
+Title: Graph Algorithms and Citation Network Analysis
+Author: Robert Tarjan, Jon Kleinberg
+Category: Graph Theory
+Year: 1999
+ISBN: 978-0262033992
+Type: Research Paper
+Keywords: Graph theory, BFS, DFS, citation network, centrality, adjacency list, topological sort
+Abstract: Graph algorithms on academic citation networks reveal intellectual genealogies, seminal research papers, and shortest conceptual paths using Breadth-First and Depth-First Search.
+Citations: 08_introduction_to_algorithms.txt, 16_web_search_pagerank.txt
+Content: Academic publications form an interconnected directed acyclic graph where nodes represent documents and directed edges represent citations. Utilizing an Adjacency List representation in Java, our system executes Breadth-First Search (BFS) to compute the shortest citation paths and reachability between works, and Depth-First Search (DFS) for path exploration, ancestor tracing, and cycle detection. In-degree and out-degree centrality metrics identify foundational and highly influential works.

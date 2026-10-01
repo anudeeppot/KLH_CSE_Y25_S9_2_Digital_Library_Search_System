@@ -1,0 +1,10 @@
+Title: Quantum Algorithms for Unstructured Database Search: An Overview
+Author: Lov K. Grover, Peter W. Shor
+Category: Quantum Computing
+Year: 2024
+ISBN: 978-0131105559
+Type: Magazine
+Keywords: Grover algorithm, quantum computing, amplitude amplification, database search, speedup
+Abstract: A popular science survey of quantum algorithms detailing Grover's quadratic speedup for searching unsorted databases and its theoretical implications for future digital libraries.
+Citations: 08_introduction_to_algorithms.txt, 15_randomized_algorithms_motwani.txt
+Content: Communications of the ACM presents an accessible overview of Grover's quantum search algorithm. In classical computing, locating a specific record in an unsorted database of N items requires O(N) operations in the worst case. Grover's algorithm uses quantum superposition and amplitude amplification to locate the target item in O(sqrt(N)) evaluations. The article explains the physical principles, quantum gates, and potential future applications for ultra-fast digital repository retrieval.

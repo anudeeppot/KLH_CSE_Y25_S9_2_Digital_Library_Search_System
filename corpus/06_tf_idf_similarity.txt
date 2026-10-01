@@ -1,0 +1,10 @@
+Title: Vector Space Model and TF-IDF for Information Retrieval
+Author: Gerard Salton, Christopher D. Manning
+Category: Information Retrieval
+Year: 1975
+ISBN: 978-0131104112
+Type: Journal
+Keywords: TF-IDF, cosine similarity, vector space model, document similarity, text mining
+Abstract: The Term Frequency-Inverse Document Frequency (TF-IDF) weighting scheme transforms unstructured document texts into vector representations to evaluate thematic similarity via cosine angle.
+Citations: 05_edit_distance_dp.txt, 11_natural_language_processing.txt, 16_web_search_pagerank.txt
+Content: The vector space model represents documents as multidimensional term vectors. Term Frequency (TF) measures how often a word occurs within a document, while Inverse Document Frequency (IDF) discounts ubiquitous words across the entire corpus. By calculating the Cosine Similarity between two document vectors, the digital library determines topical relatedness and recommends closely linked research papers, books, and journals.

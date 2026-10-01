@@ -1,0 +1,10 @@
+Title: Speech and Language Processing: An Introduction to NLP
+Author: Daniel Jurafsky, James H. Martin
+Category: Artificial Intelligence
+Year: 2023
+ISBN: 978-0131873216
+Type: Book
+Keywords: NLP, speech processing, edit distance, language models, tokenization, embeddings
+Abstract: The standard handbook for computational linguistics and natural language processing, covering n-grams, text normalisation, edit distance, transformers, and semantic analysis.
+Citations: 05_edit_distance_dp.txt, 06_tf_idf_similarity.txt, 12_deep_learning_goodfellow.txt
+Content: Speech and Language Processing provides a comprehensive mathematical and algorithmic foundation for natural language processing and computational linguistics. It starts from fundamental string operations such as tokenization, minimum edit distance, and regular expressions, advancing through n-gram language models, hidden Markov models, vector semantics, transformers, and large language models for information extraction in modern digital libraries.

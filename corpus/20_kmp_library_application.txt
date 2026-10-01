@@ -1,5 +1,0 @@
-Title: Applying KMP to a Digital Library
-Author: Algorithms and Libraries Group
-Category: Application
-Year: 2026
-Content: KMP is a practical fit for a digital library because titles and descriptions are text strings and users need fast pattern matching. The same reusable KMP method can scan many corpus documents while keeping the search logic independent of the user interface.

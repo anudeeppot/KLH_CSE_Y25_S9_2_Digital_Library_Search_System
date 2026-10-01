@@ -1,0 +1,10 @@
+Title: The Anatomy of a Large-Scale Hypertextual Web Search Engine
+Author: Sergey Brin, Lawrence Page
+Category: Information Retrieval
+Year: 1998
+ISBN: 978-0131105337
+Type: Research Paper
+Keywords: PageRank, web search, hypertext, inverted index, crawling, graph centrality
+Abstract: The original Google architecture paper presenting PageRank, an algorithm leveraging hyperlink graph topology to compute objective relevance rankings for document retrieval.
+Citations: 06_tf_idf_similarity.txt, 07_citation_graph_analysis.txt, 08_introduction_to_algorithms.txt
+Content: This historic research paper presents the design of the original Google search engine. The authors introduce PageRank, an algorithm that interprets the directed citation graph formed by hyperlinks as an endorsement system, calculating stationary probability distributions of random surfers. The paper also details crawler architectures, forward indexes, and inverted index data structures optimized for sub-second retrieval across millions of hypertext documents.

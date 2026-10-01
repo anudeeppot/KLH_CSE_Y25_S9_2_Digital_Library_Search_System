@@ -1,0 +1,10 @@
+Title: Fast String Searching with Boyer Moore Algorithm
+Author: Robert S. Boyer, J. Strother Moore
+Category: String Algorithms
+Year: 1977
+ISBN: 978-0131103856
+Type: Research Paper
+Keywords: Boyer-Moore, bad character rule, good suffix rule, pattern shifting, sublinear search
+Abstract: The Boyer-Moore algorithm scans characters from right to left, utilizing the bad-character and good-suffix heuristics to skip large sections of text, frequently achieving sublinear search speeds in natural language.
+Citations: 01_kmp_algorithm.txt, 04_suffix_array_indexing.txt
+Content: The Boyer Moore algorithm is considered the benchmark for string searching in natural language corpora. It matches characters from right to left within the pattern window. When a mismatch occurs, it applies two powerful heuristics: the Bad Character Heuristic and the Good Suffix Heuristic. These rules allow the pattern to jump forward by multiple positions rather than advancing by one character, often yielding sublinear average performance O(n / m).

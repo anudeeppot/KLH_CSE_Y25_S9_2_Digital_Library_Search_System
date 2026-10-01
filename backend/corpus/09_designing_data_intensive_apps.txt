@@ -1,0 +1,10 @@
+Title: Designing Data-Intensive Applications
+Author: Martin Kleppmann
+Category: Distributed Systems
+Year: 2017
+ISBN: 978-1449373320
+Type: Book
+Keywords: distributed systems, indexing, b-trees, lsm-trees, storage engines, replication, consensus
+Abstract: An exploration of the principles, architectures, and data structures underpinning modern storage engines, distributed databases, streaming pipelines, and search indexing systems.
+Citations: 04_suffix_array_indexing.txt, 10_database_internals.txt
+Content: This authoritative book examines the foundational data structures and trade-offs in distributed data systems. It explores storage engine internals, contrasting B-Trees with Log-Structured Merge-Trees (LSM-trees), secondary indexing, inverted indices for full-text search, partition strategies, replication models, and distributed consensus. The book provides engineering insight into how large-scale digital libraries and search platforms index petabytes of text data with high availability.

@@ -1,0 +1,10 @@
+Title: The Evolution of High-Performance Search Architectures
+Author: David Patterson, John L. Hennessy
+Category: Computer Architecture
+Year: 2024
+ISBN: 978-0131105993
+Type: Magazine
+Keywords: computer architecture, hardware acceleration, memory hierarchy, SIMD string search, cache locality
+Abstract: An IEEE Spectrum special report on how modern CPU SIMD extensions, cache hierarchies, and memory-bandwidth optimizations supercharge classical string searching algorithms.
+Citations: 01_kmp_algorithm.txt, 03_boyer_moore_search.txt, 14_parallel_text_processing.txt
+Content: IEEE Spectrum explores hardware-software co-design in modern search engines. Algorithms like KMP and Boyer-Moore, formulated decades ago, are experiencing renewed interest through hardware vectorization (AVX-512, ARM NEON). By comparing 64 characters in a single CPU clock cycle, hardware-accelerated string searching achieves unprecedented bandwidth. The article examines the trade-offs between cache locality, memory bandwidth, and algorithmic branch prediction.

@@ -1,0 +1,10 @@
+Title: Randomized Pattern Matching with Rabin Karp Algorithm
+Author: Michael O. Rabin, Richard M. Karp
+Category: Randomized Algorithms
+Year: 1987
+ISBN: 978-0131103702
+Type: Research Paper
+Keywords: Rabin-Karp, rolling hash, pattern matching, collision verification, modular arithmetic
+Abstract: Rabin-Karp uses rolling hash techniques to find patterns in large text bodies, performing average-case linear time search and enabling multi-pattern search.
+Citations: 01_kmp_algorithm.txt, 03_boyer_moore_search.txt
+Content: The Rabin Karp algorithm utilizes rolling hash techniques to find pattern occurrences efficiently. Instead of checking every position by character comparison, it computes the hash value of the pattern and compares it to sliding window hashes of the text. When a hash match occurs, a character verification step confirms the match, protecting against hash collisions. It achieves average case time complexity of O(n + m), though the worst case can degrade to O(n * m) under excessive collisions.

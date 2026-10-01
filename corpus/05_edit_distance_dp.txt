@@ -1,0 +1,10 @@
+Title: Dynamic Programming for Sequence Alignment and Edit Distance
+Author: Vladimir Levenshtein, Richard Bellman
+Category: Dynamic Programming
+Year: 1966
+ISBN: 978-0262033848
+Type: Research Paper
+Keywords: Edit Distance, Levenshtein, dynamic programming, fuzzy search, spell checking, sequence alignment
+Abstract: Levenshtein distance quantifies the difference between two character sequences as the minimum number of insertions, deletions, and substitutions, solved via a 2D dynamic programming grid.
+Citations: 08_introduction_to_algorithms.txt, 11_natural_language_processing.txt
+Content: Levenshtein Edit Distance computes the minimum number of single-character operations required to transform one string into another. The allowable operations are insertion, deletion, and substitution. Using a two-dimensional Dynamic Programming table, the optimal alignment is calculated in O(n * m) time and space. In our digital library search system, Edit Distance powers the Fuzzy Search module, automatically detecting typographical errors and suggesting 'Did you mean' alternatives.

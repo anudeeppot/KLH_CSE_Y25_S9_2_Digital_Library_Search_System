@@ -1,0 +1,10 @@
+Title: How Generative AI Is Transforming Digital Libraries and Academic Search
+Author: Karen Hao, Will Douglas Heaven
+Category: Emerging Technologies
+Year: 2025
+ISBN: 978-0131105771
+Type: Magazine
+Keywords: generative AI, search engines, RAG, retrieval-augmented generation, digital libraries, citation fidelity
+Abstract: An MIT Technology Review feature exploring the convergence of classical DSA indexing and generative AI, highlighting Retrieval-Augmented Generation (RAG) and citation verification.
+Citations: 13_attention_is_all_you_need.txt, 06_tf_idf_similarity.txt, 16_web_search_pagerank.txt
+Content: MIT Technology Review analyzes how generative artificial intelligence and large language models are transforming academic research libraries. While generative models excel at synthesis, they can suffer from hallucination. To ensure intellectual rigor, modern digital libraries pair classical algorithmic search engines—such as inverted indices, KMP pattern matching, and TF-IDF vectors—with retrieval-augmented generation (RAG) to ensure every claim is backed by verified citations.

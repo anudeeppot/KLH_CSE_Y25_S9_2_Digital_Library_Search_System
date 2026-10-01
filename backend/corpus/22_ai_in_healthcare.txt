@@ -1,0 +1,10 @@
+Title: Artificial Intelligence in Healthcare
+Author: Eric Topol, Fei-Fei Li, Andrew Ng
+Category: Artificial Intelligence
+Year: 2022
+ISBN: 978-0465097500
+Type: Research Paper
+Keywords: artificial intelligence, healthcare, clinical decision support, medical imaging, deep learning, diagnostics, clinical trials
+Abstract: A comprehensive survey of artificial intelligence in healthcare, focusing on clinical decision support systems, computer vision in radiology, and ethical considerations.
+Citations: 11_natural_language_processing.txt, 12_deep_learning_goodfellow.txt, 21_machine_learning_healthcare.txt
+Content: Artificial intelligence in healthcare is revolutionizing clinical practice and hospital workflows. Clinical decision support systems powered by deep learning and medical computer vision assist physicians in detecting anomalies from imaging modalities such as MRI and CT scans. The paper analyzes algorithmic robustness, data privacy in clinical trials, and multi-modal neural network architectures for health informatics.

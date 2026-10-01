@@ -1,0 +1,10 @@
+Title: Parallel and Concurrent Algorithms for High-Throughput Text Search
+Author: Leslie Lamport, Guy Steele
+Category: Concurrent Systems
+Year: 2015
+ISBN: 978-0131105115
+Type: Journal
+Keywords: parallel search, multithreading, concurrency, executor service, parallel streams, Amdahl's law
+Abstract: An investigation into multi-core parallelism for full-text corpora search, analyzing thread scheduling overhead, data partitioning, and synchronization barriers.
+Citations: 01_kmp_algorithm.txt, 03_boyer_moore_search.txt, 09_designing_data_intensive_apps.txt
+Content: Modern multi-core processors enable substantial throughput improvements for document searching when workloads are partitioned effectively. This journal paper explores concurrent pattern matching using Java ExecutorService thread pools and parallel streams. It contrasts divide-and-conquer document partitioning with chunk-based full-text scanning, measuring speedup and analyzing thread synchronization overhead and cache locality according to Amdahl's Law in digital library repositories.

@@ -1,0 +1,10 @@
+Title: Attention Is All You Need
+Author: Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit
+Category: Artificial Intelligence
+Year: 2017
+ISBN: 978-0131104880
+Type: Research Paper
+Keywords: attention, transformer, self-attention, neural machine translation, deep learning
+Abstract: The transformer architecture replaces recurrence and convolutions entirely with multi-head self-attention mechanisms, achieving superior parallelizability and state-of-the-art results in sequence transduction.
+Citations: 12_deep_learning_goodfellow.txt, 11_natural_language_processing.txt
+Content: The Transformer is a groundbreaking neural network architecture based entirely on self-attention mechanisms, dispensing with recurrence and convolutions. By computing attention weights across all token positions simultaneously, the Transformer enables massive parallelization on modern hardware. This paper laid the groundwork for modern large language models, semantic document embeddings, and neural search engines that enhance traditional lexical pattern matching in digital libraries.

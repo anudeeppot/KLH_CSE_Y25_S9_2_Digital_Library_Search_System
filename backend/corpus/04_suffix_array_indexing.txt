@@ -1,0 +1,10 @@
+Title: Suffix Arrays: A New Method for On-Line String Searches
+Author: Udi Manber, Gene Myers
+Category: Data Structures
+Year: 1993
+ISBN: 978-0131103993
+Type: Research Paper
+Keywords: Suffix Array, string indexing, LCP array, binary search, full text index
+Abstract: Suffix arrays provide a compact alternative to suffix trees, representing sorted lexicographical suffixes of a corpus to allow binary search matching in O(m log n) time.
+Citations: 01_kmp_algorithm.txt, 08_introduction_to_algorithms.txt
+Content: Suffix arrays represent a space-efficient alternative to suffix trees for full-text indexing in digital library systems. By sorting all suffixes of a text in lexicographical order, any substring search is reduced to a binary search over the array of suffix starting positions. With Longest Common Prefix (LCP) information, lookups are accelerated substantially. In a digital library, suffix arrays allow instant searching across large indexed archives once the preprocessing stage is completed.
