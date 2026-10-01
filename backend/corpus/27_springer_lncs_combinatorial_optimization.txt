@@ -1,0 +1,10 @@
+Title: Springer LNCS: Tree DP on Hierarchical Knowledge Taxonomies
+Author: Sanjoy Dasgupta, Christos Papadimitriou
+Category: Dynamic Programming
+Year: 2022
+ISBN: 978-3030896001
+Type: Journal
+Keywords: Tree DP, Maximum Weight Independent Set, knowledge hierarchy, Dewey Decimal, ACM CCS
+Abstract: Tree dynamic programming leverages the topological tree ordering of academic classification taxonomies to determine maximum impact non-overlapping curriculum modules in linear O(N) time.
+Citations: 08_introduction_to_algorithms.txt, 11_natural_language_processing.txt
+Content: Knowledge classifications such as Dewey Decimal and ACM Computing Classification System form directed rooted trees. Selecting optimal core disciplines without redundant prerequisite conflict is mapped to Maximum Weight Independent Set on Tree. Post-order DFS computes inclusion and exclusion states DP[u][1] and DP[u][0] in strictly linear O(N) time, yielding optimal academic grant allocation.

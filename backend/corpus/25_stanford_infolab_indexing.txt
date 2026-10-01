@@ -1,0 +1,10 @@
+Title: Stanford InfoLab: Advanced Suffix Array Indexing and Kasai LCP
+Author: Hector Garcia-Molina, Jeffrey D. Ullman
+Category: Information Retrieval & Indexing
+Year: 2023
+ISBN: 978-0133002638
+Type: Book
+Keywords: Suffix Array, Kasai LCP, binary search, longest common prefix, text indexing
+Abstract: Suffix arrays provide space-efficient full-text indexing for extensive digital repositories. With Kasai's O(N) LCP algorithm, repeated phrase detection and range queries achieve optimal bounds.
+Citations: 04_suffix_array_indexing.txt, 10_database_internals.txt
+Content: The Stanford InfoLab digital repository architecture employs Suffix Arrays as an alternative to full inverted indexes. By sorting all suffix positions lexicographically, binary search locates arbitrary pattern prefixes in O(M log N) time. The Longest Common Prefix (LCP) array, computed in strictly linear O(N) time using Kasai algorithm, enables instantaneous longest repeated substring discovery and plagiarism detection across research archives.

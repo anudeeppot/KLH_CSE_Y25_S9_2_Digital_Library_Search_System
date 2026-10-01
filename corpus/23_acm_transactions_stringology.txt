@@ -1,0 +1,10 @@
+Title: ACM Transactions on Algorithms: Linear Suffix Automata
+Author: Maxime Crochemore, Christophe Hancart
+Category: String Algorithms
+Year: 2021
+ISBN: 978-1450383172
+Type: Journal
+Keywords: Suffix Automaton, DAWG, linear time, transitions, suffix links, state space
+Abstract: This paper presents the theoretical foundations and implementation of Suffix Automata (Directed Acyclic Word Graphs) for substring matching in digital library indexing, achieving O(m) query time.
+Citations: 01_kmp_algorithm.txt, 04_suffix_array_indexing.txt
+Content: The Suffix Automaton is the minimal deterministic finite automaton accepting all substrings of a string. Built in linear O(N) time with at most 2N-1 states and 3N-4 transitions, it allows digital libraries to determine exact substring presence in O(m) time where m is pattern length, completely independent of the corpus size. Suffix links maintain longest common suffix relations between equivalent states.

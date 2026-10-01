@@ -41,17 +41,29 @@ export const searchAPI = {
   getSimilarDocuments: (id) => apiClient.get(`/documents/${id}/similar`),
   getDocumentStats: () => apiClient.get('/documents/stats'),
 
-  // DSA Algorithm Demonstration Endpoints
+  // CO-1: Problem-Class Signature Evaluator
+  evaluateSignature: (profile) => apiClient.post('/algorithms/evaluate-signature', profile),
+
+  // CO-2: Linear-Time String Algorithms & Suffix Structures
   testKMP: (data) => apiClient.post('/algorithms/kmp', data),
+  testZAlgorithm: (data) => apiClient.post('/algorithms/z-algorithm', data),
   testRabinKarp: (data) => apiClient.post('/algorithms/rabin-karp', data),
   testBoyerMoore: (data) => apiClient.post('/algorithms/boyer-moore', data),
-  testEditDistance: (data) => apiClient.post('/algorithms/edit-distance', data),
   testSuffixArray: (data) => apiClient.post('/algorithms/suffix-array', data),
-  testSimilarity: (data) => apiClient.post('/algorithms/similarity', data),
+  testSuffixAutomaton: (data) => apiClient.post('/algorithms/suffix-automaton', data),
   compareAlgorithms: (data) => apiClient.post('/algorithms/compare', data),
-  runParallelBenchmark: (query, multiplier) =>
-    apiClient.post(`/algorithms/parallel?query=${encodeURIComponent(query)}&multiplier=${multiplier}`),
-  sampleCorpus: (k) => apiClient.get(`/algorithms/randomized?k=${k}`),
+
+  // CO-3: Advanced Dynamic Programming Suite
+  testIntervalDP: (data) => apiClient.post('/algorithms/interval-dp', data || {}),
+  testBitmaskDP: (data) => apiClient.post('/algorithms/bitmask-dp', data || {}),
+  getTreeDP: () => apiClient.get('/algorithms/tree-dp'),
+  testSequenceAlignment: (data) => apiClient.post('/algorithms/sequence-alignment', data),
+  testEditDistance: (data) => apiClient.post('/algorithms/edit-distance', data),
+  testSimilarity: (data) => apiClient.post('/algorithms/similarity', data),
+
+  // CO-4: Network Flow & Max-Flow / Min-Cut Duality
+  getReservationFlow: (algo = 'EDMONDS_KARP') => apiClient.get(`/algorithms/flow/reservation?algorithm=${algo}`),
+  getCdnFlow: (algo = 'DINIC') => apiClient.get(`/algorithms/flow/cdn?algorithm=${algo}`),
 };
 
 export default apiClient;

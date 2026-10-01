@@ -1,0 +1,10 @@
+Title: Bell Labs: Information Entropy and Algorithmic Problem Signatures
+Author: Claude Shannon, Richard Hamming
+Category: Information Theory & Algorithms
+Year: 2023
+ISBN: 978-0252725487
+Type: Journal
+Keywords: Shannon Entropy, problem-class signature, strategy optimizer, string matching
+Abstract: Evaluates information-theoretic entropy and character distribution metrics to establish problem-class signatures that govern optimal algorithm strategy selection in digital library systems.
+Citations: 01_kmp_algorithm.txt, 02_rabin_karp_hashing.txt, 03_boyer_moore_search.txt
+Content: The selection of high-performance search and optimization strategies relies on evaluating the problem-class signature. Low Shannon entropy queries with repeated prefixes trigger KMP, while high-entropy natural language texts maximize Boyer-Moore bad-character jumps. State space cardinality and topological properties dictate transition between Dynamic Programming on Trees, Bitmask DP, and Network Flow algorithms.

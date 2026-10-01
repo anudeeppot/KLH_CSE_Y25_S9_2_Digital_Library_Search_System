@@ -1,0 +1,10 @@
+Title: MIT OpenCourseWare: Advanced Dynamic Programming Patterns
+Author: Erik Demaine, Charles Leiserson
+Category: Dynamic Programming
+Year: 2023
+ISBN: 978-0262033848
+Type: Book
+Keywords: Interval DP, Bitmask DP, matrix chain, optimal parsing, subset state space
+Abstract: Explores interval dynamic programming for optimal expression parsing and bitmask dynamic programming for minimum cost combinatorial curriculum coverage.
+Citations: 05_edit_distance_dp.txt, 08_introduction_to_algorithms.txt
+Content: Advanced dynamic programming introduces structural state spaces beyond standard prefix grids. Interval DP solves optimal subproblem parenthesization on continuous ranges [i..j] in O(N^3) time, as applied in optimizing digital library multi-facet boolean query plans. Bitmask DP exploits binary state representations (0 to 2^N - 1) to solve NP-hard set cover problems in O(2^N * M) polynomial-exponential time, optimal for academic syllabus topic bundle curation.

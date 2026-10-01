@@ -1,0 +1,10 @@
+Title: IEEE Xplore: Network Flow and CDN Throughput Optimization
+Author: Andrew V. Goldberg, Robert E. Tarjan
+Category: Network Flow & Optimization
+Year: 2022
+ISBN: 978-0769562814
+Type: Research Paper
+Keywords: Edmonds-Karp, Dinic, Max-Flow, Min-Cut, CDN, throughput, bottleneck
+Abstract: Network flow algorithms model digital repository content distribution across academic CDN nodes. Edmonds-Karp and Dinic level-graph algorithms compute maximum delivery capacity while Min-Cut identifies saturated links.
+Citations: 07_citation_graph_analysis.txt, 19_spectrum_scalable_computing.txt
+Content: Digital library systems serve thousands of concurrent academic downloads across tiered content delivery networks. By mapping source repositories, regional proxy caches, and campus gateway nodes into a directed capacity network, maximum document throughput is modeled as the maximum s-t flow. Dinic algorithm constructs layered DAGs via BFS and drives blocking flows in O(V^2 E) time, whereas the Min-Cut theorem isolates the exact saturated link bottlenecks.

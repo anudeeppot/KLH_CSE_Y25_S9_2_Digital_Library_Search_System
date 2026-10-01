@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { BookOpen, Search, Cpu, BarChart2, Info, FileText, Menu, X } from 'lucide-react';
+import { BookOpen, Search, Cpu, BarChart2, Info, FileText, Menu, X, Award } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
 const Navbar = () => {
@@ -10,10 +10,11 @@ const Navbar = () => {
   const navLinks = [
     { path: '/', label: 'Home', icon: BookOpen },
     { path: '/search', label: 'Search Engine', icon: Search },
-    { path: '/documents', label: 'Documents', icon: FileText },
+    { path: '/documents', label: 'Big Libraries', icon: FileText },
     { path: '/algorithms', label: 'Algorithm Lab', icon: Cpu },
-    { path: '/compare', label: 'Benchmark', icon: BarChart2 },
-    { path: '/about', label: 'About & Review', icon: Info },
+    { path: '/compare', label: 'Benchmark Arena', icon: BarChart2 },
+    { path: '/viva-guide', label: 'Syllabus & Viva Guide', icon: Award },
+    { path: '/about', label: 'About', icon: Info },
   ];
 
   const isActive = (path) => {
@@ -57,7 +58,7 @@ const Navbar = () => {
               DIGITAL LIBRARY <span style={{ color: 'var(--accent-cyan)' }}>DSA</span>
             </div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
-              B.Tech CSE Project • DSA-3
+              B.Tech CSE Project • DSA-3 (CO-1 to CO-4)
             </div>
           </div>
         </Link>

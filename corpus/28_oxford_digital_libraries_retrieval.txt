@@ -1,0 +1,10 @@
+Title: Oxford Academic: Global Sequence Alignment for Manuscript Revision
+Author: Saul B. Needleman, Christian D. Wunsch
+Category: Sequence Alignment & Bio-Informatics
+Year: 2021
+ISBN: 978-0198854203
+Type: Research Paper
+Keywords: Needleman-Wunsch, sequence alignment, dynamic programming, manuscript diff, gap penalty
+Abstract: Global sequence alignment using dynamic programming models the progression of historical manuscript editions, academic errata, and version diffs with affine gap penalties.
+Citations: 05_edit_distance_dp.txt, 11_natural_language_processing.txt
+Content: The Needleman-Wunsch algorithm performs optimal global alignment between two textual sequences in O(N * M) time. In digital library archive management, comparing successive revisions of research manuscripts or legal charters identifies insertions, deletions, and lexical substitutions through backtracked DP matrices, preserving scholarly editorial provenance.
