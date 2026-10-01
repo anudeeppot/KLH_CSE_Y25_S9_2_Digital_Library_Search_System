@@ -1,10 +1,35 @@
-Title: Designing Data-Intensive Applications
+Title: Designing Data-Intensive Applications: Storage Engines, Inverted Indices, and Distributed Retrieval
 Author: Martin Kleppmann
-Category: Distributed Systems
+Category: Database Systems
 Year: 2017
 ISBN: 978-1449373320
 Type: Book
-Keywords: distributed systems, indexing, b-trees, lsm-trees, storage engines, replication, consensus
-Abstract: An exploration of the principles, architectures, and data structures underpinning modern storage engines, distributed databases, streaming pipelines, and search indexing systems.
-Citations: 04_suffix_array_indexing.txt, 10_database_internals.txt
-Content: This authoritative book examines the foundational data structures and trade-offs in distributed data systems. It explores storage engine internals, contrasting B-Trees with Log-Structured Merge-Trees (LSM-trees), secondary indexing, inverted indices for full-text search, partition strategies, replication models, and distributed consensus. The book provides engineering insight into how large-scale digital libraries and search platforms index petabytes of text data with high availability.
+Keywords: Storage engines, LSM trees, SSTables, B-Trees, inverted index, distributed search, write ahead log, Bloom filter, compaction, replication
+Abstract: A comprehensive treatise based on Martin Kleppmann's distributed systems principles. We examine storage engine architectures underlying large digital library databases, contrasting Log-Structured Merge-Trees (LSM-Trees) with traditional B-Trees, analyzing Write-Ahead Logging (WAL) and SSTable compaction, evaluating Bloom filter query acceleration, and detailing distributed partition and replication strategies for multi-node academic repositories.
+Citations: 04_suffix_array_indexing.txt, 06_tf_idf_similarity.txt, 10_database_internals.txt, 19_spectrum_scalable_computing.txt, 25_stanford_infolab_indexing.txt
+Content: CHAPTER 1: STORAGE ENGINE ARCHITECTURES FOR DIGITAL LIBRARIES
+At the heart of every digital library search engine lies a fundamental trade-off: how to format and store data on non-volatile media so that write throughput during document ingestion is maximized, while read latency for multi-keyword searches remains low.
+Two dominant storage paradigms exist in modern data engineering:
+1. Update-in-Place Engines (B-Trees): Traditional relational engines update fixed-size blocks (typically 4 KB to 8 KB disk pages) directly in place, using write-ahead logs for crash recovery.
+2. Append-Only Engines (LSM-Trees): Modern distributed search engines (such as Elasticsearch, Lucene, and Cassandra) utilize Log-Structured Merge-Trees (LSM-Trees) where all writes are appended sequentially, eliminating expensive random disk I/O.
+
+CHAPTER 2: LOG-STRUCTURED MERGE-TREES (LSM-TREES) AND SSTABLES
+The LSM-tree architecture organizes data across memory and disk tiers:
+1. In-Memory Memtable: Incoming document inserts and index updates are written to an in-memory balanced search tree (such as a Red-Black Tree or Skip List) called the Memtable. Simultaneously, writes are appended to an on-disk Write-Ahead Log (WAL) to guarantee durability across power failures.
+2. Immutable SSTables on Disk: When the Memtable reaches a preconfigured threshold (e.g. 64 MB), it is frozen and flushed to disk as a Sorted String Table (SSTable). An SSTable stores key-value pairs sorted strictly by key. Because keys are pre-sorted, writing the SSTable is purely sequential, maximizing write throughput on NVMe and HDD storage.
+3. Leveled Compaction: Over time, multiple SSTable files accumulate across disk levels (L0, L1, L2...). Background compaction threads continuously merge overlapping SSTables using a multi-way merge-sort algorithm, removing deleted records and stale document versions.
+
+CHAPTER 3: BLOOM FILTER ACCELERATION
+Because an LSM-tree distributes keys across multiple SSTables on disk, searching for a non-existent document key could naively require checking every SSTable file, causing high read amplification.
+To prevent unnecessary disk reads, each SSTable is accompanied by an in-memory Bloom filter.
+Definition 3.1 (The Bloom Filter):
+A Bloom filter is a space-efficient probabilistic data structure consisting of a bit array B of m bits, initially all set to 0, and k independent uniform hash functions h_1, h_2, ..., h_k.
+- Insertion of key K: Set bits B[h_1(K)], B[h_2(K)], ..., B[h_k(K)] to 1.
+- Query for key K: Check if all bits B[h_i(K)] are 1. If any bit is 0, K is definitively not in the SSTable (zero false negatives). If all bits are 1, K is likely in the SSTable with a small false positive probability:
+p_fp approx (1 - e^{-k * n / m})^k.
+Using only 10 bits per key, the false positive rate drops below 1%, allowing the digital library to bypass 99% of irrelevant SSTables during search lookups.
+
+CHAPTER 4: DISTRIBUTED REPLICATION AND SEARCH PARTITIONING
+For university digital libraries serving tens of thousands of concurrent students and researchers, a single server cannot store or process the entire repository.
+1. Partitioning (Sharding): The corpus is divided into non-overlapping partitions. Under document-based partitioning (Local Inverted Index), each shard indexes a subset of documents completely. A search query is broadcast to all shards (scatter-gather), and results are merged. Under term-based partitioning (Global Inverted Index), each shard stores the complete posting list for a subset of vocabulary terms.
+2. Leaderless and Quorum Replication: To guarantee high availability, document records are replicated across R nodes. Using Dynamo-style quorum consensus (W + R > N_rep), the digital library guarantees strong consistency for metadata updates and resilient search availability during node outages.

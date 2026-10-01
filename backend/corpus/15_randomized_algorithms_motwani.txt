@@ -1,10 +1,44 @@
-Title: Randomized Algorithms in Information Retrieval
+Title: Suffix Structures and Combinatorial Text Algorithms in Large Information Systems
 Author: Rajeev Motwani, Prabhakar Raghavan
-Category: Randomized Algorithms
+Category: Algorithms
 Year: 1995
 ISBN: 978-0521474658
 Type: Book
-Keywords: randomized algorithms, reservoir sampling, hashing, probability, monte carlo, las vegas
-Abstract: A comprehensive examination of randomized algorithms and probabilistic analysis in sorting, graph cuts, hashing, reservoir sampling, and pattern searching.
-Citations: 02_rabin_karp_hashing.txt, 08_introduction_to_algorithms.txt
-Content: Randomized algorithms introduce controlled randomness into execution to achieve simplicity, efficiency, and robustness against worst-case inputs. This text examines Monte Carlo and Las Vegas algorithmic paradigms, universal hashing, min-hash signatures for near-duplicate document detection, and reservoir sampling for extracting uniform random samples from massive document streams without knowing the stream length in advance.
+Keywords: Suffix tree, Ukkonen algorithm, suffix automaton, DAWG, combinatorial algorithms, string indexing, digital libraries, text retrieval
+Abstract: An extensive academic textbook chapter exploring deterministic and combinatorial suffix structures. We present Esko Ukkonen's linear-time O(N) on-line suffix tree construction algorithm, analyze implicit suffix trees and suffix links, evaluate Directed Acyclic Word Graphs (DAWGs) and Suffix Automata, and examine their asymptotic memory-performance trade-offs for high-speed pattern matching across academic digital libraries.
+Citations: 01_kmp_algorithm.txt, 04_suffix_array_indexing.txt, 08_introduction_to_algorithms.txt, 23_acm_transactions_stringology.txt
+Content: CHAPTER 1: COMBINATORIAL COMPLEXITY OF SUFFIX STRUCTURES
+The full-text indexing problem requires preprocessing a static text T of length N so that any subsequent pattern query P of length M can be answered in O(M) time, independent of the text length N.
+While Suffix Arrays provide a compact 4N-byte table searchable in O(M * log N) time, direct O(M) search without logarithmic factors requires an explicit automaton or trie representation.
+Historically, naive construction of a suffix trie requires inserting all N suffixes of T, consuming O(N^2) time and space. For a digital manuscript of 100,000 characters, a naive trie requires 10 billion operations.
+In 1995, Esko Ukkonen introduced an on-line algorithm that constructs the compact Suffix Tree in strictly linear O(N) time and space using a sliding prefix expansion.
+
+CHAPTER 2: UKKONEN'S ON-LINE SUFFIX TREE CONSTRUCTION
+Ukkonen's algorithm builds a sequence of implicit suffix trees T_1, T_2, ..., T_N, where T_i is the suffix tree for the prefix T[0 .. i - 1].
+Definition 2.1 (Implicit Suffix Tree):
+An implicit suffix tree for string S is obtained by:
+1. Taking the compact suffix tree for S$ (where $ is a unique terminal).
+2. Removing the terminal symbol $ from all edge labels.
+3. Pruning any childless edges and deleting nodes with only one child.
+
+The Three Suffix Extension Rules:
+When transitioning from T_i to T_{i+1} by appending character c = T[i], all suffixes of T[0 .. i] must be extended by c.
+Let S be a suffix of T[0 .. i - 1].
+- Rule 1: S ends at a leaf node. The path label is extended by appending character c to the label of the leaf edge.
+- Rule 2: S ends in an internal node or along an edge, and no path continues with character c. A new internal node is created (if along an edge), and a new leaf edge labeled c is created pointing to a new leaf.
+- Rule 3: S ends in an internal node or along an edge, and a path already continues with character c. Nothing needs to be done! Suffix Sc is already present in the tree. Rule 3 indicates an 'early stop' for the current phase.
+
+Speedup Tricks Guaranteeing O(N) Time:
+1. Suffix Links: Every internal node v with path label xa (where x is a single character and a is a string) contains a directed pointer link(v) to the internal node with path label a. Suffix links allow the algorithm to traverse from one suffix extension to the next in O(1) amortized steps.
+2. Skip-Count (Edge-Label Compression): Edges are labeled with integer index pairs (start, end) rather than strings. Traversing an edge requires comparing only its length (end - start + 1) rather than individual characters.
+3. Once a Leaf, Always a Leaf: Leaves created in Rule 1 automatically extend to the end of the text by setting their end pointer to a global variable e that increments at each phase.
+
+CHAPTER 3: DIRECTED ACYCLIC WORD GRAPHS (DAWG) AND SUFFIX AUTOMATA
+A Suffix Tree represents suffixes as paths from the root to leaves. However, distinct paths frequently share identical subtrees corresponding to equivalent right-extensions.
+By merging isomorphic subtrees, the suffix tree collapses into a Directed Acyclic Word Graph (DAWG) or Suffix Automaton.
+For any text T of length N, the Suffix Automaton is the minimal deterministic finite automaton (DFA) recognizing the language of all substrings of T.
+Remarkable Theorem:
+Despite encoding all 2^{Theta(N)} possible substrings of text T:
+1. The number of states is at most 2N - 1.
+2. The number of transitions is at most 3N - 4.
+This provides the most memory-efficient O(M) substring matcher in theoretical computer science.

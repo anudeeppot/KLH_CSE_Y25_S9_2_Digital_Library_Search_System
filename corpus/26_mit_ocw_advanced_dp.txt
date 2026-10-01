@@ -1,10 +1,73 @@
-Title: MIT OpenCourseWare: Advanced Dynamic Programming Patterns
-Author: Erik Demaine, Charles Leiserson
+Title: Advanced Dynamic Programming: Tree DP and Bitmask State Space Optimization
+Author: Erik D. Demaine, Srini Devadas
 Category: Dynamic Programming
-Year: 2023
-ISBN: 978-0262033848
-Type: Book
-Keywords: Interval DP, Bitmask DP, matrix chain, optimal parsing, subset state space
-Abstract: Explores interval dynamic programming for optimal expression parsing and bitmask dynamic programming for minimum cost combinatorial curriculum coverage.
-Citations: 05_edit_distance_dp.txt, 08_introduction_to_algorithms.txt
-Content: Advanced dynamic programming introduces structural state spaces beyond standard prefix grids. Interval DP solves optimal subproblem parenthesization on continuous ranges [i..j] in O(N^3) time, as applied in optimizing digital library multi-facet boolean query plans. Bitmask DP exploits binary state representations (0 to 2^N - 1) to solve NP-hard set cover problems in O(2^N * M) polynomial-exponential time, optimal for academic syllabus topic bundle curation.
+Year: 2011
+ISBN: 978-0262529846
+Type: Research Paper
+Keywords: Dynamic programming, Tree DP, Bitmask DP, Maximum Weight Independent Set, set cover, state space compression, syllabus optimization, digital libraries
+Abstract: A comprehensive academic lecture monograph from MIT OpenCourseWare on advanced dynamic programming paradigms. We formulate the O(N) Tree DP algorithm for Maximum Weight Independent Set (MWIS) over hierarchical classification taxonomies, analyze O(2^N * M) Bitmask DP for optimal syllabus topic coverage, prove optimal substructure and state space invariants, and evaluate their deployment in digital library curriculum planning.
+Citations: 05_edit_distance_dp.txt, 08_introduction_to_algorithms.txt, 27_springer_lncs_combinatorial_optimization.txt
+Content: CHAPTER 1: BEYOND LINEAR DYNAMIC PROGRAMMING
+Elementary dynamic programming focuses on one-dimensional and two-dimensional linear state spaces (such as the Fibonacci recurrence, 0/1 Knapsack, and Wagner-Fischer Edit Distance).
+However, modern digital library knowledge representation involves non-linear structures:
+1. Hierarchical Taxonomies: Dewey Decimal Classification, ACM Computing Classification System, and Library of Congress subject headings form rooted tree structures.
+2. Combinatorial State Spaces: Course syllabus topic coverage, curriculum prerequisite satisfaction, and multi-concept query evaluation involve discrete subset selections over exponential state spaces.
+Advanced dynamic programming extends Bellman's principle of optimality to trees and bitmasks, achieving polynomial and fixed-parameter tractable algorithms.
+
+CHAPTER 2: TREE DYNAMIC PROGRAMMING: MAXIMUM WEIGHT INDEPENDENT SET (MWIS)
+In digital library catalog curation, selecting a representative set of academic texts from a hierarchical category taxonomy requires choosing prominent books while avoiding redundancy between closely related parent and child categories.
+This problem maps directly to the Maximum Weight Independent Set (MWIS) on Trees.
+Definition 2.1 (The Problem Formulation):
+Let T = (V, E) be a rooted tree representing a taxonomy of library categories.
+Each node u in V has a non-negative academic citation weight w(u) >= 0.
+An Independent Set is a subset of vertices S subseteq V such that no two vertices in S share an edge:
+for all u, v in S, (u, v) not in E.
+The goal is to find an independent set S that maximizes the total weight:
+W(S) = sum_{u in S} w(u).
+
+Algorithm Formulation via Post-Order Tree Traversal:
+For each node u in V, we define two state values:
+- DP[u][0]: The maximum weight of an independent set in the subtree rooted at u, given that node u is NOT included in the set.
+- DP[u][1]: The maximum weight of an independent set in the subtree rooted at u, given that node u IS included in the set.
+
+Recurrence Relations:
+Let Children(u) be the set of immediate child nodes of u in the taxonomy.
+1. If node u is included (DP[u][1]):
+   None of its children can be included (by the independent set constraint). Therefore, each child v must take state DP[v][0]:
+   DP[u][1] = w(u) + sum_{v in Children(u)} DP[v][0].
+2. If node u is NOT included (DP[u][0]):
+   Each child v can be either included or excluded. For each child, we greedily pick whichever choice yields higher weight:
+   DP[u][0] = sum_{v in Children(u)} max( DP[v][0], DP[v][1] ).
+
+Base Cases:
+For a leaf node u (where Children(u) = emptyset):
+DP[u][0] = 0,     DP[u][1] = w(u).
+Time Complexity:
+Because each node u is visited exactly once during a post-order Depth-First Search (DFS), and each directed edge is examined once when aggregating children values, the algorithm runs in strictly linear O(|V|) time!
+
+CHAPTER 3: BITMASK DYNAMIC PROGRAMMING: SYLLABUS TOPIC COVERAGE
+In academic curriculum design, an instructor or university department seeks to assemble a minimal-cost or minimal-volume reading list of library books that covers all required syllabus topics (e.g. CO-1, CO-2, CO-3, CO-4).
+This is the Min-Cost Set Cover problem. While general set cover is NP-hard, university course syllabi have a bounded number of core topics (N <= 20).
+Bitmask DP solves this problem exactly in O(2^N * M) time.
+
+Definition 3.1 (Binary Integer Encoding of Subsets):
+A subset of N topics S subseteq {0, 1, ..., N - 1} is encoded as an integer mask in [0, 2^N - 1]:
+mask = sum_{i in S} 2^i.
+- Bitwise test: topic i is in mask if (mask & (1 << i)) != 0.
+- Bitwise union: adding topics covered by book b with mask bookMask[b] is computed via:
+  newMask = mask | bookMask[b].
+
+Recurrence Relation:
+Let DP[mask] be the minimum acquisition cost to cover all topics represented by the binary bitmask.
+Base Case:
+DP[0] = 0   (zero cost to cover zero topics).
+DP[mask] = infty for all mask > 0.
+Transitions:
+For mask = 0 to 2^N - 1:
+    If DP[mask] < infty:
+        For each book b = 0 to M - 1:
+            nextMask = mask | bookMask[b]
+            DP[nextMask] = min( DP[nextMask], DP[mask] + cost[b] )
+The global optimal solution covering all N syllabus topics is located at:
+DP[(1 << N) - 1].
+Backtracking pointers reconstruct the exact list of books chosen.

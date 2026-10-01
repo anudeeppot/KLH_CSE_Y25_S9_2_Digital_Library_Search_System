@@ -1,10 +1,59 @@
-Title: Parallel and Concurrent Algorithms for High-Throughput Text Search
-Author: Leslie Lamport, Guy Steele
-Category: Concurrent Systems
-Year: 2015
-ISBN: 978-0131105115
-Type: Journal
-Keywords: parallel search, multithreading, concurrency, executor service, parallel streams, Amdahl's law
-Abstract: An investigation into multi-core parallelism for full-text corpora search, analyzing thread scheduling overhead, data partitioning, and synchronization barriers.
-Citations: 01_kmp_algorithm.txt, 03_boyer_moore_search.txt, 09_designing_data_intensive_apps.txt
-Content: Modern multi-core processors enable substantial throughput improvements for document searching when workloads are partitioned effectively. This journal paper explores concurrent pattern matching using Java ExecutorService thread pools and parallel streams. It contrasts divide-and-conquer document partitioning with chunk-based full-text scanning, measuring speedup and analyzing thread synchronization overhead and cache locality according to Amdahl's Law in digital library repositories.
+Title: High-Throughput Text Processing: Inverted Index Construction and Compression in Digital Libraries
+Author: Alistair Moffat, Justin Zobel
+Category: Information Retrieval
+Year: 1996
+ISBN: 978-0131477506
+Type: Research Paper
+Keywords: Inverted index, index compression, SPIMI, BSBI, variable byte encoding, Elias gamma, posting list, text retrieval, high throughput
+Abstract: A comprehensive monograph on high-throughput inverted index construction and posting list compression techniques. We formulate Block Sort-Based Indexing (BSBI), Single-Pass In-Memory Indexing (SPIMI), evaluate integer compression schemes including Variable-Byte (VByte) and Elias-Gamma codes, and demonstrate how compressed posting lists maximize cache utilization and query throughput across multi-gigabyte digital library repositories.
+Citations: 04_suffix_array_indexing.txt, 06_tf_idf_similarity.txt, 09_designing_data_intensive_apps.txt, 25_stanford_infolab_indexing.txt
+Content: CHAPTER 1: THE INVERTED INDEX AS THE BACKBONE OF DIGITAL RETRIEVAL
+The inverted index is the fundamental data structure enabling sub-millisecond keyword retrieval in modern digital libraries and academic search engines.
+Formally, an inverted index consists of two primary components:
+1. Vocabulary (Dictionary): A sorted lexicon of all distinct terms appearing across the library corpus, augmented with global statistics such as Document Frequency (DF).
+2. Posting Lists: For each term t in the vocabulary, a contiguous list of postings records the documents where t occurs. In its simplest form, a posting is a document identifier (DocID). In rich academic indices, each posting includes positional offsets and term frequencies for phrase queries and proximity scoring:
+Posting = (DocID, TermFrequency, [offset_1, offset_2, ...]).
+
+CHAPTER 2: LARGE-SCALE INDEX CONSTRUCTION ALGORITHMS
+When an academic repository ingests tens of thousands of research papers, the collection size exceeds main memory (RAM). Inverted index construction algorithms must organize postings on disk without incurring random I/O thrashing.
+
+2.1 Block Sort-Based Indexing (BSBI):
+1. Parse documents into termID-docID pairs in memory until a fixed block limit is reached.
+2. Sort the pairs in memory by termID as the primary key and docID as the secondary key.
+3. Flush the sorted pairs to disk as an intermediate run file.
+4. Perform an external multi-way merge sort across all intermediate runs to construct the final inverted index.
+
+2.2 Single-Pass In-Memory Indexing (SPIMI):
+BSBI requires assigning termIDs to all words before sorting, requiring a large two-way dynamic mapping dictionary. SPIMI eliminates this bottleneck:
+1. As documents are parsed, terms are looked up directly in a dynamic hash table.
+2. If a term is new, it is added to the dictionary, and a new dynamic posting list is allocated.
+3. Postings are appended directly to the term's posting list in memory.
+4. When memory is exhausted, the vocabulary keys are sorted alphabetically, and the completed block is written to disk.
+5. A final multi-way merge stream merges the sorted blocks into the master index.
+SPIMI achieves linear O(N) indexing time with minimal overhead and optimal memory usage.
+
+CHAPTER 3: POSTING LIST COMPRESSION TECHNIQUES
+Uncompressed posting lists storing raw 32-bit or 64-bit integer DocIDs consume vast storage and saturate memory bandwidth during query evaluation.
+Because posting lists are sorted strictly in increasing order of DocID:
+d_1 < d_2 < d_3 < ... < d_k
+we can replace absolute DocIDs with d-gaps (differences between consecutive DocIDs):
+Delta_1 = d_1,     Delta_2 = d_2 - d_1,     Delta_3 = d_3 - d_2,     ...
+For frequent terms, d-gaps are very small integers (e.g. 1, 2, or 3), which can be encoded in far fewer than 32 bits.
+
+3.1 Variable-Byte (VByte) Encoding:
+Variable-Byte encodes integers using a sequence of 8-bit bytes. In each byte:
+- The most significant bit (bit 7) is the Continuation Bit: 1 indicates the final byte of the encoded integer; 0 indicates additional bytes follow.
+- The remaining 7 bits (bits 0-6) store the binary payload of the integer.
+Small integers in [1, 127] require only 1 byte (a 75% space reduction over 32-bit integers), while integers up to 16,383 require 2 bytes. VByte decoding involves simple bitwise shift and mask operations that run at multi-gigabyte-per-second speeds on modern CPUs.
+
+3.2 Elias-Gamma and Elias-Delta Codes:
+For extremely sparse posting lists with microscopic d-gaps, Elias-Gamma represents integer x >= 1 in two parts:
+1. Unary length prefix: floor(log_2 x) zeros followed by a 1.
+2. Remainder: floor(log_2 x) bits representing x - 2^{floor(log_2 x)}.
+Elias codes are bit-level universal codes that achieve optimal Shannon entropy limits on highly repetitive text distributions.
+
+CHAPTER 4: QUERY EVALUATION AND POSTING LIST INTERSECTION
+When evaluating Boolean conjunctive queries ('A AND B'):
+1. Retrieve posting list L_A and posting list L_B.
+2. Intersect the two sorted lists using a two-pointer merge algorithm in O(|L_A| + |L_B|) time.
+3. Always process terms in increasing order of Document Frequency (smallest posting list first) to prune candidate documents early.

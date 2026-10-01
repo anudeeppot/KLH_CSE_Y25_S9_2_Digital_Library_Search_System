@@ -1,10 +1,58 @@
-Title: Dynamic Programming for Sequence Alignment and Edit Distance
-Author: Vladimir Levenshtein, Richard Bellman
+Title: Dynamic Programming for Sequence Alignment and Edit Distance in Manuscript Analysis
+Author: Vladimir I. Levenshtein, Saul B. Needleman, Christian D. Wunsch
 Category: Dynamic Programming
-Year: 1966
-ISBN: 978-0262033848
+Year: 1970
+ISBN: 978-0123704771
 Type: Research Paper
-Keywords: Edit Distance, Levenshtein, dynamic programming, fuzzy search, spell checking, sequence alignment
-Abstract: Levenshtein distance quantifies the difference between two character sequences as the minimum number of insertions, deletions, and substitutions, solved via a 2D dynamic programming grid.
-Citations: 08_introduction_to_algorithms.txt, 11_natural_language_processing.txt
-Content: Levenshtein Edit Distance computes the minimum number of single-character operations required to transform one string into another. The allowable operations are insertion, deletion, and substitution. Using a two-dimensional Dynamic Programming table, the optimal alignment is calculated in O(n * m) time and space. In our digital library search system, Edit Distance powers the Fuzzy Search module, automatically detecting typographical errors and suggesting 'Did you mean' alternatives.
+Keywords: Edit distance, Levenshtein distance, Needleman Wunsch, dynamic programming, sequence alignment, typo tolerance, manuscript diff, fuzzy search
+Abstract: A comprehensive monograph on Dynamic Programming (DP) formulations for string metric distance and sequence alignment. We formalize the Wagner-Fischer algorithm for Levenshtein edit distance, analyze the Needleman-Wunsch global alignment recurrence with affine gap penalties, evaluate Hirschberg's linear-space divide-and-conquer optimization, and demonstrate its deployment for typo-tolerant catalog search and automated manuscript edition diffing in digital libraries.
+Citations: 01_kmp_algorithm.txt, 06_tf_idf_similarity.txt, 26_mit_ocw_advanced_dp.txt, 30_bell_labs_information_theory.txt
+Content: CHAPTER 1: THE METRIC SPACE OF STRINGS AND TYPO TOLERANCE
+In digital library search systems, users frequently submit queries with typographical errors, spelling variants, optical character recognition (OCR) transcription artifacts, or transliteration discrepancies. For example, a search for 'Dijkstra' may be entered as 'Dykstra' or 'Dijkstrra'. Exact string matching algorithms (such as KMP or Boyer-Moore) fail completely in the presence of even a single character error.
+To resolve this, digital library architectures require a rigorous mathematical distance metric over strings. In 1965, the Soviet mathematician Vladimir I. Levenshtein defined the edit distance between two strings as the minimum number of single-character insertions, deletions, or substitutions required to transform one string into the other.
+
+CHAPTER 2: MATHEMATICAL FORMULATION AND WAGNER-FISCHER RECURRENCE
+Let string A have length N, and string B have length M.
+Definition 2.1 (The Levenshtein Metric):
+The Levenshtein distance D(A, B) is a true mathematical metric satisfying:
+1. Non-negativity: D(A, B) >= 0, and D(A, B) = 0 if and only if A == B.
+2. Symmetry: D(A, B) = D(B, A).
+3. Triangle Inequality: D(A, C) <= D(A, B) + D(B, C) for any strings A, B, C.
+
+Definition 2.2 (The DP Recurrence Relation):
+Let DP[i][j] denote the edit distance between prefix A[0 .. i - 1] and prefix B[0 .. j - 1], for 0 <= i <= N and 0 <= j <= M.
+Base Cases:
+DP[0][j] = j * cost_insert       for all 0 <= j <= M (transforming empty string to B[0..j-1] requires j insertions)
+DP[i][0] = i * cost_delete       for all 0 <= i <= N (transforming A[0..i-1] to empty string requires i deletions)
+
+Recurrence for 1 <= i <= N, 1 <= j <= M:
+cost_sub = 0 if A[i - 1] == B[j - 1] else cost_replace
+DP[i][j] = min {
+    DP[i - 1][j] + cost_delete,          // Deletion of A[i-1]
+    DP[i][j - 1] + cost_insert,          // Insertion of B[j-1]
+    DP[i - 1][j - 1] + cost_sub          // Match or Substitution
+}
+The final edit distance between the complete strings is located at DP[N][M].
+
+CHAPTER 3: NEEDLEMAN-WUNSCH GLOBAL SEQUENCE ALIGNMENT
+In 1970, Saul B. Needleman and Christian D. Wunsch adapted this dynamic programming formulation for global biological macromolecule sequence alignment and historical manuscript comparison.
+Rather than minimizing cost, Needleman-Wunsch maximizes an alignment similarity score:
+Score[i][j] = max {
+    Score[i - 1][j - 1] + S(A[i - 1], B[j - 1]),   // Match or Mismatch score
+    Score[i - 1][j] - gap_penalty,                 // Gap in string B (deletion)
+    Score[i][j - 1] - gap_penalty                  // Gap in string A (insertion)
+}
+Backtracking Trace:
+By following the argmax predecessor pointers from Score[N][M] back to Score[0][0], the algorithm reconstructs the exact optimal alignment including gap insertions ('-'). This capability allows digital library scholars to trace evolutionary revisions between historical manuscript editions.
+
+CHAPTER 4: SPACE AND TIME COMPLEXITY OPTIMIZATIONS
+Theorem 4.1 (Standard Space and Time Complexity):
+The standard Wagner-Fischer algorithm computes DP[N][M] in O(N * M) time and O(N * M) auxiliary space.
+Optimization 4.1 (Two-Row Rolling Space Optimization):
+Notice that computing row i in the DP matrix requires only the values from row i - 1. Therefore, if only the distance value is required (without reconstructing the alignment trace), the space complexity can be reduced to O(min(N, M)) by maintaining only two rows (current and previous).
+Optimization 4.2 (Hirschberg's Divide-and-Conquer Algorithm):
+In 1975, Dan Hirschberg combined dynamic programming with divide-and-conquer recursion to compute the full optimal alignment path in O(N * M) time while using strictly O(min(N, M)) memory, eliminating the memory wall for aligning large book chapters.
+
+CHAPTER 5: DEPLOYMENT IN DIGITAL LIBRARY SEARCH
+1. Typo-Tolerant Query Correction: When a user query yields zero exact hits, the search engine computes Levenshtein distance against a BK-Tree or Trie of library vocabulary terms, offering 'Did you mean?' suggestions with distance <= 2.
+2. Manuscript Edition Diffing: The CO-3 Sequence Alignment engine in our system aligns differing editions of classic computer science texts, highlighting revised sentences, added paragraphs, and updated mathematical notations.

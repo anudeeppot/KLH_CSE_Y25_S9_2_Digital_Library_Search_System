@@ -1,10 +1,53 @@
-Title: Graph Algorithms and Citation Network Analysis
-Author: Robert Tarjan, Jon Kleinberg
-Category: Graph Theory
+Title: Citation Graph Analysis: Topology, Betweenness Centrality, and Kleinberg HITS in Digital Libraries
+Author: Derek de Solla Price, Jon M. Kleinberg, Stanley Wasserman
+Category: Graph Algorithms
 Year: 1999
-ISBN: 978-0262033992
+ISBN: 978-0521588553
 Type: Research Paper
-Keywords: Graph theory, BFS, DFS, citation network, centrality, adjacency list, topological sort
-Abstract: Graph algorithms on academic citation networks reveal intellectual genealogies, seminal research papers, and shortest conceptual paths using Breadth-First and Depth-First Search.
-Citations: 08_introduction_to_algorithms.txt, 16_web_search_pagerank.txt
-Content: Academic publications form an interconnected directed acyclic graph where nodes represent documents and directed edges represent citations. Utilizing an Adjacency List representation in Java, our system executes Breadth-First Search (BFS) to compute the shortest citation paths and reachability between works, and Depth-First Search (DFS) for path exploration, ancestor tracing, and cycle detection. In-degree and out-degree centrality metrics identify foundational and highly influential works.
+Keywords: Citation graph, HITS algorithm, Kleinberg, hubs and authorities, PageRank, betweenness centrality, directed acyclic graph, academic literature, link analysis
+Abstract: A comprehensive monograph on citation graph topology in academic digital libraries. We formulate the directed acyclic graph (DAG) structure of academic citations, analyze Jon Kleinberg's Hyperlink-Induced Topic Search (HITS) mutual reinforcement algorithm for Hubs and Authorities, derive Brandes' algorithm for Betweenness Centrality, and demonstrate how citation topology guides search ranking in scholarly information systems.
+Citations: 06_tf_idf_similarity.txt, 16_web_search_pagerank.txt, 24_ieee_network_flow_cdn.txt, 29_arxiv_maxflow_mincut_duality.txt
+Content: CHAPTER 1: THE DIRECTED TOPOLOGY OF SCIENTIFIC LITERATURE
+Academic knowledge does not exist in isolation; each published dissertation, conference paper, and monograph cites prior literature that laid its theoretical foundations.
+In 1965, Derek de Solla Price published the first statistical analysis of citation networks in scientific journals. Mathematically, a digital library citation network is modeled as a directed graph:
+G = (V, E)
+where each vertex v in V represents an academic document, and each directed edge (u, v) in E indicates that document u formally cites document v.
+Because publications generally cite only papers published earlier in chronological time, citation graphs are predominantly Directed Acyclic Graphs (DAGs), exhibiting strong historical stratification. Documents with high in-degree represent foundational seminal works (e.g. Knuth's 1977 KMP paper), while documents with high out-degree represent comprehensive surveys and literature reviews.
+
+CHAPTER 2: KLEINBERG'S HITS ALGORITHM: HUBS AND AUTHORITIES
+In 1999, Jon M. Kleinberg introduced the Hyperlink-Induced Topic Search (HITS) algorithm, observing that in directed information networks, prominent nodes fall into two mutually reinforcing categories:
+1. Authorities: High-quality documents containing definitive technical content on a topic (cited by many hubs).
+2. Hubs: Comprehensive bibliographic documents and literature reviews that point to many prominent authorities.
+
+Definition 2.1 (The Mutual Reinforcement Equations):
+Let each document v in V have two non-negative numerical scores:
+- Authority Score: a(v)
+- Hub Score: h(v)
+The scores are defined via mutual recursive summation:
+a(v) = sum_{(u, v) in E} h(u)     (A document is a good authority if cited by good hubs)
+h(u) = sum_{(u, v) in E} a(v)     (A document is a good hub if it cites good authorities)
+
+Matrix Formulation:
+Let A be the adjacency matrix of the citation graph, where A[u][v] = 1 if (u, v) in E, else 0.
+Let a and h be column vectors of authority and hub scores.
+The update rules become:
+a_{k+1} = A^T * h_k
+h_{k+1} = A * a_{k+1} = (A * A^T) * h_k
+Substituting a directly:
+a_{k+1} = (A^T * A) * a_k
+Theorem 2.1 (Power Iteration Convergence):
+The matrices A^T * A and A * A^T are symmetric and positive semi-definite. By the Perron-Frobenius theorem, power iteration converges to the principal eigenvectors corresponding to the largest eigenvalue lambda_max. Normalizing the vectors at each iteration guarantees numerical stability:
+a = a / ||a||_2,     h = h / ||h||_2.
+
+CHAPTER 3: BETWEENNESS CENTRALITY AND INTERDISCIPLINARY BRIDGES
+In addition to in-degree prestige, digital libraries must identify interdisciplinary bridge documents that connect distinct scientific domains (e.g. computer science and medicine).
+Definition 3.1 (Betweenness Centrality):
+The Betweenness Centrality C_B(v) of document v is defined as:
+C_B(v) = sum_{s != v != t in V} ( sigma_{st}(v) / sigma_{st} )
+where sigma_{st} is the total number of shortest directed/undirected paths from document s to document t, and sigma_{st}(v) is the number of those paths that pass through v.
+In 2001, Ulrik Brandes developed an efficient algorithm to compute betweenness centrality for all vertices in O(|V| * |E|) time using augmented breadth-first search (BFS), which is deployed in our digital library graph analytics suite.
+
+CHAPTER 4: INTEGRATING CITATION TOPOLOGY INTO SEARCH RANKING
+Traditional keyword matching treats documents as isolated bags of words. By fusing text similarity with citation graph metrics, our digital library achieves superior relevance:
+Composite_Score(d, q) = w_text * BM25(d, q) + w_auth * a(d) + w_hub * h(d) + w_cit * log(1 + InDegree(d))
+This hybrid scoring ensures that when researchers search for fundamental topics like 'String Matching', seminal historical papers (high authority score) and authoritative modern surveys (high hub score) are elevated above obscure or unverified documents.

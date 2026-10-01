@@ -1,10 +1,42 @@
-Title: Machine Learning in Healthcare
-Author: David Sontag, Suchi Saria, Ziad Obermeyer
-Category: Machine Learning
-Year: 2021
-ISBN: 978-0198845620
-Type: Research Paper
-Keywords: machine learning, healthcare, clinical analytics, diagnostic models, medicine, patient outcomes, risk stratification
-Abstract: This paper investigates the application of machine learning in healthcare for early clinical diagnosis, risk stratification, and automated electronic health record analysis.
-Citations: 12_deep_learning_goodfellow.txt, 13_attention_is_all_you_need.txt, 22_ai_in_healthcare.txt
-Content: Machine learning in healthcare provides automated diagnostic models and predictive clinical analytics for patient monitoring. By applying statistical machine learning techniques and supervised learning to longitudinal medical data, healthcare systems can anticipate adverse events and tailor patient interventions. The study evaluates feature extraction, survival analysis, and cross-validation across massive clinical health datasets.
+Title: Machine Learning in Biomedical Literature: Indexing, PubMed Ontologies, and Clinical Retrieval
+Author: David L. Sackett, Atul J. Butte, Eric Topol
+Category: Biomedical Informatics
+Year: 2018
+ISBN: 978-0199343317
+Type: Journal
+Keywords: Biomedical indexing, PubMed, MeSH ontology, BioBERT, clinical retrieval, medical search, healthcare informatics, evidence based medicine
+Abstract: A comprehensive monograph on biomedical information retrieval and automated clinical indexing. We analyze the Medical Subject Headings (MeSH) controlled vocabulary hierarchy, evaluate domain-specific transformer representations (such as BioBERT and PubMedBERT), examine clinical entity recognition and relation extraction, and demonstrate how specialized biomedical digital libraries deliver evidence-based clinical guidance to medical practitioners.
+Citations: 06_tf_idf_similarity.txt, 11_natural_language_processing.txt, 12_deep_learning_goodfellow.txt, 22_ai_in_healthcare.txt
+Content: CHAPTER 1: THE DELUGE OF BIOMEDICAL LITERATURE
+Every year, over one million peer-reviewed biomedical research papers are published in scientific journals indexed by PubMed and the National Library of Medicine (NLM). For clinical physicians, oncologists, and biomedical researchers, locating relevant clinical trials, drug-drug interaction studies, and genetic mutation correlations is literally a matter of life and death.
+General-purpose web search engines fail to satisfy clinical search requirements because biomedical queries demand high recall, semantic precision, and adherence to standardized clinical terminology rather than popularity-based ranking.
+Biomedical digital libraries bridge this gap through controlled medical ontologies and domain-adapted machine learning pipelines.
+
+CHAPTER 2: CONTROLLED VOCABULARIES AND THE MESH ONTOLOGY
+To eliminate vocabulary mismatch caused by medical synonyms (e.g. 'myocardial infarction' vs 'heart attack' vs 'cardiac arrest'), the National Library of Medicine maintains the Medical Subject Headings (MeSH) thesaurus.
+MeSH is organized as a multi-rooted directed acyclic graph (tree hierarchy) of over 30,000 descriptor concepts:
+- Category A: Anatomy
+- Category B: Organisms
+- Category C: Diseases
+- Category D: Chemicals and Drugs
+- Category E: Analytical, Diagnostic and Therapeutic Techniques
+Each indexed manuscript in PubMed is manually or automatically assigned a set of MeSH descriptor headings.
+Automated MeSH Indexing Pipeline:
+Using deep transformer classifiers (e.g. MeSH-Now), incoming papers are mapped to MeSH nodes by evaluating document title and abstract embeddings. The classification utilizes hierarchical multi-label loss to enforce tree consistency: if a document is tagged with 'Type 2 Diabetes Mellitus' (C19.246.300), it automatically inherits parent headings 'Diabetes Mellitus' (C19.246) and 'Endocrine System Diseases' (C19).
+
+CHAPTER 3: DOMAIN-SPECIFIC TRANSFORMER ENCODERS: BIOBERT
+Standard language models pre-trained on generic text (such as Wikipedia and book corpora) perform poorly on biomedical texts because clinical terminology possesses distinct morphological roots (Latin and Greek affixes) and complex semantic abbreviations (e.g. 'EGFR T790M').
+BioBERT (Bidirectional Encoder Representations from Transformers for Biomedical Text Mining) adapts the Transformer architecture through continued pre-training on PubMed abstracts (4.5 billion words) and PMC full-text articles (13.5 billion words).
+Key Downstream Tasks Enabled in Digital Libraries:
+1. Biomedical Named Entity Recognition (NER): Identifying genes, diseases, chemicals, and species mentions within raw document text using BIO sequence tagging.
+2. Relation Extraction (RE): Determining whether an extracted chemical and disease exhibit an inductive, therapeutic, or adverse relationship (e.g. 'aspirin prevents thrombosis').
+3. Semantic Clinical Search: Encoding clinical queries into dense vectors that cluster near relevant randomized controlled trials (RCTs).
+
+CHAPTER 4: EVIDENCE-BASED MEDICINE (EBM) RETRIEVAL FILTERING
+In evidence-based clinical decision support, documents are categorized according to the Evidence Hierarchy:
+1. Systematic Reviews and Meta-Analyses (Highest clinical validity)
+2. Randomized Controlled Double-Blind Trials
+3. Cohort Studies
+4. Case-Control Studies
+5. Case Series and Expert Opinions (Lowest validity)
+Our digital library integrates faceted metadata filtering, allowing physicians to restrict queries to high-level clinical evidence, instantly surfacing authoritative therapeutic guidelines.

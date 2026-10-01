@@ -1,10 +1,58 @@
-Title: Vector Space Model and TF-IDF for Information Retrieval
-Author: Gerard Salton, Christopher D. Manning
+Title: The Vector Space Model: Term Frequency, Inverse Document Frequency, and Cosine Similarity
+Author: Gerard Salton, Christopher D. Manning, Prabhakar Raghavan
 Category: Information Retrieval
-Year: 1975
-ISBN: 978-0131104112
-Type: Journal
-Keywords: TF-IDF, cosine similarity, vector space model, document similarity, text mining
-Abstract: The Term Frequency-Inverse Document Frequency (TF-IDF) weighting scheme transforms unstructured document texts into vector representations to evaluate thematic similarity via cosine angle.
-Citations: 05_edit_distance_dp.txt, 11_natural_language_processing.txt, 16_web_search_pagerank.txt
-Content: The vector space model represents documents as multidimensional term vectors. Term Frequency (TF) measures how often a word occurs within a document, while Inverse Document Frequency (IDF) discounts ubiquitous words across the entire corpus. By calculating the Cosine Similarity between two document vectors, the digital library determines topical relatedness and recommends closely linked research papers, books, and journals.
+Year: 1983
+ISBN: 978-0070544840
+Type: Research Paper
+Keywords: TF-IDF, Vector Space Model, cosine similarity, information retrieval, inverted index, document ranking, BM25, term weighting, search relevance
+Abstract: A comprehensive treatise on Gerard Salton's Vector Space Model (VSM) and the mathematical foundations of Term Frequency-Inverse Document Frequency (TF-IDF) scoring. We formulate sub-linear term frequency scaling, IDF probabilistic distributions, cosine geometric projection in R^D, and comparative benchmarks against the Okapi BM25 ranking function in academic digital library catalogs.
+Citations: 01_kmp_algorithm.txt, 07_citation_graph_analysis.txt, 16_web_search_pagerank.txt, 25_stanford_infolab_indexing.txt
+Content: CHAPTER 1: SALTON'S VECTOR SPACE MODEL (VSM)
+In early information retrieval systems, document search was governed exclusively by Boolean logic: a document either matched a set of keyword conjunctions (AND, OR, NOT) or it did not. Boolean retrieval provided no ranking mechanism: a query matching 10,000 documents returned them in arbitrary order without distinguishing between highly relevant treatises and incidental mentions.
+In 1975, Gerard Salton and his collaborators at Cornell University introduced the Vector Space Model (VSM). Under VSM, both documents and search queries are represented as high-dimensional vectors in a Euclidean vector space:
+V = R^|V|
+where |V| is the vocabulary size of the entire library corpus. The degree of relevance between a query Q and a document D is defined geometrically by the cosine of the angle between their respective vectors in this multi-dimensional space.
+
+CHAPTER 2: MATHEMATICAL DERIVATION OF TF-IDF WEIGHTS
+To assign meaningful numerical coordinates to document vectors, the raw word counts must be weighted according to two conflicting principles:
+1. Local Term Frequency (TF): A word that appears frequently in a document is likely central to that document's topic.
+2. Global Inverse Document Frequency (IDF): A word that appears in virtually every document across the library (such as 'the', 'system', 'research') carries very little discriminative power.
+
+Definition 2.1 (Sub-linear Term Frequency):
+To prevent long documents with repetitive terms from dominating retrieval results, sub-linear logarithmic term frequency scaling is applied:
+TF(t, d) = 1 + log_{10}( f_{t, d} )    if f_{t, d} > 0, else 0
+where f_{t, d} is the raw count of term t in document d.
+
+Definition 2.2 (Inverse Document Frequency with Smoothing):
+Let N_total be the total number of documents in the library corpus, and let DF(t) be the document frequency (the number of documents containing term t).
+IDF(t) = log_{10} ( (1 + N_total) / (1 + DF(t)) ) + 1
+The addition of 1 inside the quotient prevents division by zero for out-of-vocabulary terms, and the outside constant guarantees positive IDF weights for all corpus terms.
+
+Definition 2.3 (The Combined TF-IDF Weight):
+The coordinate of document d along vocabulary axis t is:
+w_{t, d} = TF(t, d) * IDF(t)
+Similarly, the query vector weight is:
+w_{t, q} = TF(t, q) * IDF(t)
+
+CHAPTER 3: COSINE SIMILARITY AND LENGTH NORMALIZATION
+Definition 3.1 (Cosine Similarity Metric):
+The geometric cosine similarity between query vector q and document vector d is given by the inner product normalized by Euclidean L2 norms:
+Cosine_Sim(q, d) = ( q . d ) / ( ||q|| * ||d|| )
+Expanded algebraically:
+Cosine_Sim(q, d) = ( sum_{t in q cap d} w_{t, q} * w_{t, d} ) / ( sqrt( sum_{t} w_{t, q}^2 ) * sqrt( sum_{t} w_{t, d}^2 ) )
+Properties of Cosine Similarity:
+1. Scale Invariance: Multiplying all term counts in a document by a constant factor does not alter its direction in vector space. Consequently, cosine similarity normalizes for document length, ensuring fair comparison between short abstracts and 500-page dissertations.
+2. Bounded Interval: For non-negative term weights, Cosine_Sim(q, d) lies strictly in the interval [0.0, 1.0], where 1.0 represents collinear identical semantic focus and 0.0 represents orthogonal disjoint vocabulary.
+
+CHAPTER 4: ADVANCEMENT TO OKAPI BM25
+While TF-IDF provides the foundational vector space framework, modern digital libraries frequently augment it with Okapi BM25 (Best Matching 25), a non-linear probabilistic retrieval function:
+BM25_Score(q, d) = sum_{t in q} IDF(t) * ( f_{t, d} * (k_1 + 1) ) / ( f_{t, d} + k_1 * (1 - b + b * (|d| / avgdl)) )
+Parameters:
+- k_1 (typically 1.2 to 2.0) controls term frequency saturation. Unlike logarithmic TF, BM25 asymptotically caps the contribution of repeated terms.
+- b (typically 0.75) governs the degree of document length penalization relative to the average document length avgdl.
+
+CHAPTER 5: APPLICATION IN THE DIGITAL LIBRARY SEARCH SYSTEM
+In our digital library search platform:
+1. Document vectors are constructed during background catalog indexing.
+2. When a user executes a multi-keyword query, the system calculates TF-IDF cosine similarities to rank matching documents by semantic relevance.
+3. On the Document Details page, the TF-IDF vector engine computes inter-document cosine similarities to power the 'Related Resources' recommendation carousel.

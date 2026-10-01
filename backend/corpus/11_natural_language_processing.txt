@@ -1,10 +1,53 @@
-Title: Speech and Language Processing: An Introduction to NLP
+Title: Speech and Language Processing: Statistical Tokenization, N-Gram Modeling, and Lexical Semantics
 Author: Daniel Jurafsky, James H. Martin
-Category: Artificial Intelligence
-Year: 2023
+Category: Natural Language Processing
+Year: 2009
 ISBN: 978-0131873216
 Type: Book
-Keywords: NLP, speech processing, edit distance, language models, tokenization, embeddings
-Abstract: The standard handbook for computational linguistics and natural language processing, covering n-grams, text normalisation, edit distance, transformers, and semantic analysis.
-Citations: 05_edit_distance_dp.txt, 06_tf_idf_similarity.txt, 12_deep_learning_goodfellow.txt
-Content: Speech and Language Processing provides a comprehensive mathematical and algorithmic foundation for natural language processing and computational linguistics. It starts from fundamental string operations such as tokenization, minimum edit distance, and regular expressions, advancing through n-gram language models, hidden Markov models, vector semantics, transformers, and large language models for information extraction in modern digital libraries.
+Keywords: NLP, tokenization, n-gram models, byte pair encoding, lemmatization, part of speech tagging, language modeling, digital library search, text normalization
+Abstract: A comprehensive academic textbook chapter based on Jurafsky and Martin's Speech and Language Processing. We examine statistical text normalization, morphological analysis, Byte-Pair Encoding (BPE) subword tokenization, maximum likelihood N-gram language models, Good-Turing and Kneser-Ney smoothing distributions, Hidden Markov Models for Part-of-Speech tagging, and their foundational deployment in academic search engines and digital text repositories.
+Citations: 06_tf_idf_similarity.txt, 12_deep_learning_goodfellow.txt, 13_attention_is_all_you_need.txt, 18_technology_review_generative_search.txt
+Content: CHAPTER 1: THE TEXT NORMALIZATION PIPELINE IN DIGITAL LIBRARIES
+Before any document in a digital library can be indexed or searched by algorithmic engines (such as KMP, Suffix Arrays, or inverted indices), raw character streams must undergo rigorous text normalization.
+Academic documents exhibit complex linguistic idiosyncrasies: hyphenated line breaks, typographical ligatures (such as 'fi' and 'fl'), non-ASCII mathematical symbols, diacritics, and domain-specific punctuation (e.g. 'Ph.D.', 'et al.', and equations).
+The standardized normalization pipeline consists of four sequential stages:
+1. Sentence Segmentation: Breaking running text into discrete sentence units using rule-based boundary detection (evaluating punctuation context and honorific abbreviations).
+2. Tokenization: Splitting sentences into atomic linguistic units (tokens).
+3. Case Folding and Diacritic Stripping: Mapping characters to canonical Unicode forms (e.g. Unicode Normalization Form C - NFC).
+4. Stemming and Lemmatization: Reducing inflectional morphological variants (e.g. 'retrieving', 'retrieved', 'retrieval') to their common lemma base form ('retrieve').
+
+CHAPTER 2: SUBWORD TOKENIZATION AND BYTE-PAIR ENCODING (BPE)
+Traditional word-level tokenization suffers from the Out-of-Vocabulary (OOV) problem: when a user searches for an obscure compound term, medical neologism, or technical acronym not present in the pre-compiled dictionary, word-level systems fail completely. Conversely, pure character-level tokenization produces excessively long sequence representations that degrade search latency.
+The modern standard for digital text indexing is subword tokenization via Byte-Pair Encoding (BPE).
+Originally developed by Philip Gage in 1994 as a data compression technique, BPE was adapted for natural language processing by Sennrich et al. in 2016.
+Algorithm 1: Byte-Pair Encoding Training
+Input: Raw training text corpus, desired vocabulary size V.
+1. Initialize vocabulary V with all individual unique characters (and byte symbols) in the corpus.
+2. Represent every word in the training corpus as a sequence of space-separated characters plus an end-of-word symbol '</w>'.
+3. Repeat until |V| reaches the target threshold:
+     a. Count the frequency of all adjacent symbol pairs across the entire corpus.
+     b. Identify the most frequent symbol pair (A, B).
+     c. Create a new vocabulary token AB and add it to V.
+     d. Replace all co-occurrences of 'A B' with 'AB' across the corpus.
+4. Output the learned merge rules and subword vocabulary.
+By preserving frequent words as whole tokens while decomposing rare technical words into meaningful subword constituents (e.g. 'string' + 'ology'), BPE provides optimal vocabulary compactness for digital library indexing.
+
+CHAPTER 3: N-GRAM STATISTICAL LANGUAGE MODELING
+Definition 3.1 (The N-Gram Probability Distribution):
+An N-gram language model estimates the probability of the next word w_k given the preceding history of N - 1 words w_{k-N+1} .. w_{k-1}.
+Under the Markov assumption of order N - 1:
+P(w_1, w_2, ..., w_n) = prod_{k=1}^n P(w_k | w_{k-1}, w_{k-2}, ..., w_{k-N+1})
+The Maximum Likelihood Estimate (MLE) computes this conditional probability via relative frequency counts:
+P_MLE(w_k | w_{k-1}, ..., w_{k-N+1}) = Count(w_{k-N+1} .. w_k) / Count(w_{k-N+1} .. w_{k-1})
+
+Definition 3.2 (Smoothing and Backoff: Kneser-Ney):
+In realistic library corpora, many valid word combinations have Count = 0 in the training data, leading to catastrophic zero probabilities.
+Interpolated Kneser-Ney smoothing resolves this by combining absolute discounting of higher-order counts with lower-order continuation probabilities:
+P_KN(w_i | w_{i-1}) = ( max(Count(w_{i-1}, w_i) - d, 0) / Count(w_{i-1}) ) + lambda(w_{i-1}) * P_continuation(w_i)
+where P_continuation(w_i) measures the fertility of word w_i—how likely it is to complete novel histories across the academic library.
+
+CHAPTER 4: PART-OF-SPEECH (POS) TAGGING AND SYNTACTIC DISAMBIGUATION
+When search engines process queries containing polysemous terms (such as 'book' as a noun vs 'book' as a verb, or 'mining' in data mining vs mineral extraction), syntactic disambiguation is required.
+Using Hidden Markov Models (HMMs), the optimal sequence of grammatical tags T = (t_1, t_2, ..., t_n) for word sequence W = (w_1, w_2, ..., w_n) is decoded via the Viterbi dynamic programming algorithm:
+T* = argmax_T prod_{i=1}^n P(w_i | t_i) * P(t_i | t_{i-1})
+This enables facet filtering in the digital library, allowing users to restrict queries to noun phrases, method titles, or authorial attributions.

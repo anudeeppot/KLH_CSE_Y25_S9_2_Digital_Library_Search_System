@@ -1,10 +1,64 @@
-Title: Fast String Searching with Boyer Moore Algorithm
-Author: Robert S. Boyer, J. Strother Moore
+Title: The Boyer-Moore and Horspool String Search Algorithms: Right-to-Left Scanning and Sublinear Heuristics
+Author: Robert S. Boyer, J Strother Moore, R. Nigel Horspool
 Category: String Algorithms
 Year: 1977
-ISBN: 978-0131103856
+ISBN: 978-0130862983
 Type: Research Paper
-Keywords: Boyer-Moore, bad character rule, good suffix rule, pattern shifting, sublinear search
-Abstract: The Boyer-Moore algorithm scans characters from right to left, utilizing the bad-character and good-suffix heuristics to skip large sections of text, frequently achieving sublinear search speeds in natural language.
-Citations: 01_kmp_algorithm.txt, 04_suffix_array_indexing.txt
-Content: The Boyer Moore algorithm is considered the benchmark for string searching in natural language corpora. It matches characters from right to left within the pattern window. When a mismatch occurs, it applies two powerful heuristics: the Bad Character Heuristic and the Good Suffix Heuristic. These rules allow the pattern to jump forward by multiple positions rather than advancing by one character, often yielding sublinear average performance O(n / m).
+Keywords: Boyer Moore, Horspool, string matching, bad character rule, good suffix rule, right to left scan, sublinear search, text retrieval, digital library indexing
+Abstract: A comprehensive monograph on the Boyer-Moore string search algorithm and its Horspool variant. We analyze the theoretical foundations of right-to-left character scanning, derive the bad-character and good-suffix shift heuristics, prove the sublinear O(N / M) best-case search complexity, and demonstrate why Boyer-Moore remains the benchmark gold standard for large-alphabet search across academic journals and digital books.
+Citations: 01_kmp_algorithm.txt, 02_rabin_karp_hashing.txt, 04_suffix_array_indexing.txt, 08_introduction_to_algorithms.txt
+Content: CHAPTER 1: THE PARADIGM OF RIGHT-TO-LEFT SCANNING
+Most elementary string searching algorithms align the pattern with the beginning of the text and compare characters from left to right: P[0] with T[i], P[1] with T[i+1], and so forth.
+In 1977, Robert S. Boyer and J Strother Moore revolutionized stringology by proposing an unconventional paradigm: align the pattern with the text from left to right, but compare characters within the current window from right to left, starting at P[M - 1] down to P[0].
+The profound insight behind right-to-left scanning is that upon encountering a mismatched text character T[i + M - 1], the algorithm can inspect this character and immediately skip up to M positions forward. If the mismatched text character does not appear anywhere within the pattern, no alignment that overlaps this character can possibly match. Thus, entire blocks of text are skipped without ever being read by the processor, achieving sublinear O(N / M) average search time on large alphabets.
+
+CHAPTER 2: THE DUAL HEURISTICS: BAD CHARACTER AND GOOD SUFFIX
+The Boyer-Moore algorithm combines two independent heuristics to determine the maximum safe forward shift of the pattern upon mismatch.
+
+2.1 The Bad Character Heuristic (Delta_1):
+Suppose a mismatch occurs at pattern index j (where 0 <= j < M), between pattern character P[j] and text character c = T[i + j].
+The bad character rule states:
+1. If character c does not appear in pattern P at all, shift the pattern completely past the mismatch position: shift = j + 1.
+2. If character c appears elsewhere in P, find the rightmost occurrence of c in P that lies to the left of index j, say at index k < j. Align that character with c: shift = j - k.
+3. If the only occurrences of c in P lie to the right of j, the bad character rule does not suggest a positive shift; in this case, shift = 1.
+To implement this efficiently, a lookup table badChar[c] is precomputed for all c in Sigma:
+badChar[c] = last index of c in P (or -1 if c not in P).
+
+2.2 The Good Suffix Heuristic (Delta_2):
+Suppose during comparison, a suffix of the pattern P[j + 1 .. M - 1] successfully matched text substring T[i + j + 1 .. i + M - 1], but a mismatch occurred at P[j] != T[i + j].
+The matched substring is a non-empty suffix S = P[j + 1 .. M - 1].
+The good suffix rule states:
+1. Find the rightmost occurrence of S elsewhere in P such that the character preceding this occurrence is different from P[j]. Shift P to align this occurrence with the matched text suffix.
+2. If no such internal occurrence of S exists, find the longest proper prefix of P that is also a suffix of S. Shift P so that this prefix aligns with the suffix of the matched text.
+3. If no such prefix exists, shift the entire pattern past the matched window: shift = M.
+
+2.3 The Combined Shift Rule:
+At each mismatch, Boyer-Moore computes both shifts:
+shift = max( badCharacterShift, goodSuffixShift )
+This dual guarantee ensures correctness and yields exceptional performance.
+
+CHAPTER 3: THE BOYER-MOORE-HORSPOOL SIMPLIFICATION
+In 1980, R. Nigel Horspool observed that for practical natural language texts (such as English academic books and journals), the good suffix table is rarely invoked because the bad character heuristic alone provides massive skips.
+Horspool simplified the algorithm by basing the shift solely on the text character that aligns with the end of the pattern, T[i + M - 1], regardless of where the mismatch occurred:
+shift = M - 1 - lastOccurrence(T[i + M - 1] in P[0 .. M - 2])
+If T[i + M - 1] does not occur in P[0 .. M - 2], shift = M.
+This reduces preprocessing time to simple O(M + |Sigma|) table construction and minimizes cache footprint while retaining O(N / M) empirical performance.
+
+CHAPTER 4: COMPLEXITY AND MATHEMATICAL ANALYSIS
+Theorem 4.1 (Best-Case Time Complexity):
+The best-case running time of the Boyer-Moore algorithm is Omega(N / M) character comparisons.
+Proof:
+Consider text T of length N consisting entirely of character 'B', and pattern P of length M consisting of 'A...A'.
+Aligning P at T[0 .. M - 1], the first comparison is P[M - 1]='A' against T[M - 1]='B'.
+Since 'B' does not appear anywhere in P, the bad character rule shifts the pattern by M positions.
+The next comparison takes place at T[2M - 1], which again triggers a shift of M.
+This process repeats exactly N / M times.
+Total comparisons = N / M. For long search patterns, this represents a massive speedup over linear scan algorithms.
+Theorem 4.2 (Worst-Case Time Complexity):
+With both bad character and good suffix heuristics, the worst-case running time is O(N) comparisons (proven by Cole in 1991 to be at most 3N comparisons). Without the good suffix rule, the worst case degenerates to O(N * M) on periodic strings like T = 'AAAA...A' and P = 'BAAA'.
+
+CHAPTER 5: INTEGRATION IN DIGITAL LIBRARY SEARCH ENGINES
+Within our university digital library search architecture, Boyer-Moore and Horspool serve as the premier algorithm when:
+1. Search queries are long (M >= 10 characters, such as full book titles, author surnames, or scientific phrases).
+2. The alphabet is large (standard UTF-8 academic text where character diversity enables frequent M-character skips).
+3. The CO-1 Signature Evaluator detects high text entropy H(S) > 3.5 and low query-to-text ratio M/N, immediately routing the request to Boyer-Moore to minimize CPU cycle consumption.

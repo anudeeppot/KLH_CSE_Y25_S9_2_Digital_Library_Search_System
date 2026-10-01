@@ -1,10 +1,73 @@
-Title: Suffix Arrays: A New Method for On-Line String Searches
-Author: Udi Manber, Gene Myers
-Category: Data Structures
+Title: Suffix Array Indexing and Kasai's Linear-Time LCP Algorithm in Large Document Corpora
+Author: Udi Manber, Gene Myers, Toru Kasai, Hiroki Arimura
+Category: Suffix Structures
 Year: 1993
-ISBN: 978-0131103993
+ISBN: 978-0898713138
 Type: Research Paper
-Keywords: Suffix Array, string indexing, LCP array, binary search, full text index
-Abstract: Suffix arrays provide a compact alternative to suffix trees, representing sorted lexicographical suffixes of a corpus to allow binary search matching in O(m log n) time.
-Citations: 01_kmp_algorithm.txt, 08_introduction_to_algorithms.txt
-Content: Suffix arrays represent a space-efficient alternative to suffix trees for full-text indexing in digital library systems. By sorting all suffixes of a text in lexicographical order, any substring search is reduced to a binary search over the array of suffix starting positions. With Longest Common Prefix (LCP) information, lookups are accelerated substantially. In a digital library, suffix arrays allow instant searching across large indexed archives once the preprocessing stage is completed.
+Keywords: Suffix Array, LCP array, Kasai algorithm, string index, binary search, full text search, Manber Myers, longest common prefix, digital library search
+Abstract: A comprehensive treatise on Suffix Arrays and the Longest Common Prefix (LCP) array. We examine the Manber-Myers prefix doubling construction, Kasai's linear-time O(N) LCP computation algorithm, two-pointer binary search range queries, and the structural advantages of Suffix Arrays over Suffix Trees in terms of cache locality and 4N-byte memory compact representation for large digital library search repositories.
+Citations: 01_kmp_algorithm.txt, 03_boyer_moore_search.txt, 23_acm_transactions_stringology.txt, 25_stanford_infolab_indexing.txt
+Content: CHAPTER 1: THE EVOLUTION FROM SUFFIX TREES TO SUFFIX ARRAYS
+Full-text indexing in digital libraries requires answering arbitrary substring queries without knowing the query strings in advance. In 1973, Weiner introduced the Suffix Tree, which stores all suffixes of a text T of length N in a compacted trie. Suffix trees allow pattern matching in O(M) time. However, in practice, a suffix tree node requires multiple pointers, character edges, and suffix links, consuming between 20 and 45 bytes per input character. For a 1 GB academic library corpus, a suffix tree would require 20 to 45 GB of RAM, causing severe memory paging bottlenecks.
+In 1990, Udi Manber and Gene Myers introduced the Suffix Array as a lightweight, cache-friendly alternative. A suffix array stores the starting indices of all suffixes in lexicographically sorted order. Using standard 32-bit integers, a suffix array consumes exactly 4N bytes of memory—an 80% reduction compared to suffix trees—while preserving rapid search capabilities.
+
+CHAPTER 2: MATHEMATICAL DEFINITION AND STRUCTURAL INVARIANTS
+Let T be a text of length N terminated by a unique sentinel character '$' smaller than any other character in Sigma.
+For each index i in {0, 1, ..., N - 1}, the suffix starting at index i is denoted:
+S_i = T[i .. N - 1].
+Definition 2.1 (The Suffix Array SA):
+The Suffix Array SA of T is an integer array of size N containing a permutation of {0, 1, ..., N - 1} such that:
+S_{SA[0]} < S_{SA[1]} < S_{SA[2]} < ... < S_{SA[N-1]}
+where '<' denotes standard lexicographical ordering.
+
+Definition 2.2 (The Longest Common Prefix Array LCP):
+The LCP array is an integer array of length N where LCP[0] = 0, and for each k in {1, 2, ..., N - 1}:
+LCP[k] = length of the longest common prefix between S_{SA[k]} and S_{SA[k-1]}.
+The LCP array captures the shared prefix geometry of adjacent sorted suffixes, enabling accelerated binary search and linear-time counting of distinct substrings.
+
+CHAPTER 3: KASAI'S LINEAR-TIME O(N) LCP CONSTRUCTION
+Naively computing the LCP array by comparing adjacent suffixes in the suffix array requires O(N^2) character comparisons in the worst case (e.g. for text T = 'AAAA...A$').
+In 2001, Toru Kasai, Gunho Lee, Hiroki Arimura, Setsuo Arikawa, and Kunsoo Park discovered an elegant O(N) algorithm based on the rank array.
+Let Rank[i] be the inverse permutation of SA, indicating the position of suffix S_i in the sorted suffix array:
+Rank[SA[k]] = k.
+Key Insight (Kasai's Invariant):
+Let suffix S_i be at position Rank[i], and let its predecessor in SA be S_j where j = SA[Rank[i] - 1].
+If the LCP between S_i and S_j is h > 0, then when we consider the next suffix in original text order, S_{i+1} = T[i + 1 .. N - 1], its LCP with its predecessor in SA is guaranteed to be at least h - 1!
+Lemma 3.1:
+LCP[Rank[i + 1]] >= LCP[Rank[i]] - 1.
+Proof:
+Since S_i and S_j share a common prefix of length h > 0, the first characters must match: T[i] = T[j].
+Therefore, S_{i+1} and S_{j+1} share a common prefix of length h - 1.
+Because S_j immediately precedes S_i in sorted order, S_{j+1} must appear before S_{i+1} in the suffix array.
+Since the LCP between any two suffixes is the minimum of intermediate LCP values, the LCP between S_{i+1} and its immediate predecessor in SA cannot be less than h - 1.
+
+Kasai Algorithm Specification:
+1. Initialize Rank array such that Rank[SA[k]] = k for all k.
+2. Initialize h = 0.
+3. For i = 0 to N - 1:
+     If Rank[i] > 0:
+         j = SA[Rank[i] - 1]
+         While i + h < N and j + h < N and T[i + h] == T[j + h]:
+             h = h + 1
+         LCP[Rank[i]] = h
+         If h > 0:
+             h = h - 1
+4. Return LCP.
+Since h increases at most N times (it cannot exceed N) and decreases by 1 at most N times, the while loop executes at most 2N times in total! The running time is strictly O(N).
+
+CHAPTER 4: SUBSTRING SEARCH VIA DUAL BINARY SEARCH
+Because the suffix array is sorted lexicographically, any occurrence of a pattern P of length M must appear as a prefix of a contiguous interval of suffixes:
+SA[L .. R].
+To find this interval:
+1. Binary search for the leftmost boundary L:
+     Find the first index k in [0, N - 1] such that P <= S_{SA[k]}.
+2. Binary search for the rightmost boundary R:
+     Find the last index k in [0, N - 1] such that S_{SA[k]} has prefix P.
+Each binary search takes O(M * log N) time using standard string comparisons, or O(M + log N) time when augmented with an LCP interval tree.
+Once [L, R] is identified, the total number of occurrences of P in text T is immediately given by R - L + 1, and the exact match positions in the text are the values SA[L], SA[L+1], ..., SA[R].
+
+CHAPTER 5: ROLE IN THE DIGITAL LIBRARY SEARCH SYSTEM
+In our digital library search engine:
+1. Once an academic monograph or dissertation is uploaded, its Suffix Array and Kasai LCP array are precomputed and cached in RAM.
+2. Subsequent substring searches, phrase queries, and prefix autocompletions execute in sub-millisecond O(M * log N) time without scanning the document text.
+3. The Suffix Array powers multi-word phrase matching across catalog abstracts and citations.

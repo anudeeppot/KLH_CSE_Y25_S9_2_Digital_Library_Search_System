@@ -43,7 +43,7 @@ const DocumentCard = ({ item, isSearchResult = false }) => {
       </h3>
 
       {/* Metadata */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '0.85rem' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.85rem', fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '0.85rem', alignItems: 'center' }}>
         <span><strong>Author:</strong> {doc.author}</span>
         {doc.year && (
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
@@ -53,6 +53,19 @@ const DocumentCard = ({ item, isSearchResult = false }) => {
         {doc.isbn && (
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             <Hash size={13} /> {doc.isbn}
+          </span>
+        )}
+        {doc.content && (
+          <span style={{
+            fontSize: '0.75rem',
+            background: 'rgba(99, 102, 241, 0.12)',
+            color: 'var(--accent-indigo)',
+            padding: '0.15rem 0.45rem',
+            borderRadius: '4px',
+            fontWeight: 600,
+            border: '1px solid rgba(99, 102, 241, 0.25)',
+          }}>
+            {doc.content.split(/\s+/).filter(Boolean).length.toLocaleString()} words ({Math.max(1, Math.round(doc.content.length / 1024))} KB)
           </span>
         )}
       </div>

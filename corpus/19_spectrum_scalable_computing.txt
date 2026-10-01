@@ -1,10 +1,46 @@
-Title: The Evolution of High-Performance Search Architectures
-Author: David Patterson, John L. Hennessy
-Category: Computer Architecture
-Year: 2024
-ISBN: 978-0131105993
-Type: Magazine
-Keywords: computer architecture, hardware acceleration, memory hierarchy, SIMD string search, cache locality
-Abstract: An IEEE Spectrum special report on how modern CPU SIMD extensions, cache hierarchies, and memory-bandwidth optimizations supercharge classical string searching algorithms.
-Citations: 01_kmp_algorithm.txt, 03_boyer_moore_search.txt, 14_parallel_text_processing.txt
-Content: IEEE Spectrum explores hardware-software co-design in modern search engines. Algorithms like KMP and Boyer-Moore, formulated decades ago, are experiencing renewed interest through hardware vectorization (AVX-512, ARM NEON). By comparing 64 characters in a single CPU clock cycle, hardware-accelerated string searching achieves unprecedented bandwidth. The article examines the trade-offs between cache locality, memory bandwidth, and algorithmic branch prediction.
+Title: Scalable Distributed Computing: Index Partitioning, Sharding, and Tail Latency in Academic Repositories
+Author: Jeffrey Dean, Sanjay Ghemawat
+Category: Distributed Systems
+Year: 2004
+ISBN: 978-0201633610
+Type: Research Paper
+Keywords: Distributed systems, sharding, index partitioning, MapReduce, tail latency, scatter gather, high availability, digital libraries, cloud storage
+Abstract: A comprehensive monograph on distributed computing architectures for large-scale academic repositories and digital libraries. We analyze document-based versus term-based index partitioning, formulate the scatter-gather query aggregation model, evaluate tail-latency mitigation techniques in multi-node clusters, and examine the resilience of distributed digital library repositories.
+Citations: 09_designing_data_intensive_apps.txt, 14_parallel_text_processing.txt, 24_ieee_network_flow_cdn.txt, 25_stanford_infolab_indexing.txt
+Content: CHAPTER 1: THE SCALE OF MODERN ACADEMIC DIGITAL LIBRARIES
+Modern university digital libraries and national research repositories (such as arXiv, PubMed, and IEEE Xplore) host millions of documents comprising petabytes of text, citations, and high-resolution figures. A single physical server cannot store this volume of data, nor can a single CPU core process millions of queries per second.
+Scaling digital library search systems requires distributed architectures where computation and data are partitioned across clusters of commodity computing nodes.
+
+CHAPTER 2: PARTITIONING STRATEGIES: DOCUMENT-BASED VS TERM-BASED
+When dividing an inverted index across K cluster shards, two fundamental partitioning paradigms exist:
+
+2.1 Document-Based Partitioning (Local Inverted Index):
+In document-based partitioning, the total document corpus D is partitioned into K disjoint subsets D_1, D_2, ..., D_K.
+Each cluster shard independently builds and maintains a complete inverted index for its assigned subset of documents.
+Query Execution (Scatter-Gather):
+1. A search query Q is received by the Aggregator (Broker) node.
+2. The Aggregator broadcasts Q to all K shards simultaneously (Scatter).
+3. Each shard evaluates Q against its local inverted index and returns its top-N candidates.
+4. The Aggregator merges the K lists of candidates, sorts them by global relevance score, and returns the top-N results to the client (Gather).
+Advantages:
+- Indexing is completely embarrassingly parallel; adding new documents requires updating only one shard.
+- High resilience: if one shard fails, the remaining shards still return 99% of the corpus results.
+
+2.2 Term-Based Partitioning (Global Inverted Index):
+In term-based partitioning, the vocabulary V is partitioned into K subsets V_1, V_2, ..., V_K.
+Each shard stores the complete posting list for its assigned vocabulary terms across all documents in the entire library.
+Query Execution:
+- For single-term queries, only the specific shard holding that term's posting list is queried, saving cluster bandwidth.
+- However, for multi-term Boolean queries ('algorithms AND data structures'), posting lists must be transferred across the internal network to perform list intersection, introducing heavy network bottlenecks.
+Consequently, almost all large-scale digital search engines (including Lucene and Elasticsearch) standardize on Document-Based Partitioning.
+
+CHAPTER 3: TAIL LATENCY AND THE 'TAIL AT SCALE' PHENOMENON
+In a scatter-gather architecture with K = 100 shards, the overall query latency seen by the user is governed by the slowest shard:
+Latency_total = max( Latency_shard_1, Latency_shard_2, ..., Latency_shard_K ).
+As analyzed by Jeffrey Dean and Luiz André Barroso in 'The Tail at Scale', even if an individual server has only a 1% chance of experiencing a 1-second tail latency pause (due to garbage collection, background compaction, or network queueing), the probability that a query hitting 100 shards experiences that 1-second pause is:
+P(tail) = 1 - (1 - 0.01)^{100} approx 63.4%!
+
+Tail-Latency Mitigation Strategies:
+1. Hedged Requests: The aggregator sends the query to a primary replica. If no response is received within the 95th percentile expected latency (e.g. 15ms), the aggregator fires a duplicate hedged request to a secondary replica, taking whichever result arrives first.
+2. Micro-Sharding and Load Balancing: Splitting indices into fine-grained micro-shards allows the cluster coordinator to redistribute hot shards across under-utilized CPU cores.
+3. Tied Deadlines: Requests carry an explicit client deadline; if an overloaded background shard cannot execute the query before the deadline expires, it cancels execution immediately rather than wasting CPU cycles on a stale request.

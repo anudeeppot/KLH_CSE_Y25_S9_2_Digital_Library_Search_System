@@ -1,10 +1,88 @@
-Title: Deep Learning and Machine Learning Foundations
+Title: Deep Learning: Foundations, Neural Architectures, and Representation Learning
 Author: Ian Goodfellow, Yoshua Bengio, Aaron Courville
-Category: Machine Learning
+Category: Artificial Intelligence
 Year: 2016
 ISBN: 978-0262035613
 Type: Book
-Keywords: machine learning, deep learning, neural networks, backpropagation, optimization, computer vision, representations
-Abstract: The foundational deep learning and machine learning textbook offering mathematical treatment of linear algebra, probability, feedforward networks, convolutional architectures, and generative modeling.
-Citations: 08_introduction_to_algorithms.txt, 13_attention_is_all_you_need.txt
-Content: Machine learning and deep learning cover the mathematical theories and computational methods driving modern artificial intelligence. The book covers linear algebra, probability theory, numerical optimization, deep feedforward networks, regularization, convolutional neural networks, and sequence models. The authors discuss representation learning and latent semantic representations, which enable advanced semantic search and neural document ranking in next-generation library platforms.
+Keywords: Deep learning, neural networks, backpropagation, gradient descent, representation learning, loss optimization, stochastic gradient descent, Adam optimizer, embeddings, vector search
+Abstract: A comprehensive academic textbook chapter based on Goodfellow, Bengio, and Courville's Deep Learning. We present the mathematical foundations of applied linear algebra and multivariable calculus, derive the analytical backpropagation algorithm for feedforward architectures, evaluate stochastic optimization algorithms (SGD, RMSProp, Adam), examine representation learning in dense semantic latent spaces, and demonstrate how deep dense embeddings empower next-generation vector retrieval in academic digital library repositories.
+Citations: 06_tf_idf_similarity.txt, 11_natural_language_processing.txt, 13_attention_is_all_you_need.txt, 18_technology_review_generative_search.txt, 21_machine_learning_healthcare.txt
+Content: CHAPTER 1: APPLIED MATHEMATICAL FOUNDATIONS FOR INTELLIGENT INFORMATION RETRIEVAL
+Deep learning algorithms learn hierarchical representations of observational data by composing multiple linear transformations with non-linear activation functions. In modern digital library systems, deep learning powers semantic vector search, automated scientific document classification, paper summarization, citation relationship prediction, and metadata extraction.
+The core mathematical machinery relies on three pillars:
+
+1.1 Multidimensional Linear Algebra:
+Vector spaces R^D represent documents and queries as dense coordinates. A document embedding is a real vector v in R^D (e.g. D = 768 or 1536).
+Linear transformations are represented by weight matrices W in R^{M x D}, mapping an input representation x into a hidden state:
+z = W * x + b
+where b in R^M is the bias vector. Matrix multiplications exploit hardware SIMD parallelism, Tensor Cores, and BLAS libraries to perform billions of operations per second across library indexes.
+
+1.2 Multivariable Vector Calculus and the Chain Rule:
+Neural network training requires computing the gradient of a scalar scalar loss function L with respect to millions of network parameters.
+For a composite function y = f(u(x)), the multidimensional chain rule dictates that the gradient is obtained via matrix multiplication of Jacobians:
+nabla_x L = ( (partial u) / (partial x) )^T * nabla_u L.
+
+1.3 Probability and Information Theory:
+Shannon entropy H(X) = - sum_{x} P(x) log P(x) quantifies the information content and uncertainty of textual distributions. The Kullback-Leibler (KL) divergence D_{KL}(P || Q) = sum_{x} P(x) log ( P(x) / Q(x) ) measures the information loss when approximating true document topic distribution P by model distribution Q, serving as the basis for cross-entropy loss.
+
+CHAPTER 2: FEEDFORWARD NEURAL NETWORKS AND NON-LINEAR ACTIVATIONS
+A deep feedforward network (multilayer perceptron) defines an input-to-output mapping y = f(x; theta) and learns the optimal parameter values theta through empirical risk minimization over a training corpus.
+The architecture is structured as a directed acyclic computation graph of sequential layers:
+h^(0) = x
+h^(l) = sigma( W^(l) * h^(l-1) + b^(l) )    for l = 1, 2, ..., L
+y_hat = h^(L)
+
+The Non-Linear Activation Function sigma:
+Without non-linear activation functions, a composition of any number of linear layers collapses mathematically into a single linear transformation: W^(2) * (W^(1) * x) = (W^(2) * W^(1)) * x = W_{eff} * x.
+Non-linearities allow networks to approximate arbitrary continuous functions according to the Universal Approximation Theorem.
+Common activation functions include:
+1. Rectified Linear Unit (ReLU):
+   sigma(z) = max(0, z)
+   ReLU is computationally trivial to evaluate, provides non-saturating derivatives for positive activations, and accelerates stochastic gradient convergence by preventing the vanishing gradient problem.
+2. Gaussian Error Linear Unit (GELU):
+   GELU(z) = z * Phi(z) = z * P(X <= z) approx 0.5 * z * ( 1 + tanh( sqrt(2 / pi) * (z + 0.044715 * z^3) ) )
+   Widely used in modern transformer-based academic encoders like BERT and SciBERT.
+3. Softmax Output Layer:
+   For classifying documents across C library subject categories:
+   P(y = c | x) = exp(z_c) / sum_{j=1}^C exp(z_j).
+
+CHAPTER 3: ANALYTICAL BACKPROPAGATION AND GRADIENT DESCENT
+Backpropagation is the reverse-mode automatic differentiation algorithm used to compute gradients across neural computation graphs.
+Algorithm 1: Backpropagation in a Fully-Connected Network
+Input: Training example (x, y), current weights W^(l) and biases b^(l).
+Output: Parameter gradients nabla_{W^(l)} L and nabla_{b^(l)} L.
+1. Forward Pass:
+     Compute activations h^(0) = x.
+     For l = 1 to L:
+         a^(l) = W^(l) * h^(l-1) + b^(l)
+         h^(l) = sigma( a^(l) )
+2. Output Layer Error:
+     Compute delta^(L) = nabla_{h^(L)} L odot sigma'( a^(L) ).
+3. Backward Pass:
+     For l = L - 1 down to 1:
+         delta^(l) = ( (W^(l+1))^T * delta^(l+1) ) odot sigma'( a^(l) )
+4. Parameter Gradient Computation:
+     nabla_{W^(l)} L = delta^(l) * (h^(l-1))^T
+     nabla_{b^(l)} L = delta^(l).
+
+Optimization Algorithms:
+1. Stochastic Gradient Descent (SGD) with Momentum:
+   v_{t+1} = beta * v_t + (1 - beta) * nabla_theta L(theta_t)
+   theta_{t+1} = theta_t - alpha * v_{t+1}
+2. Adaptive Moment Estimation (Adam):
+   Adam maintains exponentially decaying averages of past gradients (m_t) and squared gradients (v_t):
+   m_t = beta_1 * m_{t-1} + (1 - beta_1) * g_t
+   v_t = beta_2 * v_{t-1} + (1 - beta_2) * g_t^2
+   Correcting for initialization bias toward zero:
+   m_hat_t = m_t / (1 - beta_1^t),     v_hat_t = v_t / (1 - beta_2^t)
+   Parameter update:
+   theta_{t+1} = theta_t - alpha * m_hat_t / ( sqrt(v_hat_t) + epsilon ).
+
+CHAPTER 4: REPRESENTATION LEARNING AND DENSE VECTOR SPACE RETRIEVAL
+Traditional library search engines represent documents using sparse bag-of-words or TF-IDF models where each vocabulary word corresponds to an orthogonal coordinate axis. Under this formulation, the term 'algorithm' and the term 'computation' share exactly zero overlap, leading to lexical mismatch failures.
+Deep representation learning projects textual passages into a continuous, dense latent space where semantic similarity corresponds to geometric proximity:
+f: Text -> R^D.
+Models such as Word2Vec (Skip-Gram with Negative Sampling), Sentence-BERT, and deep dense encoders map semantically related documents to nearby coordinates.
+Cosine Similarity in Latent Space:
+Cosine_Sim(u, v) = (u . v) / ( ||u|| * ||v|| )
+By indexing dense vectors using Hierarchical Navigable Small World (HNSW) graphs or Inverted File with Product Quantization (IVF-PQ), the digital library executes sub-5ms semantic nearest-neighbor queries across millions of research papers, discovering relevant literature even when user search terms share zero exact lexical keywords with the document text.

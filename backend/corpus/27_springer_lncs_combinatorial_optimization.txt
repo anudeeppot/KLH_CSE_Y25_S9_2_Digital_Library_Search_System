@@ -1,10 +1,65 @@
-Title: Springer LNCS: Tree DP on Hierarchical Knowledge Taxonomies
-Author: Sanjoy Dasgupta, Christos Papadimitriou
-Category: Dynamic Programming
-Year: 2022
-ISBN: 978-3030896001
-Type: Journal
-Keywords: Tree DP, Maximum Weight Independent Set, knowledge hierarchy, Dewey Decimal, ACM CCS
-Abstract: Tree dynamic programming leverages the topological tree ordering of academic classification taxonomies to determine maximum impact non-overlapping curriculum modules in linear O(N) time.
-Citations: 08_introduction_to_algorithms.txt, 11_natural_language_processing.txt
-Content: Knowledge classifications such as Dewey Decimal and ACM Computing Classification System form directed rooted trees. Selecting optimal core disciplines without redundant prerequisite conflict is mapped to Maximum Weight Independent Set on Tree. Post-order DFS computes inclusion and exclusion states DP[u][1] and DP[u][0] in strictly linear O(N) time, yielding optimal academic grant allocation.
+Title: Combinatorial Optimization in Boolean Query Evaluation and Interval Dynamic Programming
+Author: Christos H. Papadimitriou, Mihalis Yannakakis
+Category: Combinatorial Optimization
+Year: 1991
+ISBN: 978-3540544876
+Type: Research Paper
+Keywords: Interval DP, matrix chain multiplication, query optimization, join ordering, Boolean retrieval, dynamic programming, combinatorial optimization
+Abstract: A comprehensive monograph on combinatorial optimization and Interval Dynamic Programming (Interval DP) for database query evaluation. We analyze the parenthesization of multi-keyword Boolean join trees, prove Bellman's principle of optimality over contiguous index intervals [i, j], formulate the O(N^3) DP recurrence with Knuth-Yao quadrangle inequality speedups, and evaluate its application in digital library search query planners.
+Citations: 01_kmp_algorithm.txt, 05_edit_distance_dp.txt, 06_tf_idf_similarity.txt, 26_mit_ocw_advanced_dp.txt
+Content: CHAPTER 1: THE QUERY OPTIMIZATION PROBLEM IN DIGITAL LIBRARIES
+When a university student or researcher executes an advanced Boolean search query comprising multiple terms:
+Q = Term_1 AND Term_2 AND Term_3 AND ... AND Term_K
+the search engine must intersect K sorted posting lists.
+While the set intersection operation is mathematically associative:
+(L_1 cap L_2) cap L_3 = L_1 cap (L_2 cap L_3)
+the computational cost of evaluating different parenthesizations varies by orders of magnitude!
+Example:
+Suppose |L_1| = 100,000 documents, |L_2| = 1,000 documents, and |L_3| = 5 documents.
+- Left-associative join: Intersecting L_1 and L_2 first requires scanning up to 101,000 postings, producing intermediate list I_1 of size ~200. Intersecting I_1 with L_3 requires another 205 operations. Total operations approx 101,205.
+- Right-associative join: Intersecting L_2 and L_3 first requires only 1,005 operations, producing intermediate list I_2 of size ~2. Intersecting L_1 with I_2 requires scanning only until the 2 matching documents are confirmed (~2,000 operations). Total operations approx 3,005—a 33x speedup!
+The Boolean Query Join Ordering Problem consists of determining the optimal parenthesization of K posting lists that minimizes total evaluation cost.
+
+CHAPTER 2: INTERVAL DYNAMIC PROGRAMMING FORMULATION
+The structure of this problem is isomorphic to Matrix Chain Multiplication and can be solved optimally using Interval Dynamic Programming.
+Let the terms be arranged in a linear pipeline: T_1, T_2, ..., T_K.
+For any contiguous sub-interval of terms from index i to index j (where 1 <= i <= j <= K):
+Let DP[i][j] denote the minimum computational cost required to evaluate the intersection of terms T_i .. T_j.
+
+Recurrence Relation:
+Base Cases:
+DP[i][i] = 0    for all 1 <= i <= K (a single term requires zero intersection cost).
+
+Interval Recurrence for length len = 2 to K:
+For any interval [i, j] with length len = j - i + 1:
+The final operation must split the interval into two sub-intervals at some intermediate split point k (where i <= k < j):
+[i, k] and [k + 1, j].
+The total cost of this split is:
+Cost(split at k) = DP[i][k] + DP[k + 1][j] + cost_merge(size(i, k), size(k + 1, j)).
+Therefore:
+DP[i][j] = min_{i <= k < j} { DP[i][k] + DP[k + 1][j] + C * estimatedSize[i][k] * estimatedSize[k + 1][j] }.
+
+CHAPTER 3: ALGORITHM IMPLEMENTATION AND TRACE
+Algorithm 1: Interval-DP-Join-Planner(sizes, K)
+1. Initialize DP matrix of size (K + 1) x (K + 1) with 0.
+2. Initialize split matrix S of size (K + 1) x (K + 1) with 0.
+3. For length = 2 to K:
+     For i = 1 to K - length + 1:
+         j = i + length - 1
+         DP[i][j] = infty
+         For k = i to j - 1:
+             q = DP[i][k] + DP[k + 1][j] + joinCost(i, k, j)
+             If q < DP[i][j]:
+                 DP[i][j] = q
+                 S[i][j] = k
+4. Reconstruct optimal binary join tree by recursively querying S[1][K].
+5. Return DP[1][K] and JoinTree.
+
+Complexity Analysis:
+The outer loop runs K times for length. The inner loops run O(K) times for start index i and O(K) times for split index k.
+Total running time is O(K^3) operations, which executes in less than 1 millisecond for queries with K <= 20 terms.
+Knuth-Yao Quadrangle Inequality Optimization:
+When the cost function satisfies the Quadrangle Inequality (monotonicity over lattices), the optimal split points satisfy S[i][j-1] <= S[i][j] <= S[i+1][j], reducing the time complexity to O(K^2).
+
+CHAPTER 4: INTEGRATION IN THE DIGITAL LIBRARY QUERY DISPATCHER
+In our digital library system, the CO-1 Problem Class Signature Evaluator checks query complexity. When a user submits a multi-keyword query, the Interval DP engine precomputes the optimal join tree before dispatching posting list scans to KMP or Suffix Arrays, eliminating CPU bottlenecks on complex Boolean queries.

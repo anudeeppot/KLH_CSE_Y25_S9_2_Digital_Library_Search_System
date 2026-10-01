@@ -1,10 +1,78 @@
-Title: IEEE Xplore: Network Flow and CDN Throughput Optimization
+Title: Network Flow Optimization in Content Delivery Networks and Digital Library Repositories
 Author: Andrew V. Goldberg, Robert E. Tarjan
-Category: Network Flow & Optimization
-Year: 2022
-ISBN: 978-0769562814
+Category: Network Flow
+Year: 1988
+ISBN: 978-0136152613
 Type: Research Paper
-Keywords: Edmonds-Karp, Dinic, Max-Flow, Min-Cut, CDN, throughput, bottleneck
-Abstract: Network flow algorithms model digital repository content distribution across academic CDN nodes. Edmonds-Karp and Dinic level-graph algorithms compute maximum delivery capacity while Min-Cut identifies saturated links.
-Citations: 07_citation_graph_analysis.txt, 19_spectrum_scalable_computing.txt
-Content: Digital library systems serve thousands of concurrent academic downloads across tiered content delivery networks. By mapping source repositories, regional proxy caches, and campus gateway nodes into a directed capacity network, maximum document throughput is modeled as the maximum s-t flow. Dinic algorithm constructs layered DAGs via BFS and drives blocking flows in O(V^2 E) time, whereas the Min-Cut theorem isolates the exact saturated link bottlenecks.
+Keywords: Network flow, max flow min cut, content delivery network, CDN, Dinic algorithm, push relabel, residual graph, bandwidth allocation, digital libraries
+Abstract: A comprehensive monograph on Network Flow optimization and Max-Flow / Min-Cut duality in distributed Content Delivery Networks (CDNs) and digital library repositories. We analyze Ford-Fulkerson augmentation, Edmonds-Karp BFS shortest augmenting paths, Dinic's blocking flow layered graphs, Goldberg-Tarjan push-relabel algorithms, and demonstrate their deployment for optimal bandwidth routing and repository cache replication under strict link capacity constraints.
+Citations: 07_citation_graph_analysis.txt, 19_spectrum_scalable_computing.txt, 29_arxiv_maxflow_mincut_duality.txt
+Content: CHAPTER 1: BANDWIDTH ALLOCATION CHALLENGES IN DIGITAL LIBRARIES
+Modern university digital libraries must distribute high-definition digitized manuscripts, multi-gigabyte video lectures, and massive scientific datasets across globally distributed campus networks and regional Content Delivery Networks (CDNs).
+Each physical network link (fiber optic line, router interface, and campus gateway) possesses a finite, strictly bounded data transmission capacity (measured in Gigabits per second).
+When thousands of university students simultaneously download large course textbooks and research archives during examination periods, uncoordinated routing leads to severe congestion bottlenecks, packet dropouts, and degraded retrieval latency.
+Network Flow optimization solves this challenge by mathematically modeling the transmission infrastructure as a capacitated flow network and computing the exact optimal distribution of content that saturates bandwidth without exceeding physical link constraints.
+
+CHAPTER 2: FORMAL MATHEMATICAL MODEL OF CAPACITATED FLOW NETWORKS
+Definition 2.1 (The Capacitated Flow Network):
+A flow network is a directed graph G = (V, E) with a distinguished source node s in V (representing central digital library servers) and a distinguished sink node t in V (representing regional campus student clusters).
+Each directed edge (u, v) in E is assigned a non-negative real capacity:
+c(u, v) >= 0.
+If (u, v) not in E, we define c(u, v) = 0.
+
+Definition 2.2 (The Feasible Network Flow):
+A flow in G is a real-valued function f: V x V -> R satisfying three fundamental physical constraints:
+1. Capacity Constraint:
+   For all u, v in V:    f(u, v) <= c(u, v).
+   (The data transmission rate through any link cannot exceed its physical bandwidth capacity).
+2. Skew Symmetry:
+   For all u, v in V:    f(u, v) = - f(v, u).
+3. Flow Conservation (Kirchhoff's Current Law):
+   For all vertices u in V - {s, t}:
+   sum_{v in V} f(u, v) = 0.
+   (The total data entering an intermediate router must exactly equal the total data exiting that router; no data is lost or created internally).
+
+The Value of the Flow |f|:
+The net data delivery throughput from source s to sink t is defined as:
+|f| = sum_{v in V} f(s, v).
+The Maximum Flow Problem consists of finding a feasible flow f that maximizes |f|.
+
+CHAPTER 3: RESIDUAL NETWORKS AND AUGMENTING PATHS
+Definition 3.1 (The Residual Capacity c_f):
+Given a flow network G and a feasible flow f, the residual capacity c_f(u, v) represents the additional data throughput that can be routed along edge (u, v) before violating its capacity:
+c_f(u, v) = c(u, v) - f(u, v).
+Definition 3.2 (The Residual Graph G_f):
+The residual graph G_f = (V, E_f) consists of all directed edges with strictly positive residual capacity:
+E_f = { (u, v) in V x V : c_f(u, v) > 0 }.
+Notice that if edge (u, v) carries positive flow f(u, v) > 0, the backward edge (v, u) in G_f acquires residual capacity:
+c_f(v, u) = c(v, u) - f(v, u) = 0 - (-f(u, v)) = f(u, v).
+Backward edges represent the algorithm's ability to 'undo' or redirect previously committed flow, an essential property that enables greedy algorithms to discover global optimal configurations.
+
+CHAPTER 4: THE MAX-FLOW MIN-CUT DUALITY THEOREM
+Definition 4.1 (An s-t Cut):
+An s-t cut (S, T) of network G is a partition of vertices V into two disjoint sets S and T such that s in S and t in T.
+The capacity of the cut, denoted c(S, T), is the sum of capacities of all edges originating in S and terminating in T:
+c(S, T) = sum_{u in S} sum_{v in T} c(u, v).
+
+Theorem 4.1 (The Max-Flow Min-Cut Theorem of Ford and Fulkerson):
+In any capacitated flow network G = (V, E), the following three statements are mathematically equivalent:
+1. Flow f is a maximum flow in G.
+2. The residual network G_f contains no augmenting paths from source s to sink t.
+3. |f| = c(S, T) for some cut (S, T).
+In particular:
+Max Flow Value = Min Cut Capacity.
+Significance for Digital Libraries:
+The minimum cut identifies the precise structural bottleneck in the university network. All edges (u, v) crossing the min-cut from S to T are 100% saturated (f(u, v) = c(u, v)). Digital library network administrators can pinpoint these exact bottleneck links to upgrade fiber optic throughput where it will provide the maximum increase in student retrieval performance.
+
+CHAPTER 5: DINIC'S BLOCKING FLOW ALGORITHM
+In 1970, E. A. Dinic introduced the concept of layered networks and blocking flows, reducing the time complexity of maximum flow to O(V^2 * E).
+Algorithm 1: Dinic-Algorithm(G, s, t)
+1. Initialize flow f(u, v) = 0 for all edges.
+2. While BFS constructs a valid Level Graph L from s to t:
+     a. Let level[v] be the shortest unweighted path distance from s to v in G_f.
+     b. If level[t] is undefined, break (no augmenting paths remain).
+     c. Initialize pointer array ptr[v] = 0 for all v (tracking current edge in DFS).
+     d. While DFS finds a blocking flow push along augmenting paths in L:
+          Augment f by push along the path.
+3. Return f.
+In bipartite networks (such as Student-to-Book reservation matching), Dinic's algorithm runs in O(E * sqrt(V)) time, outperforming all legacy algorithms.
