@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Library Search System</title>
+  <meta name="description"
+    content="A professional Digital Library Search System powered by KMP, Levenshtein, Needleman-Wunsch, Edmonds-Karp and Bipartite Matching algorithms." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+</head>
+
+<body>
+
+  <!-- ===== SIDEBAR NAVIGATION ===== -->
+  <nav class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="sidebar-brand">
+      <div class="brand-icon" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">DigitalLibrary</span>
+        <span class="brand-sub">Search System</span>
+      </div>
+    </div>
+
+    <ul class="nav-list" role="list">
+      <li><button class="nav-item active" data-section="home" id="nav-home">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+          <span>Home</span>
+        </button></li>
+      <li><button class="nav-item" data-section="search" id="nav-search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <span>KMP Search</span>
+        </button></li>
+      <li><button class="nav-item" data-section="fuzzy" id="nav-fuzzy">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+          </svg>
+          <span>Fuzzy Search</span>
+        </button></li>
+      <li><button class="nav-item" data-section="compare" id="nav-compare">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+          <span>Compare Documents</span>
+        </button></li>
+      <li><button class="nav-item" data-section="allocation" id="nav-allocation">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          <span>Resource Allocation</span>
+        </button></li>
+      <li><button class="nav-item" data-section="matching" id="nav-matching">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 00-3-3.87" />
+            <path d="M16 3.13a4 4 0 010 7.75" />
+          </svg>
+          <span>User Matching</span>
+        </button></li>
+      <li><button class="nav-item" data-section="readingplan" id="nav-readingplan">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+          </svg>
+          <span>Reading Plan</span>
+        </button></li>
+      <li><button class="nav-item" data-section="documents" id="nav-documents">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>
+          <span>All Documents</span>
+        </button></li>
+      <li><button class="nav-item" data-section="settings" id="nav-settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+          <span>Settings</span>
+        </button></li>
+      <li><button class="nav-item" data-section="about" id="nav-about">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <span>About</span>
+        </button></li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <div style="display:flex;align-items:center;gap:.5rem;flex:1;overflow:hidden">
+        <div class="status-dot" id="status-dot" aria-live="polite" aria-label="Backend status"></div>
+        <span id="status-label" class="status-label">Connecting…</span>
+      </div>
+      <button class="quick-theme-toggle" id="quick-theme-btn" title="Toggle Light / Dark Mode"
+        aria-label="Toggle Light / Dark Mode">
+        <span class="theme-icon-light" aria-hidden="true">☀️</span>
+        <span class="theme-icon-dark" aria-hidden="true">🌙</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Sidebar overlay for mobile -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- ===== MOBILE TOPBAR ===== -->
+  <header class="topbar" role="banner">
+    <button class="hamburger" id="hamburger-btn" aria-label="Toggle navigation" aria-expanded="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>
+    </button>
+    <span class="topbar-title">Digital Library</span>
+    <button class="quick-theme-toggle" id="mobile-theme-btn" style="margin-left:auto" title="Toggle Light / Dark Mode"
+      aria-label="Toggle Light / Dark Mode">
+      <span class="theme-icon-light" aria-hidden="true">☀️</span>
+      <span class="theme-icon-dark" aria-hidden="true">🌙</span>
+    </button>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content" id="main-content" role="main">
+
+    <!-- ===== HOME SECTION ===== -->
+    <section class="section active" id="section-home" aria-labelledby="home-heading">
+      <div class="section-header">
+        <h1 id="home-heading">Digital Library Search System</h1>
+        <p class="section-desc">A digital library powered by 8 core algorithms and parallel search. Search documents,
+          find misspelled queries, compare content, allocate resources, match users, and generate optimized reading
+          plans.</p>
+      </div>
+
+      <!-- Global search bar -->
+      <div class="hero-search">
+        <div class="search-bar-wrap">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input type="text" id="hero-search-input" class="hero-input"
+            placeholder="Search the library… e.g. algorithm, machine learning" aria-label="Search the library"
+            autocomplete="off" />
+          <button class="btn btn-primary" id="hero-search-btn">Search</button>
+          <button class="btn btn-outline" id="hero-surprise-btn"
+            title="Discover a random document via Reservoir Sampling">🎲 Surprise Me</button>
+        </div>
+      </div>
+
+      <!-- Stats cards -->
+      <div class="cards-grid" role="list">
+        <div class="stat-card" role="listitem">
+          <div class="stat-icon stat-blue" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-total-docs">—</span>
+            <span class="stat-label">Total Documents</span>
+          </div>
+        </div>
+        <div class="stat-card" role="listitem">
+          <div class="stat-icon stat-indigo" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">KMP</span>
+            <span class="stat-label">Exact Search · O(n+m)</span>
+          </div>
+        </div>
+        <div class="stat-card" role="listitem">
+          <div class="stat-icon stat-teal" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">Levenshtein</span>
+            <span class="stat-label">Fuzzy Search · O(n×m)</span>
+          </div>
+        </div>
+        <div class="stat-card" role="listitem">
+          <div class="stat-icon stat-amber" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">N-W</span>
+            <span class="stat-label">Doc Comparison · O(n×m)</span>
+          </div>
+        </div>
+        <div class="stat-card" role="listitem">
+          <div class="stat-icon stat-rose" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">Edmonds-Karp</span>
+            <span class="stat-label">Resource Alloc · O(VE²)</span>
+          </div>
+        </div>
+        <div class="stat-card" role="listitem">
+          <div class="stat-icon stat-violet" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">Bipartite</span>
+            <span class="stat-label">User Matching · O(VE)</span>
+          </div>
+        </div>
+        <div class="stat-card" role="listitem">
+          <div class="stat-icon stat-emerald" aria-hidden="true" style="background:rgba(16,185,129,0.1);color:#10b981">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">Knapsack</span>
+            <span class="stat-label">Reading Plan · 1/2-Approx</span>
+          </div>
+        </div>
+        <div class="stat-card" role="listitem">
+          <div class="stat-icon stat-cyan" aria-hidden="true" style="background:rgba(6,182,212,0.1);color:#06b6d4">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">Reservoir</span>
+            <span class="stat-label">Random Discovery · O(n)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature cards -->
+      <h2 class="sub-heading">Quick Access</h2>
+      <div class="feature-grid" role="list">
+        <button class="feature-card" data-nav="search" role="listitem">
+          <div class="feature-card-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </div>
+          <h3>KMP Search</h3>
+          <p>Exact pattern search across all document fields using the Knuth-Morris-Pratt algorithm.</p>
+          <span class="feature-arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="feature-card" data-nav="fuzzy" role="listitem">
+          <div class="feature-card-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+          </div>
+          <h3>Fuzzy Search</h3>
+          <p>Find documents even with misspelled queries using Levenshtein edit-distance calculation.</p>
+          <span class="feature-arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="feature-card" data-nav="compare" role="listitem">
+          <div class="feature-card-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+          </div>
+          <h3>Compare Documents</h3>
+          <p>Global sequence alignment of two documents using Needleman-Wunsch dynamic programming.</p>
+          <span class="feature-arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="feature-card" data-nav="allocation" role="listitem">
+          <div class="feature-card-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
+          <h3>Resource Allocation</h3>
+          <p>Maximize concurrent user access using Edmonds-Karp max-flow and Min-Cut analysis.</p>
+          <span class="feature-arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="feature-card" data-nav="matching" role="listitem">
+          <div class="feature-card-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87" />
+            </svg>
+          </div>
+          <h3>User Matching</h3>
+          <p>One-to-one user-to-resource assignment using bipartite matching with augmenting paths.</p>
+          <span class="feature-arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="feature-card" data-nav="readingplan" role="listitem">
+          <div class="feature-card-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+            </svg>
+          </div>
+          <h3>Reading Plan</h3>
+          <p>1/2-Approximation knapsack optimizer for study packs within your available reading budget.</p>
+          <span class="feature-arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="feature-card" data-nav="documents" role="listitem">
+          <div class="feature-card-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+          </div>
+          <h3>Browse Corpus</h3>
+          <p>Browse all 100+ library documents with category filtering and metadata sorting.</p>
+          <span class="feature-arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="feature-card" data-nav="settings" role="listitem">
+          <div class="feature-card-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </div>
+          <h3>Settings &amp; Theme</h3>
+          <p>Toggle between Dark Mode and Light Mode, customize reading speeds and default search execution.</p>
+          <span class="feature-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== KMP SEARCH SECTION ===== -->
+    <section class="section" id="section-search" aria-labelledby="search-heading">
+      <div class="section-header">
+        <h1 id="search-heading">KMP Exact Search</h1>
+        <p class="section-desc">Knuth-Morris-Pratt pattern matching — Time O(n+m), Space O(m). Accelerated with Module 6
+          Parallel execution.</p>
+      </div>
+
+      <div class="search-panel card">
+        <div class="search-row">
+          <div class="input-group" style="flex:1">
+            <label for="search-query" class="input-label">Search Query</label>
+            <input type="text" id="search-query" class="input-field" placeholder="e.g. machine learning, algorithm"
+              autocomplete="off" />
+          </div>
+          <div class="input-group" style="width:160px">
+            <label for="search-field" class="input-label">Search Field</label>
+            <select id="search-field" class="input-field select-field">
+              <option value="all">All Fields</option>
+              <option value="title">Title</option>
+              <option value="author">Author</option>
+              <option value="isbn">ISBN</option>
+              <option value="category">Category</option>
+              <option value="content">Content</option>
+            </select>
+          </div>
+          <div class="input-group" style="width:190px">
+            <label for="search-mode" class="input-label">Execution Mode</label>
+            <select id="search-mode" class="input-field select-field">
+              <option value="auto">Auto (Adaptive)</option>
+              <option value="sequential">Sequential</option>
+              <option value="parallel">Parallel (Multi-thread)</option>
+            </select>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="search-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            Search
+          </button>
+          <button class="btn btn-ghost" id="search-clear-btn">Clear</button>
+          <button class="btn btn-outline" id="kmp-demo-toggle-btn">KMP Demo</button>
+          <button class="btn btn-outline" id="search-surprise-btn"
+            title="Discover a random document via Reservoir Sampling">🎲 Surprise Me</button>
+        </div>
+      </div>
+
+      <!-- Search Metrics Banner -->
+      <div id="search-metrics-banner" class="metrics-banner" style="display:none"></div>
+
+      <!-- KMP Demo panel -->
+      <div class="card kmp-demo-panel" id="kmp-demo-panel" style="display:none">
+        <h3 class="card-title">KMP Algorithm Demonstration</h3>
+        <p class="card-desc">Select a document and a pattern to see the LPS array and all match positions computed by
+          Java.</p>
+        <div class="search-row">
+          <div class="input-group" style="flex:1">
+            <label for="kmp-demo-doc" class="input-label">Document</label>
+            <select id="kmp-demo-doc" class="input-field select-field">
+              <option value="">— select a document —</option>
+            </select>
+          </div>
+          <div class="input-group" style="flex:1">
+            <label for="kmp-demo-pattern" class="input-label">Pattern</label>
+            <input type="text" id="kmp-demo-pattern" class="input-field" placeholder="e.g. search" autocomplete="off" />
+          </div>
+        </div>
+        <button class="btn btn-primary" id="kmp-demo-run-btn">Run KMP Demo</button>
+        <div id="kmp-demo-result"></div>
+      </div>
+
+      <div id="search-results-area"></div>
+    </section>
+
+    <!-- ===== FUZZY SEARCH SECTION ===== -->
+    <section class="section" id="section-fuzzy" aria-labelledby="fuzzy-heading">
+      <div class="section-header">
+        <h1 id="fuzzy-heading">Fuzzy Search</h1>
+        <p class="section-desc">Enter a misspelled query. Java first runs KMP exact search. If no match is found,
+          Levenshtein Distance DP finds the closest terms from the corpus vocabulary.</p>
+      </div>
+
+      <div class="card">
+        <div class="search-row">
+          <div class="input-group" style="flex:1">
+            <label for="fuzzy-query" class="input-label">Query (possibly misspelled)</label>
+            <input type="text" id="fuzzy-query" class="input-field" placeholder="e.g. algoritm, machne lernng"
+              autocomplete="off" />
+          </div>
+          <div class="input-group" style="width:160px">
+            <label for="fuzzy-max-dist" class="input-label">Max Edit Distance</label>
+            <input type="number" id="fuzzy-max-dist" class="input-field" value="2" min="0" max="10" />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="fuzzy-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+            Fuzzy Search
+          </button>
+          <button class="btn btn-ghost" id="fuzzy-clear-btn">Clear</button>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>Workflow:</strong> Step 1 — KMP exact search. If a match is found, exact results are shown. Step 2 — If
+        no exact match, Levenshtein DP ranks corpus vocabulary terms by edit distance.
+      </div>
+
+      <div id="fuzzy-results-area"></div>
+    </section>
+
+    <!-- ===== COMPARE SECTION ===== -->
+    <section class="section" id="section-compare" aria-labelledby="compare-heading">
+      <div class="section-header">
+        <h1 id="compare-heading">Compare Two Library Documents</h1>
+        <p class="section-desc">Needleman-Wunsch global sequence alignment — Time O(n×m). Java computes the aligned
+          sequences; this panel displays the result.</p>
+      </div>
+
+      <div class="info-box">
+        <strong>Needleman-Wunsch</strong> performs global sequence alignment. It aligns two sequences from beginning to
+        end using dynamic programming. The first <strong>200 characters</strong> of each document's content are used for
+        a practical demonstration.
+      </div>
+
+      <div class="card">
+        <div class="search-row">
+          <div class="input-group" style="flex:1">
+            <label for="compare-doc-a" class="input-label">Document A</label>
+            <select id="compare-doc-a" class="input-field select-field">
+              <option value="">— select document A —</option>
+            </select>
+          </div>
+          <div class="input-group" style="flex:1">
+            <label for="compare-doc-b" class="input-label">Document B</label>
+            <select id="compare-doc-b" class="input-field select-field">
+              <option value="">— select document B —</option>
+            </select>
+          </div>
+        </div>
+        <div class="search-row">
+          <div class="input-group" style="width:160px">
+            <label for="cmp-match" class="input-label">Match Score</label>
+            <input type="number" id="cmp-match" class="input-field" value="1" />
+          </div>
+          <div class="input-group" style="width:160px">
+            <label for="cmp-mismatch" class="input-label">Mismatch Penalty</label>
+            <input type="number" id="cmp-mismatch" class="input-field" value="-1" />
+          </div>
+          <div class="input-group" style="width:160px">
+            <label for="cmp-gap" class="input-label">Gap Penalty</label>
+            <input type="number" id="cmp-gap" class="input-field" value="-2" />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="compare-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+            Compare
+          </button>
+          <button class="btn btn-ghost" id="compare-clear-btn">Clear</button>
+        </div>
+      </div>
+
+      <div id="compare-results-area"></div>
+    </section>
+
+    <!-- ===== RESOURCE ALLOCATION SECTION ===== -->
+    <section class="section" id="section-allocation" aria-labelledby="alloc-heading">
+      <div class="section-header">
+        <h1 id="alloc-heading">Library Resource Allocation</h1>
+        <p class="section-desc">Edmonds-Karp Max-Flow algorithm — Time O(V×E²). Calculates the maximum number of
+          concurrent users that can be served given licence constraints.</p>
+      </div>
+
+      <div class="info-box">
+        <strong>Network Model:</strong> Source → User groups (Undergrad·8, Postgrad·5, Faculty·3) → Resource categories
+        (Algorithms-Collection·5 licences, AI-Collection·4 licences) → Sink. Max-flow = maximum concurrent users served.
+      </div>
+
+      <div class="card" style="max-width:420px">
+        <h3 class="card-title">Run Allocation</h3>
+        <p class="card-desc">Runs the fixed library network through Java's Edmonds-Karp implementation and reports the
+          max-flow result along with Min-Cut bottleneck analysis.</p>
+        <button class="btn btn-primary" id="alloc-run-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          Run Allocation
+        </button>
+      </div>
+
+      <div id="alloc-results-area"></div>
+    </section>
+
+    <!-- ===== MATCHING SECTION ===== -->
+    <section class="section" id="section-matching" aria-labelledby="matching-heading">
+      <div class="section-header">
+        <h1 id="matching-heading">User-Resource Matching</h1>
+        <p class="section-desc">Bipartite Matching using augmenting-path DFS — Time O(V×E). Define users, resources, and
+          compatibility, then Java computes the maximum one-to-one assignment.</p>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">Define Matching Problem</h3>
+        <div class="search-row">
+          <div class="input-group" style="flex:1">
+            <label for="matching-users" class="input-label">Users (comma-separated)</label>
+            <input type="text" id="matching-users" class="input-field" value="Anudeep, Sarvesh, Gautam, Priya, Ravi"
+              autocomplete="off" />
+          </div>
+          <div class="input-group" style="flex:1">
+            <label for="matching-resources" class="input-label">Resources (comma-separated)</label>
+            <input type="text" id="matching-resources" class="input-field"
+              value="AlgoBook, AIJournal, NetworksPaper, MLDataset, DBTextbook" autocomplete="off" />
+          </div>
+        </div>
+        <p class="card-desc" style="margin-top:1rem">Compatibility matrix (tick = user can access resource):</p>
+        <div id="compat-matrix-container" class="compat-table-wrap"></div>
+        <div class="btn-row" style="margin-top:1.2rem">
+          <button class="btn btn-outline" id="build-matrix-btn">Build Matrix</button>
+          <button class="btn btn-primary" id="matching-run-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+            </svg>
+            Run Matching
+          </button>
+          <button class="btn btn-ghost" id="matching-clear-btn">Clear</button>
+        </div>
+      </div>
+
+      <div id="matching-results-area"></div>
+    </section>
+
+    <!-- ===== READING PLAN SECTION (MODULE 5) ===== -->
+    <section class="section" id="section-readingplan" aria-labelledby="readingplan-heading">
+      <div class="section-header">
+        <h1 id="readingplan-heading">Reading Plan &amp; Study Pack Builder</h1>
+        <p class="section-desc">Module 5: 1/2-Approximation Algorithm for 0/1 Knapsack. Maximize the priority value of
+          your study session within your available reading budget using priority density ordering.</p>
+      </div>
+
+      <div class="card" style="margin-bottom:var(--space-md)">
+        <div class="search-row">
+          <div class="input-group" style="width:190px">
+            <label for="plan-budget" class="input-label">Time Budget (Minutes)</label>
+            <input type="number" id="plan-budget" class="input-field" value="30" min="1" max="600" />
+          </div>
+          <div class="input-group" style="width:190px">
+            <label for="plan-speed" class="input-label">Reading Speed (WPM)</label>
+            <input type="number" id="plan-speed" class="input-field" value="200" min="50" max="1000" />
+          </div>
+          <div class="input-group" style="flex:1">
+            <label for="plan-candidate-filter" class="input-label">Filter Candidate Documents</label>
+            <input type="text" id="plan-candidate-filter" class="input-field"
+              placeholder="Filter by title, author, or category…" />
+          </div>
+        </div>
+
+        <div class="plan-presets-row">
+          <span class="plan-presets-label">Preset Packs:</span>
+          <button class="btn btn-ghost" id="plan-preset-all" style="padding:.25rem .6rem;font-size:.78rem">All 100
+            Documents</button>
+          <button class="btn btn-ghost" id="plan-preset-algo" style="padding:.25rem .6rem;font-size:.78rem">Algorithms
+            &amp; DS</button>
+          <button class="btn btn-ghost" id="plan-preset-ai" style="padding:.25rem .6rem;font-size:.78rem">AI &amp; Data
+            Science</button>
+          <button class="btn btn-ghost" id="plan-preset-clear" style="padding:.25rem .6rem;font-size:.78rem">Deselect
+            All</button>
+        </div>
+
+        <!-- Candidate Selection Table -->
+        <div class="candidate-table-container">
+          <table class="candidate-table" id="candidate-table">
+            <thead>
+              <tr>
+                <th style="width:36px"><input type="checkbox" id="plan-check-all" title="Select / Deselect Visible"
+                    checked /></th>
+                <th>Document Title &amp; Category</th>
+                <th style="width:100px">Words</th>
+                <th style="width:110px">Est. Time</th>
+                <th style="width:120px">Priority (1–10)</th>
+              </tr>
+            </thead>
+            <tbody id="candidate-table-body">
+              <tr>
+                <td colspan="5" style="text-align:center;padding:1.5rem">Loading library documents…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="btn-row" style="margin-top:var(--space-md)">
+          <button class="btn btn-primary" id="generate-plan-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+            </svg>
+            Generate Reading Plan
+          </button>
+          <button class="btn btn-outline" id="plan-random-btn"
+            title="Sample a random candidate using Reservoir Sampling">🎲 Surprise Discovery</button>
+        </div>
+      </div>
+
+      <!-- Generated Plan Results Area -->
+      <div id="plan-results-area"></div>
+
+      <!-- Syllabus Theory Expandable Accordion -->
+      <details class="theory-accordion">
+        <summary>
+          <span>📚 Academic Theory &amp; Viva Guide: Module 5 NP-Completeness &amp; Approximation</span>
+          <span style="font-size:.8rem;color:var(--col-text-muted)">Expand ▾</span>
+        </summary>
+        <div class="theory-content">
+          <h4>1. Optimization Problem vs. Decision Problem</h4>
+          <p>In complexity theory, an <strong>optimization problem</strong> seeks the maximum value subset subject to
+            <code>∑ time ≤ Budget</code>. Its <strong>decision problem</strong> asks: <em>"Can priority ≥ K be achieved
+              within budget W?"</em> The decision problem is <strong>NP-complete</strong> via polynomial reduction from
+            <code>SUBSET-SUM</code>.
+          </p>
+
+          <h4>2. Why Approximation is Necessary</h4>
+          <p>Standard Dynamic Programming runs in <code>O(n × W)</code> time, which is <em>pseudo-polynomial</em>. For
+            large budgets or real-time web responsiveness, exact algorithms can become bottlenecked. The greedy density
+            heuristic runs in <strong>polynomial time <code>O(n log n)</code></strong> with minimal memory
+            <code>O(n)</code>.
+          </p>
+
+          <h4>3. The 1/2-Approximation Mathematical Proof</h4>
+          <p>Sorting by density <code>v_i/w_i</code> packs the continuous (fractional) knapsack optimum:
+            <code>V(GreedyPrefix) + v_{first_rejected} ≥ OPT_{fractional} ≥ OPT</code>. Comparing the greedy prefix
+            against the single highest-value feasible item guarantees:
+            <code>max(V(GreedyPrefix), v_{max}) ≥ 0.5 × OPT</code>.
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <!-- ===== ALL DOCUMENTS SECTION ===== -->
+    <section class="section" id="section-documents" aria-labelledby="docs-heading">
+      <div class="section-header">
+        <h1 id="docs-heading">All Documents</h1>
+        <p class="section-desc">Browsing the complete corpus. Metadata loaded from Java. Category filter and sorting are
+          UI-side helpers; all text search uses Java KMP.</p>
+      </div>
+
+      <div class="docs-toolbar card">
+        <div class="input-group" style="flex:1;min-width:180px">
+          <label for="docs-filter-cat" class="input-label">Filter by Category</label>
+          <select id="docs-filter-cat" class="input-field select-field">
+            <option value="">All Categories</option>
+          </select>
+        </div>
+        <div class="input-group" style="flex:1;min-width:180px">
+          <label for="docs-sort" class="input-label">Sort By</label>
+          <select id="docs-sort" class="input-field select-field">
+            <option value="filename">Filename</option>
+            <option value="title">Title</option>
+            <option value="author">Author</option>
+            <option value="category">Category</option>
+            <option value="year">Year</option>
+          </select>
+        </div>
+        <div class="input-group" style="flex:0;align-self:flex-end">
+          <span class="doc-count-label" id="docs-count-label">Loading…</span>
+        </div>
+      </div>
+
+      <div id="docs-grid" class="docs-grid"></div>
+      <div class="load-more-wrap">
+        <button class="btn btn-outline" id="docs-load-more-btn" style="display:none">Load More</button>
+      </div>
+    </section>
+
+    <!-- ===== SETTINGS SECTION ===== -->
+    <section class="section" id="section-settings" aria-labelledby="settings-heading">
+      <div class="section-header">
+        <h1 id="settings-heading">Settings &amp; Preferences</h1>
+        <p class="section-desc">Customize your interface theme, appearance, default algorithm parameters, and reading
+          plan options.</p>
+      </div>
+
+      <div class="settings-grid">
+        <!-- Theme & Appearance Card -->
+        <div class="card settings-card">
+          <div class="settings-card-header">
+            <div class="settings-icon-wrap" style="background:var(--col-accent-lt);color:var(--col-accent)">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5" />
+                <path
+                  d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title">Theme &amp; Appearance</h3>
+              <p class="card-desc">Toggle between clean academic Light Mode and high-contrast OLED Dark Mode.</p>
+            </div>
+          </div>
+
+          <div class="theme-switch-container">
+            <div class="theme-options-grid">
+              <!-- Light Mode Card Option -->
+              <div class="theme-card-option" id="theme-card-light" onclick="setTheme('light')" role="button"
+                tabindex="0">
+                <div class="theme-preview-box preview-light">
+                  <div class="preview-header"></div>
+                  <div class="preview-content">
+                    <div class="preview-line w-80"></div>
+                    <div class="preview-line w-50"></div>
+                  </div>
+                </div>
+                <div class="theme-card-info">
+                  <span class="theme-icon">☀️</span>
+                  <span class="theme-name">Light Mode</span>
+                  <span class="theme-check" id="check-light">✓</span>
+                </div>
+              </div>
+
+              <!-- Dark Mode Card Option -->
+              <div class="theme-card-option" id="theme-card-dark" onclick="setTheme('dark')" role="button" tabindex="0">
+                <div class="theme-preview-box preview-dark">
+                  <div class="preview-header"></div>
+                  <div class="preview-content">
+                    <div class="preview-line w-80"></div>
+                    <div class="preview-line w-50"></div>
+                  </div>
+                </div>
+                <div class="theme-card-info">
+                  <span class="theme-icon">🌙</span>
+                  <span class="theme-name">Dark Mode</span>
+                  <span class="theme-check" id="check-dark">✓</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="theme-toggle-row">
+              <span style="font-size:.875rem;font-weight:500;color:var(--col-text)">Dark Mode Toggle:</span>
+              <label class="switch-control" for="theme-toggle-checkbox">
+                <input type="checkbox" id="theme-toggle-checkbox" aria-label="Dark Mode Toggle Switch" />
+                <span class="switch-slider"></span>
+              </label>
+              <span id="theme-status-text" style="font-size:.82rem;font-weight:600;color:var(--col-accent)">Light</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Algorithm & Search Defaults Card -->
+        <div class="card settings-card">
+          <div class="settings-card-header">
+            <div class="settings-icon-wrap" style="background:var(--col-blue-lt);color:var(--col-blue)">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title">Default Search Execution Mode</h3>
+              <p class="card-desc">Configure default parallel or sequential strategy for KMP multi-field search.</p>
+            </div>
+          </div>
+
+          <div class="settings-body" style="margin-top:var(--space-md)">
+            <div class="input-group">
+              <label for="settings-search-mode" class="input-label">Preferred Search Execution Mode</label>
+              <select id="settings-search-mode" class="input-field select-field">
+                <option value="auto">Auto (Adaptive - Parallel when corpus &ge; 20)</option>
+                <option value="parallel">Parallel (Bounded ExecutorService, 8 threads)</option>
+                <option value="sequential">Sequential (Single thread execution)</option>
+              </select>
+            </div>
+            <p style="font-size:.78rem;color:var(--col-text-muted);margin-top:.5rem">
+              Automatically applies to all new search queries performed from the global search bar and KMP search
+              section.
+            </p>
+          </div>
+        </div>
+
+        <!-- Reading Plan Defaults Card -->
+        <div class="card settings-card">
+          <div class="settings-card-header">
+            <div class="settings-icon-wrap" style="background:var(--col-teal-lt);color:var(--col-teal)">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title">Reading Plan Defaults (Module 5)</h3>
+              <p class="card-desc">Configure your reading speed and default study time budget.</p>
+            </div>
+          </div>
+
+          <div class="settings-body"
+            style="margin-top:var(--space-md);display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md)">
+            <div class="input-group">
+              <label for="settings-reading-speed" class="input-label">Default Reading Speed (WPM)</label>
+              <input type="number" id="settings-reading-speed" class="input-field" value="200" min="50" max="800" />
+            </div>
+            <div class="input-group">
+              <label for="settings-time-budget" class="input-label">Default Study Budget (Minutes)</label>
+              <input type="number" id="settings-time-budget" class="input-field" value="30" min="1" max="600" />
+            </div>
+          </div>
+          <div class="btn-row" style="margin-top:var(--space-md)">
+            <button class="btn btn-outline" id="settings-apply-plan-btn">Apply to Reading Plan</button>
+          </div>
+        </div>
+
+        <!-- System & Storage Card -->
+        <div class="card settings-card">
+          <div class="settings-card-header">
+            <div class="settings-icon-wrap" style="background:var(--col-violet-lt);color:var(--col-violet)">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title">System &amp; Storage</h3>
+              <p class="card-desc">Local storage preferences and connected backend endpoint.</p>
+            </div>
+          </div>
+
+          <div class="settings-body" style="margin-top:var(--space-md);font-size:.84rem;color:var(--col-text-muted)">
+            <div
+              style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--col-border)">
+              <span>Theme Persistence</span>
+              <span style="font-weight:600;color:var(--col-text)" id="settings-storage-theme">Active
+                (localStorage)</span>
+            </div>
+            <div
+              style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--col-border)">
+              <span>Backend Host</span>
+              <span
+                style="font-family:var(--font-mono);font-size:.8rem;color:var(--col-text)">http://localhost:8080</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.4rem 0">
+              <span>Active Algorithms</span>
+              <span style="font-weight:600;color:#10b981">8 Loaded (Pure Java)</span>
+            </div>
+            <div class="btn-row" style="margin-top:var(--space-md)">
+              <button class="btn btn-ghost" id="settings-reset-defaults-btn">Reset All Settings</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ABOUT SECTION ===== -->
+    <section class="section" id="section-about" aria-labelledby="about-heading">
+      <div class="section-header">
+        <h1 id="about-heading">About This Project</h1>
+        <p class="section-desc">Digital Library Search System — a DSA project implementing six algorithms on a
+          100-document corpus.</p>
+      </div>
+
+      <div class="about-grid">
+        <div class="card about-arch">
+          <h3 class="card-title">Architecture</h3>
+          <p class="card-desc">The website is the presentation layer. Java remains the algorithm layer. Browser
+            JavaScript sends requests to the Java backend, the Java backend executes the existing algorithms against the
+            corpus, and the results are returned as JSON for display.</p>
+          <div class="arch-flow" aria-label="Architecture flow diagram">
+            <div class="arch-box web-box">Browser (HTML / CSS / JS)</div>
+            <div class="arch-arrow" aria-hidden="true">HTTP / JSON ↕</div>
+            <div class="arch-box java-box">Java HTTP Server</div>
+            <div class="arch-arrow" aria-hidden="true">↓</div>
+            <div class="arch-row">
+              <div class="arch-mini">KMP</div>
+              <div class="arch-mini">Levenshtein</div>
+              <div class="arch-mini">N-W</div>
+              <div class="arch-mini">Edmonds-Karp</div>
+              <div class="arch-mini">Bipartite</div>
+            </div>
+            <div class="arch-arrow" aria-hidden="true">↓</div>
+            <div class="arch-box corpus-box">corpus/ — 100 TXT documents</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Algorithms</h3>
+          <table class="algo-table">
+            <thead>
+              <tr>
+                <th>ALGORITHM</th>
+                <th>PURPOSE</th>
+                <th>COMPLEXITY</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>KMP</td>
+                <td>Exact text search</td>
+                <td>O(n+m)</td>
+              </tr>
+              <tr>
+                <td>Levenshtein</td>
+                <td>Fuzzy search / edit distance</td>
+                <td>O(n×m)</td>
+              </tr>
+              <tr>
+                <td>Needleman-Wunsch</td>
+                <td>Global document alignment</td>
+                <td>O(n×m)</td>
+              </tr>
+              <tr>
+                <td>Edmonds-Karp</td>
+                <td>Max-flow resource allocation</td>
+                <td>O(V×E²)</td>
+              </tr>
+              <tr>
+                <td>Min-Cut</td>
+                <td>Bottleneck identification</td>
+                <td>O(V+E)</td>
+              </tr>
+              <tr>
+                <td>Bipartite Matching</td>
+                <td>User-resource assignment</td>
+                <td>O(V×E)</td>
+              </tr>
+              <tr>
+                <td>Greedy Knapsack</td>
+                <td>Reading Plan / study-pack selection</td>
+                <td>O(k log k)</td>
+              </tr>
+              <tr>
+                <td>Reservoir Sampling</td>
+                <td>Random document discovery</td>
+                <td>O(N)</td>
+              </tr>
+              <tr>
+                <td>Parallel Document Search</td>
+                <td>Concurrent document searching</td>
+                <td>O(N) total work</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Project Team</h3>
+          <ul class="team-list">
+            <li><strong>P. Anudeep</strong> — 2520030087</li>
+            <li><strong>S. Sarvesh Reddy</strong> — 2520030049</li>
+            <li><strong>V. Gautam</strong> — 2520030316</li>
+          </ul>
+          <p class="card-desc" style="margin-top:1rem"><strong>Guide:</strong> Dr. S. Vinay Kumar, Dept. of CSE</p>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">API Endpoints</h3>
+          <ul class="api-list">
+            <li><code>GET /api/status</code> — Server and corpus status</li>
+            <li><code>GET /api/documents</code> — List all documents with word counts &amp; reading times</li>
+            <li><code>GET /api/document?id=…</code> — Single document with complete content</li>
+            <li><code>GET /api/search?q=…&amp;field=…&amp;mode=…</code> — KMP search (Auto, Sequential, Parallel)</li>
+            <li><code>POST /api/fuzzy-search</code> — Levenshtein fuzzy search</li>
+            <li><code>POST /api/kmp-demo</code> — LPS array + match positions</li>
+            <li><code>POST /api/compare</code> — Needleman-Wunsch alignment</li>
+            <li><code>POST /api/resource-allocation</code> — Edmonds-Karp + Min-Cut</li>
+            <li><code>POST /api/matching</code> — Bipartite matching</li>
+            <li><code>GET /api/random-document</code> — Reservoir sampling uniform discovery (Module 6)</li>
+            <li><code>POST /api/reading-plan</code> — 1/2-Approximation knapsack reading plan (Module 5)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== DOCUMENT MODAL ===== -->
+  <div class="modal-overlay" id="doc-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title"
+    style="display:none">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="modal-title" class="modal-title">Document</h2>
+        <button class="modal-close" id="modal-close-btn" aria-label="Close document viewer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-meta" id="modal-meta"></div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ===== SURPRISE ME MODAL ===== -->
+  <div class="modal-overlay" id="surprise-modal-overlay" role="dialog" aria-modal="true"
+    aria-labelledby="surprise-modal-title" style="display:none">
+    <div class="modal-box" style="max-width:620px">
+      <div class="modal-header">
+        <h2 id="surprise-modal-title" class="modal-title">🎲 Random Document Discovery</h2>
+        <button class="modal-close" id="surprise-modal-close-btn" aria-label="Close surprise viewer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div id="surprise-modal-content"></div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST ===== -->
+  <div class="toast" id="toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

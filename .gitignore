@@ -1,0 +1,11 @@
+# Compiled Java output
+*.class
+
+# Python cache artifacts
+__pycache__/
+*.pyc
+*.pyo
+
+# Temporary development artifacts
+scratch/
+corpus_backup_original/
