@@ -1,0 +1,136 @@
+Title: Cryptography Fundamentals
+Author: Ananya Singh
+ISBN: 978-93-10065-5
+Category: Cybersecurity
+Year: 2025
+Content: Cryptography Fundamentals is an important topic in modern computer science. This document introduces cryptography fundamentals and discusses protocols, routing, authentication, encryption, access control, secure communication, monitoring. The subject is useful when a program must process structured information, make decisions efficiently, or manage computational resources under practical constraints. A typical study begins by defining the input, output, assumptions, and correctness conditions. Students should then identify the appropriate data representation and select an algorithm whose running time and memory requirements are suitable for the expected input size. Correctness can be checked using normal examples, boundary cases, empty inputs, invalid inputs, and carefully constructed cases that exercise the most important branches of the implementation. Complexity analysis provides an asymptotic view of performance, while benchmarking can reveal the effect of constant factors, memory access patterns, and input distributions. Documentation should describe the algorithm, important variables, assumptions, and limitations. In a digital library environment, this kind of document can be indexed and searched using exact pattern matching, while fuzzy text similarity can help users recover from spelling errors. The material also provides a useful basis for DSA laboratory experiments where students compare alternative approaches, inspect intermediate states, and verify outputs with independent test cases. Important study terms include protocols, routing, authentication, encryption, access control, secure communication, monitoring. A practical exercise is to modify the input size, record the resulting output, and compare the observed behavior with the expected complexity. Students should avoid choosing an algorithm only because it is advanced; the simplest correct method that satisfies the constraints is often the most maintainable solution.
+
+1. Theoretical Foundations and Historical Context
+Cryptography dates back millennia to classical transposition ciphers, the Spartan Scytale, and the Roman Caesar Cipher.
+In 1917, Gilbert Vernam invented the One-Time Pad, proven by Claude Shannon in 1949 to provide information-theoretic perfect secrecy.
+The Data Encryption Standard (DES) was standardized in 1977 by the National Bureau of Standards, establishing modern symmetric block ciphers.
+Whitfield Diffie and Martin Hellman revolutionized the field in 1976 by introducing Public-Key Cryptography and the Diffie-Hellman Key Exchange.
+Ron Rivest, Adi Shamir, and Leonard Adleman published the RSA algorithm in 1977, founding asymmetric public-key encryption and digital signatures.
+The Advanced Encryption Standard (AES) was selected in 2001 (Rijndael cipher), becoming the global standard for symmetric data encryption.
+In digital libraries, cryptography protects data confidentiality at rest, authenticates electronic document signatures, and verifies catalog integrity.
+Understanding cryptographic foundations ensures that digital archives remain authentic, uncorrupted, and verifiable for centuries.
+
+2. Core Principles, Data Structures, and Invariants
+Cryptography secures digital information through three foundational primitives: Symmetric Encryption, Asymmetric Encryption, and Cryptographic Hashing.
+Kerckhoffs's Principle: A cryptographic system must remain secure even if everything about the system, except the secret key, is public knowledge.
+Symmetric Encryption utilizes a single shared secret key for both encryption and decryption (AES-128, AES-256).
+Block ciphers encrypt fixed-size data blocks (e.g., 128 bits for AES) using operation modes like GCM (Galois/Counter Mode) for authenticated encryption.
+Asymmetric Encryption uses a mathematically linked key pair: a Public Key (freely distributed for encryption) and a Private Key (kept secret for decryption).
+Digital Signatures provide Non-Repudiation, Authenticity, and Integrity: the sender signs a document hash with their private key; anyone verifies with the public key.
+Cryptographic Hash Functions (SHA-256) map arbitrary-length data to fixed-length digests with three core properties: Preimage Resistance, Second Preimage Resistance, Collision Resistance.
+Public Key Infrastructure (PKI) binds cryptographic public keys to verified identities using digital X.509 certificates signed by Certificate Authorities.
+Diffie-Hellman Key Exchange allows two parties to establish a shared secret over an insecure channel without transmitting the secret itself.
+In digital libraries, cryptographic digital watermarks and checksums preserve the proven authenticity of rare historical manuscripts.
+
+3. Mathematical Analysis and Asymptotic Bounds
+RSA Mathematical Formulation: Choose distinct large primes p and q. Let modulus n = p * q, Euler's totient phi(n) = (p - 1) * (q - 1).
+Choose public exponent e such that gcd(e, phi(n)) = 1. Compute private exponent d = e^{-1} mod phi(n).
+Encryption: c = m^e mod n; Decryption: m = c^d mod n. Correctness proven by Euler's Totient Theorem: m^{phi(n)} == 1 mod n.
+Diffie-Hellman Formulation: Public parameters prime p and generator g. Alice chooses private a, sends A = g^a mod p. Bob chooses b, sends B = g^b mod p.
+Shared secret: Alice computes s = B^a mod p; Bob computes s = A^b mod p. s = g^{ab} mod p.
+Elliptic Curve Cryptography (ECC): Based on the discrete logarithm problem over the group of points on an elliptic curve y^2 = x^3 + ax + b mod p.
+Avalanche Effect in Cryptographic Hashing: Flipping a single bit in the input message changes approximately 50% of output hash bits randomly.
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure Generate-Digital-Signature(DocumentText, PrivateKey):
+  1. Compute cryptographic message digest: hash = SHA-256(DocumentText).
+  2. Apply cryptographic padding (e.g., PSS or PKCS#1 v1.5 padding) to hash.
+  3. Sign padded hash with RSA private key: signature = (padded_hash)^d mod n.
+  4. Package DocumentText alongside signature.
+  5. Return SignedDocument(DocumentText, signature).
+Procedure Verify-Digital-Signature(SignedDocument, PublicKey):
+  1. Compute expected hash: expected_hash = SHA-256(SignedDocument.text).
+  2. Decrypt signature with RSA public key: decrypted_padded_hash = (signature)^e mod n.
+  3. Extract recovered hash from decrypted padded structure.
+  4. Verify: return (recovered_hash == expected_hash).
+
+5. Concrete Worked Example and Laboratory Trace
+Verifying Document Integrity in the Digital Library using SHA-256:
+Original document: '1_kmp_algorithm.txt'.
+Canonical SHA-256 digest computed at publication:
+  hash_orig = 'a3f8b912c4e5...89f2'.
+Scenario A (Uncorrupted Document):
+  - Patron downloads document. Library verifies: SHA-256(downloaded_text) == 'a3f8b912c4e5...89f2'.
+  - Checksums match perfectly: Document verified as 100% authentic.
+Scenario B (Tampered Document - single character modified from 'algorithm' to 'algoritm'):
+  - Attacker modifies one letter in the text.
+  - SHA-256 recomputed: hash_tampered = '7c2e4109b81f...33a1' (Avalanche Effect flips over 128 bits!).
+  - hash_tampered != hash_orig. System immediately rejects document as corrupted or tampered.
+Cryptographic hashing guarantees mathematical detection of even single-bit modifications.
+
+6. Systems Applications and Industrial Use Cases
+Digital Manuscript Verification: Storing cryptographic hashes in blockchain registries to prove historical document authenticity.
+Transport Layer Security (TLS/HTTPS): Encrypting patron search traffic and catalog interactions across public networks.
+Electronic Resource Access Licensing: Validating digital license signatures for restricted academic journal databases.
+Encrypted Database Storage: Encrypting student borrowing records at rest using AES-256 to ensure data privacy compliance.
+Password Hashing: Storing patron passwords securely using salted adaptive key-derivation functions (Argon2id, bcrypt).
+
+7. Comparative Analysis and Architectural Trade-offs
+Symmetric Encryption (AES): Fast, high throughput (gigabytes/sec), compact keys (256 bits); requires secure shared key distribution.
+Asymmetric Encryption (RSA, ECC): Solves key distribution, enables digital signatures; computationally slower (100x-1000x slower than AES).
+Hybrid Encryption: Uses asymmetric crypto (RSA/ECC) to securely exchange a symmetric key (AES), which then encrypts the bulk data.
+Hashing (SHA-256): One-way transformation, fixed length, non-reversible; used for integrity verification and signatures.
+RSA vs ECC: ECC achieves equivalent security with vastly smaller keys (256-bit ECC matches 3072-bit RSA), saving bandwidth and CPU.
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Using Electronic Codebook (ECB) mode for block ciphers, which preserves plaintext patterns (e.g., ECB penguin image vulnerability).
+Reusing Nonces or Initialization Vectors (IVs) in GCM or CTR modes, leading to catastrophic key stream recovery.
+Implementing custom cryptographic algorithms ('rolling your own crypto') instead of using audited standard libraries.
+Hardcoding cryptographic keys directly into source code repositories.
+Using MD5 or SHA-1 for digital signatures, both of which are broken by practical collision attacks.
+
+9. Frequently Asked Questions (FAQ)
+Q: What is Kerckhoffs's Principle?
+A: It states that a cryptosystem must remain secure even if everything about the design is publicly known, relying solely on the secrecy of the key.
+Q: Why is hybrid encryption universally used in HTTPS?
+A: Because asymmetric crypto is too slow to encrypt large web pages, so it is used only to exchange a fast symmetric AES key for the actual data transfer.
+Q: What is the difference between encryption and hashing?
+A: Encryption is a reversible two-way process requiring a key to decrypt; hashing is an irreversible one-way process producing a fixed-size digest.
+Q: How does cryptography ensure digital library provenance?
+A: Digital signatures signed by archival institutions prove that historical documents have not been altered since the moment of archival digitization.
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on Cryptography Fundamentals into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of Cryptography Fundamentals manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of Cryptography Fundamentals.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+Cryptography provides confidentiality, data integrity, authentication, and non-repudiation.
+Symmetric ciphers (AES) provide fast bulk encryption; asymmetric ciphers (RSA, ECC) enable secure key exchange and signatures.
+Cryptographic hash functions (SHA-256) generate tamper-evident digital fingerprints.
+In digital libraries, cryptography guarantees document provenance, patron privacy, and secure API transport.
+
+13. Fuzzy Search Test Variants and Typo Recovery
+In real-world digital library environments, users frequently type query terms with typographical errors.
+For testing Levenshtein fuzzy matching on Cryptography Fundamentals, the following controlled variants are recorded:
+- Typo Variant 'cryptografy' (Type: Substitution): corresponds to canonical 'cryptography'.
+- Typo Variant 'ciphre' (Type: Transposition): corresponds to canonical 'cipher'.
+- Typo Variant 'encrypton' (Type: Deletion): corresponds to canonical 'encryption'.
+- Typo Variant 'decrypton' (Type: Deletion): corresponds to canonical 'decryption'.
+- Typo Variant 'asymmetrc' (Type: Deletion): corresponds to canonical 'asymmetric'.
+The Levenshtein distance algorithm identifies queries like 'cryptografy' within edit threshold d <= 2.
+This guarantees that user typing mistakes are recovered while preserving complete accuracy in educational definitions.

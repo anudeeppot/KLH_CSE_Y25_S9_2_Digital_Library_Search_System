@@ -1,0 +1,123 @@
+Title: Digital Library Search Architecture
+Author: Digital Library Project Team
+Category: Software Architecture
+Year: 2026
+Content: The application separates the corpus, file reader, KMP algorithm, search engine, and main interface. The corpus is external data. The file reader loads documents, the search engine requests KMP searches, and the main class controls user interaction. This separation makes future expansion easier.
+
+1. Theoretical Foundations and Historical Context
+Digital library systems architecture evolved from monolithic mainframe database designs in the 1970s to modern microservices and distributed clusters.
+The Client-Server model emerged in the late 1980s, formalized in library standards such as ANSI/NISO Z39.50 for networked information retrieval.
+The Open Archives Initiative Protocol for Metadata Harvesting (OAI-PMH) was launched in 2001, enabling standardized cross-repository harvesting.
+Apache Lucene, created by Doug Cutting in 1999, revolutionized search architecture by providing an embeddable Java library for full-text inverted indexing.
+Distributed search engines like Elasticsearch and Apache Solr scaled Lucene architectures across commodity server clusters in the 2010s.
+In our project, the Digital Library Search System implements a clean, layered architectural design connecting Java algorithmic backends to modern web interfaces.
+Architectural modularity ensures that search algorithms, document stores, and HTTP network handlers remain loosely coupled and independently testable.
+
+2. Core Principles, Data Structures, and Invariants
+Layered Architectural Pattern: Presentation Layer (HTML/CSS/JS) -> Network/API Layer (`WebServer.java`, `ApiHandler.java`) -> Service/Engine Layer (`LibrarySearchEngine.java`) -> Algorithmic Layer (`KMP.java`, `EditDistance.java`) -> Storage/Corpus Layer (`CorpusReader.java`, `LibraryDocument.java`).
+Separation of Concerns: Algorithmic classes perform pure computation without network or UI dependencies; controllers handle serialization and routing.
+Stateless RESTful API Design: Endpoints (`/api/documents`, `/api/search`, `/api/fuzzy-search`) do not maintain server session state, facilitating horizontal scaling.
+Thread Safety and Concurrency: Shared document corpus collections are read-only during search queries, allowing lock-free concurrent thread access.
+In-Memory Caching and Inverted Lexicons: Holding pre-parsed documents and search indices in RAM to achieve sub-5ms query response times.
+Graceful Error Handling: Structured JSON error payloads with standard HTTP status codes (200 OK, 400 Bad Request, 404 Not Found, 500 Server Error).
+Single Responsibility Principle (SRP): Each Java class has a single, well-defined responsibility, simplifying maintenance and unit testing.
+Low-Coupling Frontend Integration: The browser frontend communicates strictly through asynchronous `fetch()` requests and standard JSON interchange.
+In our project, the entire system runs locally on port 8080 without requiring heavy external servlet containers or database servers.
+Clean architecture enables seamless live demonstrations of all 9 implemented algorithms.
+
+3. Mathematical Analysis and Asymptotic Bounds
+Search Engine Response Latency Equation: T_{total} = T_{network} + T_{deserialize} + T_{algorithm} + T_{serialize} + T_{render}.
+Throughput Scaling under Concurrent Requests: QPS = N_{threads} / (T_{service} + T_{wait}); contention-free read access maximizes QPS.
+Memory Footprint Model: RAM_{total} = RAM_{JVM\_overhead} + sum_{d in Corpus} (Size(d.metadata) + Size(d.content)) + Size(Index).
+Amdahl's Speedup in Parallel Architecture: S = 1 / ((1 - p) + p / k); parallel search across k worker threads accelerates corpus scanning by up to k times.
+Cache Hit Ratio Impact: Effective Search Latency T_{eff} = H * T_{cache} + (1 - H) * T_{full\_scan}; caching high-frequency queries yields sub-millisecond response times.
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure Handle-HTTP-Search-Request(exchange, search_engine):
+  1. If exchange.getRequestMethod() != 'GET':
+       Send-HTTP-Error(exchange, 405, 'Method Not Allowed').
+       Return.
+  2. query_params = Parse-Query-String(exchange.getRequestURI().getQuery()).
+  3. q = query_params.get('q'); mode = query_params.getOrDefault('mode', 'EXACT').
+  4. If q is null or q.trim().isEmpty():
+       Send-HTTP-Response(exchange, 400, '{"status": "error", "message": "Missing query"}').
+       Return.
+  5. Start timer: t_0 = System.nanoTime().
+  6. Switch mode:
+       Case 'EXACT': results = search_engine.searchExact(q).
+       Case 'FUZZY': results = search_engine.searchFuzzy(q, max_distance=2).
+       Case 'PARALLEL': results = search_engine.searchParallel(q).
+       Default: results = search_engine.searchExact(q).
+  7. Elapsed time ms = (System.nanoTime() - t_0) / 1,000,000.0.
+  8. json_output = Serialize-To-JSON(results, elapsed_time_ms).
+  9. Send-HTTP-Response(exchange, 200, json_output) // 200 OK with application/json.
+
+5. Concrete Worked Example and Laboratory Trace
+End-to-End Search Architectural Request Flow Trace:
+User Action: User types 'dynamic programming' into search bar and clicks 'Search'.
+Step 1: Frontend JavaScript executes `fetch('/api/search?q=dynamic%20programming&mode=EXACT')`.
+Step 2: Browser opens HTTP GET socket to `localhost:8080`.
+Step 3: Java built-in `HttpServer` accepts connection, routing request to `ApiHandler`.
+Step 4: `ApiHandler` extracts parameter `q = 'dynamic programming'` and `mode = 'EXACT'`.
+Step 5: Invokes `LibrarySearchEngine.searchExact('dynamic programming')`.
+Step 6: Engine calls `KMP.search()` across all 100 in-memory `LibraryDocument` instances.
+Step 7: 6 matching documents identified with occurrence counts in 4.2 milliseconds.
+Step 8: `ApiHandler` serializes results array into JSON string and sets `Content-Type: application/json`.
+Step 9: Browser receives JSON response, parses payload, and dynamically renders cards in DOM.
+Total round-trip latency: 8.1 milliseconds.
+
+6. Systems Applications and Industrial Use Cases
+Architectural design for university and college digital library search portals.
+High-throughput enterprise document search APIs in cloud microservice clusters.
+Desktop digital library search applications running on local user workstations.
+Offline educational search appliances deployed in rural schools without internet.
+
+7. Comparative Analysis and Architectural Trade-offs
+Monolithic vs Layered Architecture: Monolithic mingles UI, DB, and algorithms into a single file; layered architecture cleanly decouples concerns for testability and maintainability.
+In-Memory Corpus vs Disk-Based Database: In-memory provides nanosecond access times for small-to-medium corpora; disk databases scale to billions of documents at higher latency.
+Embedded Java HTTP Server vs Heavy Application Server (Tomcat/Spring): Built-in `HttpServer` requires zero dependencies and starts in 100ms; Spring adds heavy framework overhead.
+Synchronous vs Asynchronous Client Communication: Asynchronous `fetch` updates page elements dynamically without full page reloads, providing a modern desktop-like user experience.
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Tight Coupling of UI and Logic: Writing HTML strings directly inside Java algorithm classes, making frontend redesigns impossible without recompiling Java.
+Blocking the Main HTTP Thread: Executing long-running searches synchronously on single-threaded event loops, starving other incoming HTTP requests.
+Unchecked Cross-Origin Resource Sharing (CORS): Failing to set CORS headers when frontend and backend run on different ports during development.
+Memory Leaks in Cached Results: Caching search results in unbounded static maps without eviction policies, eventually causing OutOfMemoryError.
+
+9. Frequently Asked Questions (FAQ)
+Q: Why does our project use Java's built-in `HttpServer`?
+A: It is included in the standard Java runtime library (JDK), requiring zero external dependencies, JAR files, or Maven configurations to run.
+Q: How do frontend JavaScript and backend Java communicate?
+A: Through standard HTTP GET and POST requests over port 8080, transmitting data in JSON format.
+Q: Where is the document corpus stored at runtime?
+A: In memory as a collection of `LibraryDocument` objects loaded at startup by `CorpusReader.java`.
+Q: How does the architecture support adding new algorithms?
+A: By encapsulating algorithmic logic into standalone classes (like `KMP.java` and `EditDistance.java`) and exposing them via clean service methods in `LibrarySearchEngine.java`.
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on Digital Library Search Architecture into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of Digital Library Search Architecture manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of Digital Library Search Architecture.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+A well-structured digital library architecture decouples presentation, networking, and algorithmic computation.
+Adhering to layered design patterns ensures high search performance, clean code organization, and effortless extensibility.

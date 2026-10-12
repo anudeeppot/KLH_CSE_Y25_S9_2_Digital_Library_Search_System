@@ -1,0 +1,127 @@
+Title: Numerical Linear Algebra
+Author: Arjun Mehta
+ISBN: 978-93-10082-2
+Category: Mathematics
+Year: 2024
+Content: Numerical Linear Algebra is an important topic in modern computer science. This document introduces numerical linear algebra and discusses sets, matrices, probability, statistics, optimization, numerical methods, computational models. The subject is useful when a program must process structured information, make decisions efficiently, or manage computational resources under practical constraints. A typical study begins by defining the input, output, assumptions, and correctness conditions. Students should then identify the appropriate data representation and select an algorithm whose running time and memory requirements are suitable for the expected input size. Correctness can be checked using normal examples, boundary cases, empty inputs, invalid inputs, and carefully constructed cases that exercise the most important branches of the implementation. Complexity analysis provides an asymptotic view of performance, while benchmarking can reveal the effect of constant factors, memory access patterns, and input distributions. Documentation should describe the algorithm, important variables, assumptions, and limitations. In a digital library environment, this kind of document can be indexed and searched using exact pattern matching, while fuzzy text similarity can help users recover from spelling errors. The material also provides a useful basis for DSA laboratory experiments where students compare alternative approaches, inspect intermediate states, and verify outputs with independent test cases. Important study terms include sets, matrices, probability, statistics, optimization, numerical methods, computational models. A practical exercise is to modify the input size, record the resulting output, and compare the observed behavior with the expected complexity. Students should avoid choosing an algorithm only because it is advanced; the simplest correct method that satisfies the constraints is often the most maintainable solution.
+
+1. Theoretical Foundations and Historical Context
+Numerical linear algebra arose as an independent field with the development of electronic computers in the late 1940s.
+John von Neumann and Herman Goldstine investigated round-off errors in matrix inversion on the ENIAC in 1947.
+James H. Wilkinson published 'The Algebraic Eigenvalue Problem' in 1965, establishing backward error analysis.
+Gene Golub and William Kahan published the first practical algorithm for computing the Singular Value Decomposition (SVD) in 1965.
+LINPACK and EISPACK were developed in the 1970s, succeeded by LAPACK (Linear Algebra Package) and BLAS (Basic Linear Algebra Subprograms) in the 1990s.
+Cleve Moler created MATLAB in the late 1970s to give university students easy access to LINPACK without writing Fortran.
+In digital libraries, numerical linear algebra powers large-scale graph centrality algorithms (PageRank), dimensionality reduction, and clustering.
+Numerical linear algebra bridges abstract matrix mathematics with floating-point computational stability.
+
+2. Core Principles, Data Structures, and Invariants
+Numerical linear algebra designs algorithms for performing matrix operations accurately and efficiently in floating-point arithmetic.
+Matrix factorizations decompose complex matrices into products of simpler structured matrices (triangular, orthogonal, diagonal).
+LU Decomposition factorizes A = L * U (Lower and Upper triangular) with partial pivoting (P * A = L * U), solving A * x = b in O(n^3) time.
+QR Decomposition factorizes A = Q * R (Orthogonal Q, Upper triangular R) via Gram-Schmidt, Householder reflections, or Givens rotations.
+Cholesky Decomposition factorizes symmetric positive-definite matrices A = L * L^T in half the operations of standard LU.
+The Power Iteration algorithm computes the dominant eigenvalue and eigenvector of a matrix by repeatedly multiplying an initial vector by A.
+Singular Value Decomposition (SVD) computes principal singular vectors for low-rank matrix approximation and latent semantic indexing.
+Backward Error Analysis (Wilkinson's approach) proves that a computed solution is the exact solution to a slightly perturbed problem.
+Sparse Matrix representations (CSR, CSC) store only non-zero entries, reducing memory and operations for high-dimensional sparse data.
+In digital libraries, sparse numerical linear algebra computes PageRank scores across citation graphs.
+
+3. Mathematical Analysis and Asymptotic Bounds
+LU Decomposition: P * A = L * U requires (2/3) * n^3 floating-point operations (FLOPs) for an n x n matrix.
+Cholesky Decomposition: A = L * L^T requires (1/3) * n^3 FLOPs (twice as fast as LU, unconditionally stable without pivoting).
+Householder Reflection Matrix: H = I - 2 * (v * v^T) / (v^T * v); reflects vectors across a hyperplane, eliminating sub-diagonal matrix entries.
+Power Iteration Convergence Rate: Error after k iterations decreases as |lambda_2 / lambda_1|^k, where lambda_1 is dominant and lambda_2 is second eigenvalue.
+Condition Number of Linear System: kappa(A) = ||A|| * ||A^{-1}||; relative error in solution satisfies ||delta_x|| / ||x|| <= kappa(A) * (||delta_b|| / ||b||).
+Frobenius Norm: ||A||_F = sqrt(sum_{i=1}^m sum_{j=1}^n |a_{ij}|^2).
+Compressed Sparse Row (CSR) Space: 3 flat arrays (values, column_indices, row_pointers) consuming O(NNZ + n) space where NNZ is non-zero count.
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure Power-Iteration-PageRank(AdjacencyMatrix, damping_factor d, max_iter, tol):
+  1. Let N = AdjacencyMatrix.size.
+  2. Construct Google Matrix M: stochastic link matrix adjusted with uniform random teleportation (1 - d) / N.
+  3. Initialize rank vector v = array of size N with uniform values 1.0 / N.
+  4. For iter = 1 to max_iter:
+       v_next = M * v.  // Sparse matrix-vector multiplication
+       norm = sum(abs(v_next[i]) for i in 1..N).
+       v_next = v_next / norm.  // Normalize vector
+       diff = sum(abs(v_next[i] - v[i]) for i in 1..N).
+       If diff < tol: return v_next  // Convergence reached
+       v = v_next.
+  5. Return v // Dominant eigenvector containing PageRank scores.
+
+5. Concrete Worked Example and Laboratory Trace
+Computing PageRank via Power Iteration on a 3-Document Library Citation Network:
+Documents: Doc 1 (KMP paper), Doc 2 (LPS paper), Doc 3 (Search review).
+Citations: Doc 1 cites Doc 2; Doc 2 cites Doc 1; Doc 3 cites both Doc 1 and Doc 2.
+Transition matrix P (without damping for simplicity):
+  P = [[0,   1, 0.5],
+       [1,   0, 0.5],
+       [0,   0, 0  ]].
+Power iteration steps starting from v_0 = [1/3, 1/3, 1/3]^T:
+  - v_1 = P * v_0 = [1/3 + 1/6, 1/3 + 1/6, 0]^T = [0.5, 0.5, 0]^T.
+  - v_2 = P * v_1 = [0.5, 0.5, 0]^T.
+Eigenvector converges in 2 iterations to [0.5, 0.5, 0.0]^T.
+Doc 1 and Doc 2 receive equal high importance (0.5 each); Doc 3 receives 0 (cited by no one).
+The library search engine ranks Docs 1 and 2 higher in catalog query results.
+
+6. Systems Applications and Industrial Use Cases
+Citation Graph PageRank: Calculating authoritative prestige scores for academic research papers in digital repositories.
+Latent Semantic Indexing (LSI): Performing truncated SVD on term-document matrices to discover hidden semantic concepts.
+Image Compression of Scanned Books: Low-rank SVD approximation of high-resolution historical document scans.
+Collaborative Filtering Recommendation: Matrix factorization (Alternating Least Squares) of patron book borrowing matrices.
+High-Dimensional Clustering: Spectral clustering using graph Laplacian matrix eigenvectors.
+
+7. Comparative Analysis and Architectural Trade-offs
+LU Decomposition: Solves general non-symmetric linear systems; requires partial pivoting for numerical stability.
+Cholesky Decomposition: Specifically for symmetric positive-definite matrices; 2x faster than LU, zero pivoting needed.
+QR Decomposition: Orthogonal transformations; more stable than LU, ideal for linear least squares problems.
+Power Iteration: Finds only the single largest eigenvalue; fast and simple for sparse graph transition matrices.
+Lanczos / Arnoldi Iteration: Krylov subspace methods finding multiple extreme eigenvalues of massive sparse matrices.
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Performing Gaussian elimination without pivoting, causing catastrophic division by tiny numbers and massive round-off error.
+Inverting a matrix explicitly (inv(A) * b) instead of solving the system directly (solve(A, b) via LU decomposition).
+Ignoring matrix sparsity, allocating gigabytes of memory for mostly zero matrices.
+Applying Cholesky decomposition to non-positive-definite matrices, triggering square roots of negative numbers.
+Assuming floating-point matrix multiplication is commutative (A * B != B * A).
+
+9. Frequently Asked Questions (FAQ)
+Q: Why is explicit matrix inversion discouraged in numerical computation?
+A: Computing A^{-1} explicitly is slower, uses more memory, and introduces significantly higher numerical round-off error than solving A * x = b directly via LU or Cholesky.
+Q: What is partial pivoting?
+A: Swapping rows during Gaussian elimination to ensure that the largest available element in the column becomes the pivot, preventing division by near-zero numbers.
+Q: How does PageRank relate to numerical linear algebra?
+A: PageRank is mathematically equivalent to computing the stationary distribution (principal eigenvector) of a Markov transition matrix via the Power Iteration algorithm.
+Q: What is a sparse matrix?
+A: A matrix where the vast majority of elements are zero; storing only non-zero entries saves memory and reduces matrix-vector multiplications from O(n^2) to O(NNZ).
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on Numerical Linear Algebra into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of Numerical Linear Algebra manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of Numerical Linear Algebra.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+Numerical linear algebra designs numerically stable matrix algorithms for floating-point hardware.
+Matrix factorizations (LU, QR, Cholesky, SVD) solve linear systems and reduce dimensionality efficiently.
+Power iteration computes dominant eigenvectors for graph ranking algorithms like PageRank.
+In digital libraries, numerical linear algebra powers citation ranking, LSI semantic search, and document recommendation.

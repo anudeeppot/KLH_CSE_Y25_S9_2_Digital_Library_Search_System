@@ -1,0 +1,144 @@
+Title: Randomized Algorithms
+Author: Ananya Singh
+ISBN: 978-93-10025-5
+Category: Algorithms
+Year: 2021
+Content: Randomized Algorithms is an important topic in modern computer science. This document introduces randomized algorithms and discusses optimal substructure, overlapping subproblems, graph traversal, complexity analysis, dynamic programming, greedy strategies. The subject is useful when a program must process structured information, make decisions efficiently, or manage computational resources under practical constraints. A typical study begins by defining the input, output, assumptions, and correctness conditions. Students should then identify the appropriate data representation and select an algorithm whose running time and memory requirements are suitable for the expected input size. Correctness can be checked using normal examples, boundary cases, empty inputs, invalid inputs, and carefully constructed cases that exercise the most important branches of the implementation. Complexity analysis provides an asymptotic view of performance, while benchmarking can reveal the effect of constant factors, memory access patterns, and input distributions. Documentation should describe the algorithm, important variables, assumptions, and limitations. In a digital library environment, this kind of document can be indexed and searched using exact pattern matching, while fuzzy text similarity can help users recover from spelling errors. The material also provides a useful basis for DSA laboratory experiments where students compare alternative approaches, inspect intermediate states, and verify outputs with independent test cases. Important study terms include optimal substructure, overlapping subproblems, graph traversal, complexity analysis, dynamic programming, greedy strategies. A practical exercise is to modify the input size, record the resulting output, and compare the observed behavior with the expected complexity. Students should avoid choosing an algorithm only because it is advanced; the simplest correct method that satisfies the constraints is often the most maintainable solution.
+
+1. Theoretical Foundations and Historical Context
+Randomized algorithms revolutionized theoretical computer science by demonstrating that random coin flips can simplify algorithm design and improve efficiency.
+Early foundations originated with Stanislaw Ulam and John von Neumann's development of the Monte Carlo method in the 1940s for nuclear physics simulations.
+In 1976, Michael Rabin published 'Probabilistic Algorithms', demonstrating efficient randomized algorithms for nearest pair and primality testing.
+In 1985, Jeffrey Vitter published 'Random Sampling with a Reservoir', formalizing streaming reservoir sampling algorithms.
+Alan Frieze, Laszlo Lovasz, and Ravi Kannan further expanded randomized techniques for counting, volume estimation, and graph coloring in the 1990s.
+Randomized algorithms divide into two primary classes: Las Vegas (always correct, random runtime) and Monte Carlo (deterministic runtime, small bounded error probability).
+In the Digital Library Search System, Reservoir Sampling enables random document discovery across extensive document archives.
+The algorithm guarantees that every corpus document possesses an identical probability of selection without requiring memory buffering.
+
+2. Core Principles, Data Structures, and Invariants
+Reservoir sampling solves the problem of selecting a uniform random sample of k items from a data stream of unknown or infinite length N.
+In digital library discovery, the algorithm selects k = 1 random document from the corpus in a single sequential pass.
+The stream length N does not need to be known in advance, making reservoir sampling ideal for streaming APIs, log files, and disk readers.
+When processing item i (1 <= i <= N):
+  - The first item (i = 1) is unconditionally placed in the reservoir.
+  - For each subsequent item i > 1, the algorithm generates a uniform random integer r in the range [0, i - 1].
+  - If r == 0 (with probability 1 / i), the current item replaces the item in the reservoir.
+  - Otherwise, the reservoir remains unchanged.
+Mathematical induction proves that after scanning all N documents, every document has an exact 1 / N probability of selection.
+The algorithm requires only O(1) auxiliary space beyond the storage of the single selected item.
+Reservoir sampling avoids the need to load the entire document list into memory before making a random selection.
+
+3. Mathematical Analysis and Asymptotic Bounds
+Proof by Induction of Uniformity for Reservoir Sampling (k = 1):
+Base Case (N = 1): The first item is chosen with probability 1 = 1 / 1. Base case holds.
+Inductive Hypothesis: Assume that after processing n items, every item in the reservoir was chosen with probability 1 / n.
+Inductive Step for (n + 1)-th item:
+  - The (n + 1)-th item is chosen with probability 1 / (n + 1).
+  - Any previously selected item survives if it was in the reservoir after step n and is NOT replaced in step n + 1.
+  - Probability of survival = P(in reservoir after n) * P(not replaced in step n + 1).
+  - P(survival) = (1 / n) * (1 - 1 / (n + 1)) = (1 / n) * (n / (n + 1)) = 1 / (n + 1).
+Therefore, by mathematical induction, every item has probability exactly 1 / N of being selected.
+Time complexity is strictly O(N) because each of the N stream items is inspected exactly once.
+Auxiliary space complexity is strictly O(1) for single-item discovery, or O(k) for sampling k items.
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure Reservoir-Sample(DocumentStream):
+  1. Initialize reservoir = null.
+  2. Initialize count = 0.
+  3. For each document d in DocumentStream:
+       a. count = count + 1.
+       b. If count == 1: reservoir = d.
+       c. Else:
+            i. Generate random integer r in range [0, count - 1].
+            ii. If r == 0: reservoir = d.
+  4. If count == 0: return null (empty stream).
+  5. Return reservoir.
+
+5. Concrete Worked Example and Laboratory Trace
+Tracing Reservoir Sampling over stream of 4 documents: [Doc1, Doc2, Doc3, Doc4].
+Step 1 (Doc1):
+  count = 1 -> reservoir = Doc1. (P(Doc1) = 1).
+Step 2 (Doc2):
+  count = 2 -> generate r in [0, 1]. P(r == 0) = 1/2.
+  Assume r == 0 -> reservoir updated to Doc2. (P(Doc2) = 1/2; P(Doc1) = 1 * (1 - 1/2) = 1/2).
+Step 3 (Doc3):
+  count = 3 -> generate r in [0, 2]. P(r == 0) = 1/3.
+  Assume r == 2 (not 0) -> reservoir remains Doc2.
+  P(Doc3) = 1/3; P(Doc2) = (1/2) * (2/3) = 1/3; P(Doc1) = (1/2) * (2/3) = 1/3.
+Step 4 (Doc4):
+  count = 4 -> generate r in [0, 3]. P(r == 0) = 1/4.
+  Assume r == 1 (not 0) -> reservoir remains Doc2.
+  P(Doc4) = 1/4; P(Doc1) = (1/3) * (3/4) = 1/4; P(Doc2) = (1/3) * (3/4) = 1/4; P(Doc3) = (1/3) * (3/4) = 1/4.
+Final selection yields Doc2. Every document had exactly 1/4 (25%) probability of selection.
+
+6. Systems Applications and Industrial Use Cases
+Random Document Discovery: Serving 'Surprise Me' serendipitous book recommendations to library patrons.
+Big Data Telemetry: Sampling web server access logs and error telemetry without buffering terabytes of events.
+Database Query Cardinality Estimation: Generating representative sample tables for query plan cost estimation.
+Distributed Stream Processing: Implementing unbiased sampling in Apache Flink and Apache Spark streaming pipelines.
+Statistical Auditing: Randomly sampling loan applications and financial transactions for regulatory compliance.
+
+7. Comparative Analysis and Architectural Trade-offs
+Reservoir Sampling: O(N) time, O(1) space, single pass, handles unknown stream sizes. Unbiased uniform distribution.
+Naive Array Indexing (random(0, N-1)): Requires loading all N documents into memory array first (O(N) space).
+Skip-Reservoir (Vitter Algorithm Z): O(k * (1 + log(N/k))) time by generating geometric random skips, faster on huge streams.
+Hash-Based Sampling: Samples items whose hash(item) < threshold; fast, but resulting sample size is random rather than fixed k.
+Systematic Sampling: Selects every k-th item; susceptible to periodic biases in the underlying stream.
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Using pseudo-random number generators without seeding, producing identical discovery sequences across application restarts.
+Generating random numbers in the range [1, count] but checking r == 0, causing the replacement condition to never trigger.
+Failing to handle empty streams gracefully, resulting in null pointer exceptions in downstream callers.
+Assuming reservoir sampling works for weighted sampling without modifying replacement probability to include item weights.
+Sharing a non-thread-safe Random instance across concurrent requests, causing contention and degraded randomness.
+
+9. Frequently Asked Questions (FAQ)
+Q: Why is reservoir sampling useful if the total document count is known?
+A: Even when N is known, reservoir sampling streams documents from disk without loading the entire collection into memory.
+Q: How does reservoir sampling extend to selecting k > 1 documents?
+A: The reservoir stores an array of k items; item i replaces a random reservoir slot with probability k / i.
+Q: How can reservoir sampling be validated empirically?
+A: By running the algorithm over thousands of trials (Monte Carlo simulation) and checking that each item's selection frequency converges to 1 / N.
+Q: Is Java's java.util.Random sufficiently uniform for reservoir sampling?
+A: Yes; Random employs a 48-bit linear congruential generator which passes standard uniformity tests for library sampling.
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on Randomized Algorithms into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of Randomized Algorithms manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of Randomized Algorithms.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+Reservoir sampling is an elegant randomized streaming algorithm for uniform selection from streams.
+It guarantees strictly unbiased 1 / N probability for every stream item in a single sequential pass.
+The algorithm operates in O(N) time and requires only O(1) auxiliary space.
+In digital libraries, it enables serendipitous document discovery without requiring memory-intensive buffering.
+
+13. Fuzzy Search Test Variants and Typo Recovery
+In real-world digital library environments, users frequently type query terms with typographical errors.
+For testing Levenshtein fuzzy matching on Randomized Algorithms, the following controlled variants are recorded:
+- Typo Variant 'reservior' (Type: Realistic Query Mistake): corresponds to canonical 'reservoir'.
+- Typo Variant 'samplng' (Type: Deletion): corresponds to canonical 'sampling'.
+- Typo Variant 'probabiliti' (Type: Substitution): corresponds to canonical 'probability'.
+- Typo Variant 'unifrom' (Type: Transposition): corresponds to canonical 'uniform'.
+- Typo Variant 'stochastc' (Type: Deletion): corresponds to canonical 'stochastic'.
+The Levenshtein distance algorithm identifies queries like 'reservior' within edit threshold d <= 2.
+This guarantees that user typing mistakes are recovered while preserving complete accuracy in educational definitions.

@@ -1,0 +1,117 @@
+Title: Document Classification
+Author: Pooja Das
+ISBN: 978-93-10051-1
+Category: Information Retrieval
+Year: 2023
+Content: Document Classification is an important topic in modern computer science. This document introduces document classification and discusses indexing, tokenization, ranking, similarity, document representation, retrieval, query processing. The subject is useful when a program must process structured information, make decisions efficiently, or manage computational resources under practical constraints. A typical study begins by defining the input, output, assumptions, and correctness conditions. Students should then identify the appropriate data representation and select an algorithm whose running time and memory requirements are suitable for the expected input size. Correctness can be checked using normal examples, boundary cases, empty inputs, invalid inputs, and carefully constructed cases that exercise the most important branches of the implementation. Complexity analysis provides an asymptotic view of performance, while benchmarking can reveal the effect of constant factors, memory access patterns, and input distributions. Documentation should describe the algorithm, important variables, assumptions, and limitations. In a digital library environment, this kind of document can be indexed and searched using exact pattern matching, while fuzzy text similarity can help users recover from spelling errors. The material also provides a useful basis for DSA laboratory experiments where students compare alternative approaches, inspect intermediate states, and verify outputs with independent test cases. Important study terms include indexing, tokenization, ranking, similarity, document representation, retrieval, query processing. A practical exercise is to modify the input size, record the resulting output, and compare the observed behavior with the expected complexity. Students should avoid choosing an algorithm only because it is advanced; the simplest correct method that satisfies the constraints is often the most maintainable solution.
+
+1. Theoretical Foundations and Historical Context
+Document classification began with manual library classification systems: Melvil Dewey's Dewey Decimal Classification (1876) and the Library of Congress Classification (1897).
+Automated text categorization emerged in the 1960s with Maron's probabilistic indexing of scientific documents.
+Naive Bayes text classifiers became widespread in the 1990s, famously deployed in email spam filters (Paul Graham's 'A Plan for Spam' in 2002).
+Thorsten Joachims pioneered Support Vector Machines (SVMs) for text categorization in 1998, establishing linear SVMs as the high-accuracy benchmark for sparse text vectors.
+Deep learning models (Convolutional Neural Networks for text, FastText, BERT) transformed document classification from the 2010s onward.
+In our Digital Library Search System, document categorization groups the 100 corpus texts into distinct disciplinary subjects.
+Accurate classification powers category-filtered searches and personalized reading plan recommendations.
+
+2. Core Principles, Data Structures, and Invariants
+The Document Classification Task: Assigning a document d to one or more predefined subject classes C = {c_1, c_2, ..., c_k}.
+Single-Label vs Multi-Label Classification: Single-label assigns exactly one category per document; multi-label permits documents to belong to multiple subjects simultaneously.
+Supervised Learning Workflow: Labeled Training Corpus -> Feature Extraction (TF-IDF) -> Model Training -> Evaluation (Precision, Recall, F1) -> Production Inference.
+Naive Bayes Classifier: Probabilistic model applying Bayes' Theorem under the 'naive' assumption that word occurrences are mutually independent given the class.
+Linear Support Vector Machines (SVM): Finding the maximum-margin hyperplane separating document feature vectors in high-dimensional term space.
+Feature Selection and Dimensionality Reduction: Selecting the top informative terms using Chi-Square (chi^2) test, Mutual Information, or Information Gain.
+Hierarchical Classification: Classifying documents through taxonomical trees (e.g. Computer Science -> Software -> Operating Systems).
+Evaluation Metrics: Micro-averaged and Macro-averaged F1 scores measuring classification accuracy across balanced and imbalanced class distributions.
+In our project, documents carry standardized `Category:` metadata headers (Algorithms, Data Structures, AI/ML, Systems, Mathematics, etc.).
+Faceted catalog browsing allows users to filter search results by subject category instantly.
+
+3. Mathematical Analysis and Asymptotic Bounds
+Bayes' Rule for Document Classification: P(c | d) = (P(c) * P(d | c)) / P(d) proportional to P(c) * prod_{t in d} P(t | c).
+Multinomial Naive Bayes Word Probability with Laplace Smoothing: P(t | c) = (Count(t, c) + 1) / (sum_{t' in V} Count(t', c) + |V|).
+Linear SVM Primal Optimization Problem: min_{w, b} 0.5 * ||w||^2 + C * sum_{i=1}^N max(0, 1 - y_i (w^T x_i + b)).
+Macro-Averaged F1 Score: F1_{macro} = (1 / |C|) * sum_{c in C} F1(c); treats all classes equally regardless of document count.
+Micro-Averaged F1 Score: Aggregates global true positives, false positives, and false negatives across all classes before calculating F1.
+Chi-Square Feature Selection Statistic: chi^2(t, c) = (N * (A * D - B * C)^2) / ((A + B) * (C + D) * (A + C) * (B + D)).
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure Predict-Document-Category(document_text, trained_model):
+  1. tokens = Tokenize-And-Normalize(document_text).
+  2. best_category = null; max_log_prob = -INFINITY.
+  3. For each category c in trained_model.categories:
+       log_prob = log(trained_model.prior(c)).
+       For each token in tokens:
+         cond_prob = trained_model.getConditionalProb(token, c).
+         log_prob += log(cond_prob).
+       If log_prob > max_log_prob:
+         max_log_prob = log_prob.
+         best_category = c.
+  4. Return best_category // Most probable category classification.
+
+5. Concrete Worked Example and Laboratory Trace
+Multinomial Naive Bayes Classification Trace:
+New uncataloged document text: 'KMP prefix table search algorithms complexity'.
+Candidate classes: c_1 = 'Algorithms', c_2 = 'Databases'.
+Priors: P('Algorithms') = 0.50, P('Databases') = 0.50 (equal prior).
+Class 'Algorithms' conditional probabilities: P('kmp'|Algo)=0.04, P('prefix'|Algo)=0.03, P('search'|Algo)=0.05, P('complexity'|Algo)=0.04.
+  Likelihood product for Algo = 0.50 * (0.04 * 0.03 * 0.05 * 0.04) = 0.50 * 2.4e-6 = 1.2e-6.
+Class 'Databases' conditional probabilities: P('kmp'|DB)=0.0001, P('prefix'|DB)=0.0005, P('search'|DB)=0.02, P('complexity'|DB)=0.001.
+  Likelihood product for DB = 0.50 * (0.0001 * 0.0005 * 0.02 * 0.001) = 0.50 * 1.0e-12 = 5.0e-13.
+Comparison: 1.2e-6 >> 5.0e-13.
+Result: Document classified as 'Algorithms' with over 99.9% posterior probability.
+
+6. Systems Applications and Industrial Use Cases
+Automated subject classification of newly ingested academic dissertations in digital libraries.
+Routing submitted conference papers to appropriate peer review tracks.
+Spam filtering in university email gateways detecting phishing attacks.
+Sentiment classification analyzing patron feedback on library facilities.
+
+7. Comparative Analysis and Architectural Trade-offs
+Naive Bayes vs Support Vector Machines: Naive Bayes is ultra-fast to train and handles small datasets well; SVMs achieve higher accuracy in high-dimensional sparse text vectors.
+Supervised Classification vs Unsupervised Clustering: Classification predicts predefined categories using labeled data; clustering groups unlabeled documents based on text similarity.
+Rule-Based Classification vs Machine Learning: Rule-based uses expert keyword rules (brittle, expensive to maintain); machine learning learns patterns automatically from data.
+Single-Label vs Multi-Label: Single-label forces documents into a single bucket; multi-label allows an article to be both 'Machine Learning' and 'Healthcare'.
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Class Imbalance Skew: Having 90 documents in one category and 2 in another, causing classifiers to blindly predict the majority class.
+Zero Probability Problem in Naive Bayes: If a word never appeared in a class during training, multiplying by zero wipes out the entire class probability; requires Laplace smoothing.
+Concept Drift: Document vocabulary evolving over time, causing legacy classification models to degrade in accuracy without retraining.
+Overfitting on Author Names: Classifiers memorizing specific author names rather than learning general domain concepts.
+
+9. Frequently Asked Questions (FAQ)
+Q: What is Laplace smoothing in Naive Bayes?
+A: Adding 1 to every word count in the numerator and the vocabulary size to the denominator to prevent unseen words from producing zero probabilities.
+Q: Why is log-probability used during classification?
+A: Because multiplying hundreds of small fractional probabilities leads to arithmetic floating-point underflow; summing logarithms avoids underflow.
+Q: How are categories organized in our Digital Library project?
+A: Every document has a dedicated `Category:` header line (e.g., Algorithms, Data Structures, AI, Systems) parsed by `CorpusReader.java`.
+Q: What is the difference between Macro-F1 and Micro-F1?
+A: Macro-F1 computes F1 independently per class and averages them (giving equal weight to small classes); Micro-F1 aggregates overall counts (weighting larger classes more).
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on Document Classification into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of Document Classification manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of Document Classification.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+Document classification organizes large textual collections into structured subject taxonomies.
+Employing probabilistic models like Naive Bayes and linear classifiers ensures digital libraries can automatically catalog and route incoming knowledge.

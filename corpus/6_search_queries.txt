@@ -1,0 +1,120 @@
+Title: Search Query Processing
+Author: Digital Library Project Team
+Category: Query Processing
+Year: 2026
+Content: Users may search with a book title, author name, ISBN, category, or keyword. The search component normalizes the query for case independent matching and then applies KMP to the text fields of each corpus document. The result contains the document name and the fields in which the query occurred.
+
+1. Theoretical Foundations and Historical Context
+Query processing originated in relational database systems during the 1970s with Edgar F. Codd's relational algebra and IBM System R's SQL optimizer.
+Information retrieval pioneers developed boolean query parsing in early automated library catalogs during the 1960s and 1970s (DIALOG system).
+Lexical tokenization and stemmers (Martin Porter's 1980 algorithm) became standard query preprocessing stages.
+Web search engines in the 1990s popularized single-box free-text query interfaces, removing the need for patrons to write explicit boolean syntax.
+Google introduced query auto-completion and 'Did you mean?' spell-correction in the early 2000s, transforming user interaction expectations.
+In our Digital Library Search System, query processing bridges user input with algorithmic search routines (KMP and Levenshtein).
+Modern query processing combines query normalization, tokenization, intent classification, and fuzzy correction.
+
+2. Core Principles, Data Structures, and Invariants
+Query Processing Lifecycle: Raw Input -> Trimming/Sanitization -> Case Normalization -> Tokenization -> Spell Checking/Fuzzy Expansion -> Execution -> Ranking.
+Whitespace and Punctuation Handling: Stripping leading/trailing whitespace, normalizing multi-spaces, and deciding whether punctuation serves as delimiters or literal search tokens.
+Case Normalization: Converting queries and corpus text to lowercase for case-insensitive matching without modifying original document display copies.
+Query Tokenization: Decomposing complex search phrases into discrete token streams using whitespace and punctuation boundaries.
+Stop-Word Treatment in Queries: Stripping non-informative words while preserving exact phrases (e.g. keeping 'to be or not to be' intact).
+Query Intent Detection: Determining whether the user is searching for an author name, a specific book title, an ISBN, or full-text concepts.
+Fuzzy Query Routing: Detecting typographical errors in search queries and routing them to Levenshtein edit-distance matchers.
+Query Validation and Security: Sanitizing query strings to prevent denial-of-service from maliciously large patterns or injection attacks.
+In our project, `ApiHandler.java` inspects HTTP URL query parameters (`/api/search?q=...&mode=...`) and dispatches requests to `LibrarySearchEngine.java`.
+Seamless query parsing guarantees robust search execution even with messy or misspelled user input.
+
+3. Mathematical Analysis and Asymptotic Bounds
+Token Count Distribution: Average user query length in academic libraries is 2.8 words; query token count k follows Poisson distribution.
+Query Normalization Complexity: Transforming a query of length m characters to lowercase stripped format runs in strictly O(m) time.
+Combinatorial Sub-Token Generation: A query of w words contains w * (w + 1) / 2 possible contiguous phrase sub-queries.
+Levenshtein Search Neighborhood: A query of length m has 26 * (2m + 1) possible strings at edit distance 1; checking each exhaustively is intractable without dynamic programming.
+Query Execution Time Budget: Modern digital library systems target query processing times under 20 milliseconds to deliver 60 FPS UI rendering.
+Query-Term Inverse Collection Frequency: ICF(q) = log(Total_Tokens_In_Corpus / Frequency_of_q).
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure Process-User-Query(raw_query_string, mode_param, engine):
+  1. If raw_query_string is null or raw_query_string.trim().isEmpty():
+       Return new SearchResponse(status='ERROR', message='Query string cannot be empty').
+  2. cleaned_query = raw_query_string.trim().toLowerCase().
+  3. tokens = Split-By-Whitespace(cleaned_query).
+  4. If mode_param == 'EXACT':
+       results = engine.searchExact(cleaned_query).
+  5. Else if mode_param == 'FUZZY':
+       threshold = 2 // Maximum allowed Levenshtein edit distance.
+       results = engine.searchFuzzy(cleaned_query, threshold).
+  6. Else if mode_param == 'PARALLEL':
+       results = engine.searchParallel(cleaned_query).
+  7. Else: // Default fallback
+       results = engine.searchExact(cleaned_query).
+  8. Log-Query-Metrics(raw_query_string, mode_param, len(results)).
+  9. Return new SearchResponse(status='SUCCESS', count=len(results), data=results).
+
+5. Concrete Worked Example and Laboratory Trace
+Query Normalization and Routing Trace:
+Raw Input from Web UI: '   KMP   Algorithm   ' with mode='EXACT'.
+Step 1: Raw string received in API endpoint: '/api/search?q=%20%20%20KMP%20%20%20Algorithm%20%20%20&mode=EXACT'.
+Step 2: URL-decoder transforms '%20' into whitespace.
+Step 3: .trim() removes leading and trailing spaces: 'KMP   Algorithm'.
+Step 4: Case normalization converts to lowercase: 'kmp   algorithm' (or preserves case if case-sensitive search selected).
+Step 5: Whitespace consolidation collapses multiple spaces to single space: 'kmp algorithm'.
+Step 6: Engine runs KMP exact search using normalized pattern 'kmp algorithm'.
+Step 7: Search matches 3 documents: '1_kmp_algorithm.txt', '14_library_search_architecture.txt', '20_kmp_library_application.txt'.
+Result: Clean JSON payload delivered to web client in 2.8 milliseconds.
+
+6. Systems Applications and Industrial Use Cases
+Sanitizing and dispatching search requests in university library OPAC interfaces.
+Query suggestion and auto-complete dropdowns in web search frontends.
+Voice-activated query processing parsing spoken transcription text into catalog queries.
+Fuzzy query correction identifying misspelled technical terms like 'algoritm'.
+
+7. Comparative Analysis and Architectural Trade-offs
+Exact Query vs Fuzzy Query: Exact query requires 100% substring alignment; fuzzy query accommodates minor typographical errors within specified edit thresholds.
+Raw Query vs Normalized Query: Raw query retains original user casing and punctuation; normalized query converts to uniform canonical representations for consistent indexing.
+Single-Term Query vs Multi-Term Boolean: Single-term queries scan for one continuous string; boolean queries parse logical expressions (AND, OR, NOT) across terms.
+Client-Side vs Server-Side Processing: Client-side handles debounce and character input; server-side handles heavy algorithmic matching and index intersections.
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Missing URL Decoding: Failing to decode `%20` or `%2B` query parameter characters causing search mismatches.
+Over-Sanitization: Stripping meaningful punctuation like hyphens or periods that are vital for technical terms ('C++', 'Node.js', 'ISBN-13').
+Ignoring Empty Queries: Allowing blank or whitespace-only queries to trigger full-corpus scans, wasting server CPU cycles.
+Case Inconsistency: Lowercasing user queries while leaving document corpus text uppercase, preventing any matches from succeeding.
+
+9. Frequently Asked Questions (FAQ)
+Q: Why is query normalization critical in search engines?
+A: Because users type queries with unpredictable capitalization and spacing; normalization ensures that 'Algorithm', 'algorithm', and ' ALGORITHM ' retrieve identical results.
+Q: How does our system handle typos in user queries?
+A: When the user selects Fuzzy Search mode, the engine uses the Levenshtein algorithm to compare the query against document terms, returning matches within edit distance 2.
+Q: What HTTP status code is returned for an empty query?
+A: The API returns HTTP 400 Bad Request with an informative JSON error message stating that the query parameter is required.
+Q: How are query parameters parsed in Java without external frameworks?
+A: By reading the raw URI query string from `HttpExchange.getRequestURI().getQuery()` and splitting on `&` and `=`.
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on Search Query Processing into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of Search Query Processing manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of Search Query Processing.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+Search query processing transforms messy human input into structured, executable algorithmic search parameters.
+Robust sanitization, normalization, and intelligent routing ensure the digital library responds accurately and efficiently to patron queries.

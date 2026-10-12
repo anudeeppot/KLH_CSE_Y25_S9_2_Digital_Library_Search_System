@@ -1,0 +1,134 @@
+Title: Hashing Techniques
+Author: Aditya Bose
+ISBN: 978-93-10030-0
+Category: Data Structures
+Year: 2020
+Content: Hashing Techniques is an important topic in modern computer science. This document introduces hashing techniques and discusses arrays, trees, heaps, hashing, indexed structures, memory organization, search and update operations. The subject is useful when a program must process structured information, make decisions efficiently, or manage computational resources under practical constraints. A typical study begins by defining the input, output, assumptions, and correctness conditions. Students should then identify the appropriate data representation and select an algorithm whose running time and memory requirements are suitable for the expected input size. Correctness can be checked using normal examples, boundary cases, empty inputs, invalid inputs, and carefully constructed cases that exercise the most important branches of the implementation. Complexity analysis provides an asymptotic view of performance, while benchmarking can reveal the effect of constant factors, memory access patterns, and input distributions. Documentation should describe the algorithm, important variables, assumptions, and limitations. In a digital library environment, this kind of document can be indexed and searched using exact pattern matching, while fuzzy text similarity can help users recover from spelling errors. The material also provides a useful basis for DSA laboratory experiments where students compare alternative approaches, inspect intermediate states, and verify outputs with independent test cases. Important study terms include arrays, trees, heaps, hashing, indexed structures, memory organization, search and update operations. A practical exercise is to modify the input size, record the resulting output, and compare the observed behavior with the expected complexity. Students should avoid choosing an algorithm only because it is advanced; the simplest correct method that satisfies the constraints is often the most maintainable solution.
+
+1. Theoretical Foundations and Historical Context
+Hashing was conceived in the early 1950s by Hans Peter Luhn at IBM, who proposed using internal numerical hash codes for document indexation.
+Gene Amdahl, Elaine M. McGraw, and Arthur Samuel popularized hashing in assembly compilers and symbol tables during the mid-1950s.
+In 1968, Robert Morris published 'Scatter Storage Techniques' in the Communications of the ACM, formalizing collision resolution mechanisms.
+Carter and Wegman introduced Universal Hashing in 1979, proving that randomly chosen hash functions prevent adversarial worst-case degradation.
+Ronald Fagin, Jurg Nievergelt, Nicholas Pippenger, and H. Raymond Strong introduced Extendible Hashing in 1979 for dynamic database storage.
+Cuckoo Hashing was invented by Rasmus Pagh and Flemming Friche Rodler in 2001, providing guaranteed O(1) worst-case lookup time.
+Modern digital libraries rely on hashing for instantaneous keyword lookups, document deduplication (MD5/SHA-256), and distributed caching.
+Hashing remains one of the most practically pervasive algorithmic paradigms in computer science.
+
+2. Core Principles, Data Structures, and Invariants
+A hash function maps keys from a potentially infinite universe U into a finite range of table buckets [0, m - 1].
+A well-designed hash function exhibits the Uniform Hashing property: each key is equally likely to hash to any bucket, independently of other keys.
+Collisions (distinct keys hashing to the same bucket) are mathematically inevitable by the Pigeonhole Principle whenever |U| > m.
+Collision resolution divides into Separate Chaining (linked lists or balanced trees per bucket) and Open Addressing (probing within the table).
+Open addressing probing strategies include Linear Probing (hash(k, i) = (h(k) + i) mod m), Quadratic Probing, and Double Hashing.
+Linear probing exhibits primary clustering: long contiguous blocks of occupied buckets build up, increasing average search times.
+Double hashing utilizes two independent hash functions to eliminate clustering: hash(k, i) = (h1(k) + i * h2(k)) mod m.
+Load factor alpha = n / m measures table saturation; dynamic resizing doubles table capacity when alpha exceeds a threshold (typically 0.75).
+Cryptographic hash functions (SHA-256) guarantee collision resistance and one-way preimage resistance for document integrity.
+In digital libraries, hash tables provide O(1) average-time title, author, and ISBN index lookup.
+
+3. Mathematical Analysis and Asymptotic Bounds
+Under Simple Uniform Hashing, expected chain length in Separate Chaining is exactly the load factor alpha = n / m.
+Expected time for unsuccessful search in Separate Chaining is Theta(1 + alpha); for successful search it is Theta(1 + alpha / 2).
+In Open Addressing with uniform hashing, expected probes in an unsuccessful search is at most 1 / (1 - alpha).
+Expected probes in a successful search for open addressing is bounded by (1 / alpha) * ln(1 / (1 - alpha)).
+Universal Hashing: A family H of hash functions is universal if for any distinct x != y, P_{h in H}(h(x) == h(y)) <= 1 / m.
+Birthday Paradox: With m buckets, a collision occurs with probability > 50% after hashing only sqrt(pi * m / 2) keys (~1.25 * sqrt(m)).
+Amortized cost of dynamic array resizing: doubling table size from m to 2m requires Theta(n) work, but amortizes to O(1) per insertion.
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure Hash-Table-Insert(Table, Key, Value):
+  1. If Table.size / Table.capacity >= MAX_LOAD_FACTOR (0.75):
+       Resize-And-Rehash(Table, 2 * Table.capacity).
+  2. Let index = Hash(Key) mod Table.capacity.
+  3. For Open Addressing with Double Hashing:
+       step = Hash2(Key) mod (Table.capacity - 1) + 1.
+       While Table[index] is occupied and Table[index].key != Key and not Table[index].isDeleted:
+         index = (index + step) mod Table.capacity.
+  4. If Table[index] is occupied with Key: update Table[index].value = Value.
+  5. Else: insert entry at Table[index]; increment Table.size.
+  6. Return Success.
+
+5. Concrete Worked Example and Laboratory Trace
+Inserting keys into a Hash Table of capacity m = 7 using Double Hashing:
+Hash functions: h1(k) = k mod 7; h2(k) = 5 - (k mod 5).
+Insert key 10: h1(10) = 3. Bucket 3 is empty -> insert at index 3.
+Insert key 17: h1(17) = 3 (collision!).
+  - Compute step: h2(17) = 5 - (17 mod 5) = 5 - 2 = 3.
+  - Probe 1: (3 + 1 * 3) mod 7 = 6 mod 7 = 6. Bucket 6 is empty -> insert at index 6.
+Insert key 24: h1(24) = 3 (collision!).
+  - Compute step: h2(24) = 5 - (24 mod 5) = 5 - 4 = 1.
+  - Probe 1: (3 + 1 * 1) mod 7 = 4. Bucket 4 is empty -> insert at index 4.
+Final table state: [-, -, -, 10, 24, -, 17]. All keys resolved with zero clustering.
+
+6. Systems Applications and Industrial Use Cases
+Digital Library ISBN Index: Constant-time exact lookup of book catalog metadata by 13-digit barcode.
+Document Deduplication: Identifying identical uploaded documents across archives using SHA-256 cryptographic hashes.
+Web Caching and Memcached: In-memory key-value caching of query result pages to accelerate web frontends.
+Compiler Symbol Tables: Fast lookup of identifier variables, scopes, and function signatures in programming languages.
+Distributed Hash Tables (DHT): Decentralized peer-to-peer storage routing (Chord, Kademlia) for digital preservation.
+
+7. Comparative Analysis and Architectural Trade-offs
+Separate Chaining: Simple deletion, degrades gracefully when load factor exceeds 1.0, but incurs pointer overhead.
+Linear Probing: Excellent CPU cache locality due to sequential memory scans, but suffers from primary clustering.
+Double Hashing: Eliminates clustering, excellent key distribution, but requires two hash calculations and poor cache locality.
+Cuckoo Hashing: Worst-case O(1) lookup using two tables and evictions; insertion can fail, requiring full rehash.
+Tree Map (Balanced BST): O(log n) lookup, but preserves sorted key ordering; hash tables cannot perform range queries efficiently.
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Using poorly distributed hash functions (e.g., modulo a power of two with poor lower bit randomness).
+Neglecting tombstone markers during deletion in open addressing, breaking search probe sequences for subsequent keys.
+Allowing load factor to exceed 0.8 in open addressing, causing query times to degrade from O(1) to O(n).
+Modifying mutable object fields after using them as hash keys, making entries permanently unfindable in Java HashMaps.
+Failing to ensure that second hash function h2(k) is relatively prime to table size m, trapping probe cycles.
+
+9. Frequently Asked Questions (FAQ)
+Q: Why does Java's HashMap switch from linked lists to Red-Black trees at bucket count 8?
+A: When many keys collide in a single bucket (e.g., under hash collision attacks), treeifying reduces lookup time from O(n) to O(log n).
+Q: What is the difference between cryptographic hashing and non-cryptographic hashing?
+A: Cryptographic hashes (SHA-256) provide preimage resistance and collision resistance; non-cryptographic hashes (MurmurHash, xxHash) prioritize throughput speed.
+Q: Why must table size m ideally be a prime number in double hashing?
+A: A prime table size guarantees that probe steps are coprime to m, ensuring that every bucket in the table is visited before repeating.
+Q: Can hash tables support prefix searches like 'algo*'?
+A: No; hashing destroys lexicographical order. Prefix and range queries require Trie or B-Tree data structures.
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on Hashing Techniques into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of Hashing Techniques manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of Hashing Techniques.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+Hashing delivers expected O(1) time complexity for insert, delete, and lookup operations.
+Collision resolution strategies (chaining vs open addressing) balance memory footprint and CPU cache locality.
+Universal and double hashing eliminate clustering and worst-case performance degradation.
+In digital libraries, hash tables provide instant catalog metadata retrieval and file deduplication.
+
+13. Fuzzy Search Test Variants and Typo Recovery
+In real-world digital library environments, users frequently type query terms with typographical errors.
+For testing Levenshtein fuzzy matching on Hashing Techniques, the following controlled variants are recorded:
+- Typo Variant 'hashng' (Type: Deletion): corresponds to canonical 'hashing'.
+- Typo Variant 'collison' (Type: Deletion): corresponds to canonical 'collision'.
+- Typo Variant 'buckett' (Type: Insertion): corresponds to canonical 'bucket'.
+- Typo Variant 'probingg' (Type: Insertion): corresponds to canonical 'probing'.
+- Typo Variant 'quadratc' (Type: Deletion): corresponds to canonical 'quadratic'.
+The Levenshtein distance algorithm identifies queries like 'hashng' within edit threshold d <= 2.
+This guarantees that user typing mistakes are recovered while preserving complete accuracy in educational definitions.

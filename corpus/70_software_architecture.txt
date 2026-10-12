@@ -1,0 +1,137 @@
+Title: Software Architecture
+Author: Aditya Bose
+ISBN: 978-93-10070-0
+Category: Software Engineering
+Year: 2024
+Content: Software Architecture is an important topic in modern computer science. This document introduces software architecture and discusses requirements, architecture, testing, APIs, version control, interfaces, maintainability. The subject is useful when a program must process structured information, make decisions efficiently, or manage computational resources under practical constraints. A typical study begins by defining the input, output, assumptions, and correctness conditions. Students should then identify the appropriate data representation and select an algorithm whose running time and memory requirements are suitable for the expected input size. Correctness can be checked using normal examples, boundary cases, empty inputs, invalid inputs, and carefully constructed cases that exercise the most important branches of the implementation. Complexity analysis provides an asymptotic view of performance, while benchmarking can reveal the effect of constant factors, memory access patterns, and input distributions. Documentation should describe the algorithm, important variables, assumptions, and limitations. In a digital library environment, this kind of document can be indexed and searched using exact pattern matching, while fuzzy text similarity can help users recover from spelling errors. The material also provides a useful basis for DSA laboratory experiments where students compare alternative approaches, inspect intermediate states, and verify outputs with independent test cases. Important study terms include requirements, architecture, testing, APIs, version control, interfaces, maintainability. A practical exercise is to modify the input size, record the resulting output, and compare the observed behavior with the expected complexity. Students should avoid choosing an algorithm only because it is advanced; the simplest correct method that satisfies the constraints is often the most maintainable solution.
+
+1. Theoretical Foundations and Historical Context
+Software architecture emerged in the late 1980s as software systems outgrew the capacity of individual programmers to comprehend in their entirety.
+Edsger Dijkstra introduced layered architectural abstraction in the THE multiprogramming system in 1968.
+Mary Shaw and David Garlan published 'Software Architecture: Perspectives on an Emerging Discipline' in 1996, formalizing architectural patterns.
+Martin Fowler published 'Patterns of Enterprise Application Architecture' in 2002, cataloging enterprise design models.
+Microservices architecture emerged in the early 2010s (championed by Netflix and Martin Fowler), decomposing monoliths into distributed network services.
+Event-Driven Architecture (EDA) and Domain-Driven Design (DDD) reshaped modern distributed cloud application engineering.
+In digital libraries, software architecture defines the relationships between storage, indexing, business logic, and presentation.
+Architectural choices dictate scalability, maintainability, and deployment velocity for enterprise digital archives.
+
+2. Core Principles, Data Structures, and Invariants
+Software architecture defines the fundamental structure of a software system: its software elements, relations, and design principles.
+Layered Architecture (N-Tier) organizes components into horizontal layers: Presentation Layer, Business Logic Layer, Data Access Layer.
+Model-View-Controller (MVC) decouples data representations (Model) from user interaction (Controller) and UI rendering (View).
+Microservices Architecture decomposes systems into autonomous, loosely coupled services communicating via lightweight network APIs (REST/gRPC).
+Monolithic Architecture packages all functionality into a single unified deployment unit; simple to develop, but scales as a single unit.
+Event-Driven Architecture (EDA) coordinates decoupled services asynchronously through message brokers via publish-subscribe event topics.
+Hexagonal Architecture (Ports and Adapters) isolates core domain logic from external technologies, frameworks, and databases.
+Service-Oriented Architecture (SOA) exposes reusable enterprise business services over Enterprise Service Buses (ESB).
+Architectural Trade-offs govern quality attributes: Scalability vs Simplicity, Latency vs Consistency, Modularity vs Deployment Ease.
+In digital libraries, a clean 3-tier architecture connects the HTML/CSS/JS frontend to the Java algorithm backend via JSON REST APIs.
+
+3. Mathematical Analysis and Asymptotic Bounds
+Coupling Metric - Afferent (Ca) vs Efferent (Ce) Coupling:
+  - Afferent Coupling (Ca): Number of external classes that depend on this package.
+  - Efferent Coupling (Ce): Number of external packages this package depends on.
+Instability Metric: I = Ce / (Ca + Ce); I = 0 implies completely stable; I = 1 implies completely unstable.
+Abstractness Metric: A = N_abstract / N_total; measures proportion of abstract classes and interfaces in a package.
+Distance from Main Sequence: D = |A + I - 1|; evaluates package balance between stability and abstractness (D -> 0 is optimal).
+Latency in Microservices: Cumulative API latency L_total = sum_{i=1}^k L_service_i + sum_{j=1}^{k-1} Network_Hop_j.
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure API-Gateway-Route-Request(IncomingRequest):
+  1. Extract URI path: path = IncomingRequest.getPath().
+  2. Authentication & Rate Limiting:
+       If not RateLimiter.allow(IncomingRequest.getClientIP()):
+         Return HTTP-429-Too-Many-Requests().
+  3. Route Matching:
+       If path.startsWith('/api/search'):
+         Forward to SearchService.handle(IncomingRequest).
+       Else if path.startsWith('/api/document'):
+         Forward to DocumentService.handle(IncomingRequest).
+       Else if path.startsWith('/api/compare'):
+         Forward to AlignmentService.handle(IncomingRequest).
+       Else:
+         Forward to StaticFileHandler(web/ directory).
+  4. Capture execution metrics and access logs.
+  5. Return Response to Client.
+
+5. Concrete Worked Example and Laboratory Trace
+Architectural Evolution of the Digital Library Search System:
+Monolithic CLI Design (Main.java):
+  - Terminal scanner CLI tightly coupled to algorithms; only single local user could execute queries.
+Decoupled 3-Tier Web Architecture:
+  - Presentation Tier (web/): Pure HTML5, CSS3, ES6 JavaScript. Runs entirely inside patron browser.
+  - Application/API Tier (WebServer.java, ApiHandler.java): Built-in Java HttpServer on port 8080. Parses JSON and dispatches to DSA algorithms.
+  - Data/Algorithm Tier (CorpusReader, KMP, EditDistance, LibraryDocument): Pure Java data structures and algorithms.
+Result: System supports multiple concurrent web users, responsive modern UI, and automated integration testing without changing core algorithms.
+
+6. Systems Applications and Industrial Use Cases
+Enterprise Digital Library Architecture: Scaling search across millions of university documents using microservices.
+Cloud API Gateway Deployment: Managing rate limiting, CORS, and authentication for public catalog API consumers.
+Streaming Data Pipeline Architecture: Ingesting high-velocity research paper preprints using Apache Kafka event streams.
+CQRS (Command Query Responsibility Segregation): Separating heavy read search workloads from write catalog acquisitions.
+Serverless Search Backends: Running search query handlers as stateless cloud functions that scale automatically to zero.
+
+7. Comparative Analysis and Architectural Trade-offs
+Monolith: Simple deployment, fast in-memory calls, easy debugging; difficult to scale teams or deploy components independently.
+Microservices: Independent scaling, technology heterogeneity, decoupled teams; high network latency, distributed data complexity.
+Layered (N-Tier): Intuitive separation of concerns, well-understood; can become rigid with pass-through boilerplate layers.
+Event-Driven: Highly decoupled, asynchronous, scalable; eventual consistency challenges and complex event tracing.
+Serverless (FaaS): Zero idle cost, automatic scaling; cold start latency spikes and vendor platform lock-in.
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Adopting microservices prematurely for small systems, creating massive distributed systems overhead for a 100-document catalog.
+Allowing presentation code (HTML rendering) to leak into core algorithmic logic classes.
+Creating Distributed Monoliths: Microservices that must all be deployed simultaneously due to tight inter-service coupling.
+Neglecting API versioning, breaking mobile and web clients when updating backend JSON schemas.
+Over-relying on synchronous network calls between services, creating fragile cascades of network failures.
+
+9. Frequently Asked Questions (FAQ)
+Q: What is the difference between software architecture and software design?
+A: Architecture defines system-level structures and major component relationships; design focuses on module-level algorithms, class hierarchies, and functions.
+Q: Why is a 3-tier architecture ideal for this Digital Library project?
+A: It cleanly separates the browser UI (presentation) from the Java HTTP API (application logic) and corpus data structures (data access).
+Q: What is Conway's Law?
+A: Organizations design systems that mirror their communication structures (e.g., three separate teams will inevitably produce a 3-tier architecture).
+Q: How does the Java WebServer decouple frontend from backend?
+A: By serving standard JSON responses over HTTP endpoints, allowing the frontend to be developed in standard browser technologies without framework dependencies.
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on Software Architecture into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of Software Architecture manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of Software Architecture.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+Software architecture defines system components, inter-relationships, and design trade-offs.
+Layered N-tier and MVC patterns separate presentation, business logic, and data storage.
+Monolithic and microservices architectures balance operational simplicity with independent scalability.
+In digital libraries, clean architecture decouples web presentation from algorithmic search engines.
+
+13. Fuzzy Search Test Variants and Typo Recovery
+In real-world digital library environments, users frequently type query terms with typographical errors.
+For testing Levenshtein fuzzy matching on Software Architecture, the following controlled variants are recorded:
+- Typo Variant 'archtect' (Type: Deletion): corresponds to canonical 'architect'.
+- Typo Variant 'microsrvices' (Type: Deletion): corresponds to canonical 'microservices'.
+- Typo Variant 'monolthic' (Type: Deletion): corresponds to canonical 'monolithic'.
+- Typo Variant 'scalabilty' (Type: Deletion): corresponds to canonical 'scalability'.
+- Typo Variant 'decouplng' (Type: Deletion): corresponds to canonical 'decoupling'.
+The Levenshtein distance algorithm identifies queries like 'archtect' within edit threshold d <= 2.
+This guarantees that user typing mistakes are recovered while preserving complete accuracy in educational definitions.

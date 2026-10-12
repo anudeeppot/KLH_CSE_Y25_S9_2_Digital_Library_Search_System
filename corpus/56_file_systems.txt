@@ -1,0 +1,121 @@
+Title: File Systems
+Author: Manoj Gupta
+ISBN: 978-93-10056-6
+Category: Computer Systems
+Year: 2022
+Content: File Systems is an important topic in modern computer science. This document introduces file systems and discusses processes, memory, scheduling, storage, concurrency, fault tolerance, resource management. The subject is useful when a program must process structured information, make decisions efficiently, or manage computational resources under practical constraints. A typical study begins by defining the input, output, assumptions, and correctness conditions. Students should then identify the appropriate data representation and select an algorithm whose running time and memory requirements are suitable for the expected input size. Correctness can be checked using normal examples, boundary cases, empty inputs, invalid inputs, and carefully constructed cases that exercise the most important branches of the implementation. Complexity analysis provides an asymptotic view of performance, while benchmarking can reveal the effect of constant factors, memory access patterns, and input distributions. Documentation should describe the algorithm, important variables, assumptions, and limitations. In a digital library environment, this kind of document can be indexed and searched using exact pattern matching, while fuzzy text similarity can help users recover from spelling errors. The material also provides a useful basis for DSA laboratory experiments where students compare alternative approaches, inspect intermediate states, and verify outputs with independent test cases. Important study terms include processes, memory, scheduling, storage, concurrency, fault tolerance, resource management. A practical exercise is to modify the input size, record the resulting output, and compare the observed behavior with the expected complexity. Students should avoid choosing an algorithm only because it is advanced; the simplest correct method that satisfies the constraints is often the most maintainable solution.
+
+1. Theoretical Foundations and Historical Context
+File systems evolved from sequential magnetic tape reels and punch-card storage in the late 1950s.
+IBM introduced the first random-access hard disk drive (RAMAC 305) in 1956, necessitating block-based storage organization.
+The Unix File System (UFS) and inode architecture was created by Ken Thompson and Dennis Ritchie in 1969, decoupling filenames from metadata.
+Microsoft introduced FAT (File Allocation Table) in 1977 for standalone floppy disk storage, followed by NTFS in 1993 with journaling support.
+Journaling file systems (ext3, ext4, XFS) emerged in the late 1990s to guarantee metadata crash consistency without requiring hours of fsck scans.
+Copy-on-Write (CoW) file systems (ZFS, Btrfs) in the 2000s introduced instant snapshots and cryptographic data checksumming.
+In digital libraries, file systems organize document storage directories, manage file descriptors, and ensure corpus durability.
+Understanding file systems ensures reliable persistence and high-throughput streaming of digital books and research papers.
+
+2. Core Principles, Data Structures, and Invariants
+A file system provides persistent, structured data storage across block-oriented secondary storage devices (HDDs, NVMe SSDs).
+The Inode (Index Node) is the central Unix metadata structure storing file size, permissions, timestamps, and physical block pointers.
+Crucially, inodes do NOT store file names; directory files store mappings between human-readable filenames and inode numbers.
+Block allocation strategies include Contiguous Allocation, Linked Allocation (FAT), and Indexed Allocation (multi-level indirect blocks / Extents).
+Modern file systems use Extents (contiguous ranges of blocks specified by start block and length) to reduce metadata overhead.
+Journaling (Write-Ahead Logging) records planned metadata modifications in a dedicated circular log before updating active disk structures.
+In the event of a power failure or system crash, the file system replays the journal in seconds to restore consistency without data corruption.
+The Virtual File System (VFS) kernel abstraction provides unified POSIX API interfaces across diverse underlying filesystems (ext4, NTFS, NFS).
+File caching (Page Cache) buffers recently read and written disk blocks in unused RAM, turning disk reads into high-speed memory copies.
+In digital libraries, CorpusReader traverses filesystem directories, loading plain-text document files into memory buffers.
+
+3. Mathematical Analysis and Asymptotic Bounds
+Classic Unix Inode Direct/Indirect Capacity: Inode with 12 direct blocks, 1 single indirect, 1 double indirect, 1 triple indirect.
+With 4 KB block size (4096 bytes) and 4-byte block pointers (1024 pointers per block):
+  - Direct: 12 * 4 KB = 48 KB.
+  - Single Indirect: 1024 * 4 KB = 4 MB.
+  - Double Indirect: 1024^2 * 4 KB = 4 GB.
+  - Triple Indirect: 1024^3 * 4 KB = 4 TB.
+  Total max file size = ~4.004 TB.
+Disk Access Latency: T_access = T_seek (3-10 ms) + T_rotational_delay (2-4 ms) + T_transfer (fraction of ms).
+Sequential versus Random I/O: Sequential reading achieves 500+ MB/s on HDDs and 7000+ MB/s on NVMe SSDs; random small I/O drops by 100x due to seek delays.
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure Journaled-File-Write(File, Data, Offset):
+  1. Allocate new data blocks on storage device.
+  2. Write user Data to allocated blocks.
+  3. Create Journal Transaction: record new inode state, block allocation bitmap update, and timestamp.
+  4. Write transaction to Journal Log on disk (flush write-ahead log).
+  5. Write Commit Record to Journal: marks transaction as committed.
+  6. Checkpoint: write metadata updates to actual filesystem inode and bitmap blocks.
+  7. Release transaction from Journal Log.
+  8. Return Success.
+
+5. Concrete Worked Example and Laboratory Trace
+Directory Lookup and File Read for 'corpus/1_kmp_algorithm.txt':
+Step 1: Read root directory inode (inode 2). Locate directory data block.
+Step 2: Scan root directory data: find entry 'corpus' -> maps to inode 512.
+Step 3: Read inode 512. Verify directory permissions. Locate 'corpus' data block.
+Step 4: Scan 'corpus' data block: find entry '1_kmp_algorithm.txt' -> maps to inode 8194.
+Step 5: Read inode 8194: size = 2048 bytes, direct block pointer = Block 45012.
+Step 6: Check OS Page Cache: Block 45012 is cached in RAM! Zero disk I/O needed.
+Step 7: Copy 2048 bytes from page cache into CorpusReader memory buffer in sub-microsecond time.
+
+6. Systems Applications and Industrial Use Cases
+Digital Library Corpus Loading: Scanning directories and streaming plain-text books into memory at application startup.
+Archival Backup Systems: Taking atomic Copy-on-Write (CoW) filesystem snapshots of digital library databases.
+Content Delivery Networks: Serving static PDF files with kernel sendfile() zero-copy network socket transfers.
+Database WAL Engines: Writing write-ahead transaction logs for crash recovery in database management systems.
+Distributed Storage Clusters: Managing Petabyte-scale archival research datasets across Ceph and GlusterFS clusters.
+
+7. Comparative Analysis and Architectural Trade-offs
+Ext4: Extent-based, journaling, battle-tested Linux standard; excellent general performance and backward compatibility.
+NTFS: Windows enterprise file system; B-tree directory indexing, journaling, transparent compression and encryption.
+ZFS: 128-bit Copy-on-Write, integrated volume management, data scrubbing with SHA-256 checksums; high RAM requirements.
+FAT32: Simple, universal compatibility across USB flash drives; no permissions, no journaling, 4 GB maximum file size limit.
+NVMe Flash File Systems (F2FS): Optimized for NAND flash memory characteristics, minimizing write amplification.
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Failing to close file descriptors in long-running servers, causing 'Too many open files' OS resource exhaustion.
+Assuming file writes are durable immediately after write() syscall without invoking fsync() to flush disk write caches.
+Executing millions of tiny random read syscalls instead of buffered block streaming, causing high context switch overhead.
+Hardcoding operating system path separators (forward slash '/' vs Windows backslash '\') instead of using platform-agnostic APIs.
+Corrupting file metadata during power failures by disabling filesystem journaling for minor write speed gains.
+
+9. Frequently Asked Questions (FAQ)
+Q: What is an inode in a Unix file system?
+A: An inode is a metadata structure storing file attributes (size, permissions, timestamps, block pointers), identified by a unique inode number.
+Q: Why is filename stored in directory data rather than in the inode?
+A: This allows hard links: multiple directory entries with different names can point to the same inode number, sharing the exact same file content.
+Q: How does filesystem journaling prevent corruption?
+A: It writes planned metadata modifications to a log before committing them; if a crash occurs, the system replays the log in seconds to reach a consistent state.
+Q: How does CorpusReader interact with the file system?
+A: It uses Java's File and BufferedReader APIs to list files in the 'corpus' directory, read metadata headers, and assemble document text into memory.
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on File Systems into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of File Systems manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of File Systems.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+File systems provide persistent, organized, and protected data storage across physical block media.
+Inodes decouple file metadata and block pointers from human-readable directory filenames.
+Journaling and Copy-on-Write guarantee crash consistency without lengthy filesystem checks.
+In digital libraries, efficient filesystem I/O enables rapid corpus loading and document indexing.

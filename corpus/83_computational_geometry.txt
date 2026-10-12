@@ -1,0 +1,124 @@
+Title: Computational Geometry
+Author: Neha Rao
+ISBN: 978-93-10083-3
+Category: Mathematics
+Year: 2025
+Content: Computational Geometry is an important topic in modern computer science. This document introduces computational geometry and discusses sets, matrices, probability, statistics, optimization, numerical methods, computational models. The subject is useful when a program must process structured information, make decisions efficiently, or manage computational resources under practical constraints. A typical study begins by defining the input, output, assumptions, and correctness conditions. Students should then identify the appropriate data representation and select an algorithm whose running time and memory requirements are suitable for the expected input size. Correctness can be checked using normal examples, boundary cases, empty inputs, invalid inputs, and carefully constructed cases that exercise the most important branches of the implementation. Complexity analysis provides an asymptotic view of performance, while benchmarking can reveal the effect of constant factors, memory access patterns, and input distributions. Documentation should describe the algorithm, important variables, assumptions, and limitations. In a digital library environment, this kind of document can be indexed and searched using exact pattern matching, while fuzzy text similarity can help users recover from spelling errors. The material also provides a useful basis for DSA laboratory experiments where students compare alternative approaches, inspect intermediate states, and verify outputs with independent test cases. Important study terms include sets, matrices, probability, statistics, optimization, numerical methods, computational models. A practical exercise is to modify the input size, record the resulting output, and compare the observed behavior with the expected complexity. Students should avoid choosing an algorithm only because it is advanced; the simplest correct method that satisfies the constraints is often the most maintainable solution.
+
+1. Theoretical Foundations and Historical Context
+Computational geometry emerged as an independent subfield of computer science in the mid-1970s.
+Michael Ian Shamos submitted his foundational PhD dissertation 'Computational Geometry' at Yale University in 1978.
+Franco Preparata and Michael Shamos published the first comprehensive textbook 'Computational Geometry' in 1985.
+Ronald Graham introduced the Graham Scan algorithm in 1972, computing the 2D convex hull in optimal O(n log n) time.
+Steven Fortune invented Fortune's Sweepline algorithm in 1987, constructing Voronoi diagrams in optimal O(n log n) time.
+Mark de Berg, Otfried Cheong, Marc van Kreveld, and Mark Overmars standardized geometric algorithms in their 1997 treatise.
+In digital libraries, computational geometry powers optical character recognition (OCR) bounding box detection and scanned layout analysis.
+Geometric algorithms organize spatial and graphical data structures with rigorous complexity bounds.
+
+2. Core Principles, Data Structures, and Invariants
+Computational geometry investigates algorithms and data structures for solving problems stated in terms of geometric objects (points, lines, polygons).
+The Convex Hull of a set of points S is the smallest convex polygon containing all points in S.
+The Cross Product orientation test determines whether three ordered points (p1, p2, p3) make a left turn, right turn, or are collinear.
+The Graham Scan algorithm sorts points by polar angle and uses a stack to build the convex hull, eliminating clockwise turns.
+Line Segment Intersection algorithms use a Sweepline (Bentley-Ottmann) to find all k intersections among n segments in O((n + k) log n) time.
+Voronoi Diagrams partition space into cells around sites such that all points in a cell are closer to its site than any other.
+Delaunay Triangulation is the geometric dual of the Voronoi diagram, maximizing the minimum angle of all triangles (avoids sliver triangles).
+Range Searching uses spatial data structures (k-d Trees, Range Trees) to find all points inside orthogonal query rectangles in sub-linear time.
+Bounding Volume Hierarchies (BVH) accelerate collision detection and document layout element queries.
+In digital libraries, geometric algorithms segment scanned book pages into columns, paragraphs, and illustration bounding boxes.
+
+3. Mathematical Analysis and Asymptotic Bounds
+2D Cross Product (Signed Area / Orientation Test):
+  Cross(p1, p2, p3) = (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1).
+  - If Cross > 0: Counterclockwise turn (Left turn).
+  - If Cross < 0: Clockwise turn (Right turn).
+  - If Cross == 0: Collinear points.
+Convex Hull Asymptotic Lower Bound: Computing the convex hull of n points requires Omega(n log n) time in the algebraic computation tree model.
+Graham Scan Complexity: O(n log n) time dominated by angular sorting; the stack traversal takes linear O(n) amortized time.
+Bentley-Ottmann Sweepline Complexity: O((n + k) log n) time and O(n) space, where k is the number of intersection points.
+Euler's Planar Formula for Delaunay Triangulation: Triangulation of n points has at most 3n - 6 edges and 2n - 5 triangular faces.
+k-d Tree Orthogonal Range Query Time: O(sqrt(n) + k) in 2D space, returning k reporting points.
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure Graham-Scan-Convex-Hull(Points):
+  1. Find pivot point p0 with lowest y-coordinate (break ties with lowest x-coordinate).
+  2. Sort remaining points by polar angle with respect to p0 (break ties by distance from p0).
+  3. If sorted points count < 2: return Points (trivial hull).
+  4. Initialize stack S; push p0, sorted[0], sorted[1].
+  5. For i = 2 to sorted.length - 1:
+       While S.size >= 2 and Cross(S.secondFromTop(), S.top(), sorted[i]) <= 0:
+         S.pop().  // Pop non-left turns
+       S.push(sorted[i]).
+  6. Return S (Ordered vertices of the convex hull).
+
+5. Concrete Worked Example and Laboratory Trace
+Segmenting a Scanned Digital Manuscript Page into Layout Columns using Bounding Boxes:
+OCR scanner detects word bounding boxes: Box1(10, 10, 50, 20), Box2(15, 25, 55, 35), Box3(120, 10, 160, 20).
+Goal: Detect whether document has a multi-column layout.
+Geometric Sweepline Analysis:
+  - Project bounding boxes onto horizontal X-axis: Interval 1 [10, 55], Interval 2 [120, 160].
+  - Sweepline sweeps along X-axis from 0 to 200.
+  - Detects continuous gap between x = 55 and x = 120 (gap width = 65 pixels with 0 text crossings).
+Result: Algorithm proves page has two distinct text columns separated by a central gutter at x = 87.5.
+Document reader formats text into two readable sequential columns instead of garbling lines across the page.
+
+6. Systems Applications and Industrial Use Cases
+Document Layout Analysis: Segmenting scanned book pages into columns, headers, footers, and illustration zones.
+Historical Manuscript OCR: Detecting text line baselines and letter bounding boxes in ancient manuscripts.
+Geographic Information Systems (GIS): Spatial range searching across digitized historical map collections.
+Digital Watermarking: Embedding geometric invariant watermark polygons into high-resolution archival scans.
+3D Virtual Library Navigation: Collision detection and camera path planning in 3D virtual reality library walk-throughs.
+
+7. Comparative Analysis and Architectural Trade-offs
+Graham Scan: Optimal O(n log n) time, simple; requires sorting all points in advance.
+Jarvis March (Gift Wrapping): O(n * h) time where h is hull vertex count; output-sensitive, faster than Graham scan when h << n.
+Quickhull: Average O(n log n), worst-case O(n^2); divide-and-conquer, fast in practice.
+k-d Tree: Binary spatial partitioning; excellent for orthogonal range search and nearest neighbor in low dimensions (d < 10).
+R-Tree: B-tree variant for bounding boxes; standard for spatial indexing in geospatial databases.
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Floating-point round-off error in orientation tests, causing geometric algorithms to enter infinite loops or crash.
+Failing to handle collinear points during polar angle sorting in Graham scan.
+Assuming 2D geometric algorithms generalize trivially to 3D: 3D convex hull complexity is O(n log n), but 4D+ is O(n^{floor(d/2)}).
+Degenerate input cases: all points lying on a single straight line.
+Curse of Dimensionality in k-d trees: performance degrades to linear brute force scan O(n) in high dimensions (d > 20).
+
+9. Frequently Asked Questions (FAQ)
+Q: Why is the cross product used to determine turns in 2D geometry?
+A: The sign of the 2D cross product of vectors (p2 - p1) and (p3 - p1) indicates whether p3 lies to the left (positive), right (negative), or collinear (zero) of the line p1-p2.
+Q: What is a Voronoi Diagram?
+A: A partitioning of a plane into convex polygons such that each polygon contains all points closest to a specific seed point.
+Q: How does computational geometry assist in optical character recognition (OCR)?
+A: It groups individual letter pixels into bounding boxes, identifies text line baselines, and segments multi-column newspaper layouts.
+Q: What is an output-sensitive algorithm?
+A: An algorithm whose running time depends on both the input size n and the output size h (such as Jarvis March running in O(n * h)).
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on Computational Geometry into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of Computational Geometry manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of Computational Geometry.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+Computational geometry develops efficient algorithms for spatial and geometric data structures.
+Convex hulls, line segment intersections, and Voronoi diagrams solve fundamental spatial layout problems.
+Orientation tests via cross products provide robust geometric decision primitives.
+In digital libraries, computational geometry enables document page segmentation, OCR bounding, and spatial indexing.

@@ -1,0 +1,125 @@
+Title: Operating System Scheduling
+Author: Nikhil Rao
+ISBN: 978-93-10054-4
+Category: Computer Systems
+Year: 2020
+Content: Operating System Scheduling is an important topic in modern computer science. This document introduces operating system scheduling and discusses processes, memory, scheduling, storage, concurrency, fault tolerance, resource management. The subject is useful when a program must process structured information, make decisions efficiently, or manage computational resources under practical constraints. A typical study begins by defining the input, output, assumptions, and correctness conditions. Students should then identify the appropriate data representation and select an algorithm whose running time and memory requirements are suitable for the expected input size. Correctness can be checked using normal examples, boundary cases, empty inputs, invalid inputs, and carefully constructed cases that exercise the most important branches of the implementation. Complexity analysis provides an asymptotic view of performance, while benchmarking can reveal the effect of constant factors, memory access patterns, and input distributions. Documentation should describe the algorithm, important variables, assumptions, and limitations. In a digital library environment, this kind of document can be indexed and searched using exact pattern matching, while fuzzy text similarity can help users recover from spelling errors. The material also provides a useful basis for DSA laboratory experiments where students compare alternative approaches, inspect intermediate states, and verify outputs with independent test cases. Important study terms include processes, memory, scheduling, storage, concurrency, fault tolerance, resource management. A practical exercise is to modify the input size, record the resulting output, and compare the observed behavior with the expected complexity. Students should avoid choosing an algorithm only because it is advanced; the simplest correct method that satisfies the constraints is often the most maintainable solution.
+
+1. Theoretical Foundations and Historical Context
+CPU scheduling emerged with early multiprogramming batch systems in the 1960s to maximize mainframe processor utilization.
+The Compatible Time-Sharing System (CTSS) at MIT in 1961 pioneered round-robin time-slicing for interactive terminals.
+E. G. Coffman and Peter Denning formalized processor scheduling models in their 1973 treatise 'Operating Systems Theory'.
+The Multilevel Feedback Queue (MLFQ) was developed by Fernando Corbato in the mid-1960s to dynamically adapt to varying job behaviors.
+Linux adopted the O(1) scheduler in kernel 2.6, followed by Ingo Molnar's Completely Fair Scheduler (CFS) using Red-Black trees in kernel 2.6.23.
+Modern scheduling balances CPU-bound throughput, I/O-bound interactive latency, power consumption, and multi-core cache affinity.
+In digital library search backends, thread schedulers prioritize interactive user queries over background corpus re-indexing.
+Optimal scheduling prevents request starvation and guarantees low median response latencies under heavy load.
+
+2. Core Principles, Data Structures, and Invariants
+The CPU Scheduler selects which runnable process or thread from the ready queue executes on an available CPU core.
+Scheduling criteria include CPU Utilization, Throughput (jobs completed per unit time), Turnaround Time, Waiting Time, and Response Time.
+First-Come, First-Served (FCFS) schedules non-preemptively by arrival order; suffers from the Convoy Effect.
+Shortest Job First (SJF) minimizes average waiting time; impractical in general OS kernels because future CPU burst lengths are unknown.
+Shortest Remaining Time First (SRTF) provides preemptive SJF scheduling using exponential smoothing burst predictions.
+Round Robin (RR) allocates a fixed time quantum q to each process in circular order, ensuring bounded interactive response time.
+Multilevel Feedback Queue (MLFQ) uses multiple priority queues with decreasing time quanta, prioritizing I/O-bound interactive tasks.
+Completely Fair Scheduler (CFS) models an ideal multi-tasking processor by tracking virtual runtime (vruntime) in a Red-Black tree.
+Processor affinity (cache affinity) schedules threads on the same CPU core to preserve warm L1/L2 hardware caches.
+In digital library systems, search worker pools assign high priority to patron REST API queries over batch PDF parsers.
+
+3. Mathematical Analysis and Asymptotic Bounds
+Exponential Smoothing for CPU burst prediction: tau_{n+1} = alpha * t_n + (1 - alpha) * tau_n, where 0 <= alpha <= 1.
+Round Robin Time Quantum Trade-off: If quantum q is huge (q -> infinity), RR degrades to FCFS; if q is tiny, context switch overhead dominates.
+Average Waiting Time for SJF is mathematically proven to be minimal among all non-preemptive scheduling policies.
+CFS Virtual Runtime formula: vruntime_i <- vruntime_i + delta_exec * (NICE_0_LOAD / weight_i), where weight corresponds to nice level.
+Processor Load Metric: Total load = sum_{i in runnable} weight_i; time slice = sysctl_sched_latency * (weight_i / total_load).
+Convoy Effect Metric: Long CPU-bound job of burst T blocks n short jobs of burst t, increasing total wait time to sum_{i=1}^n (T + (i-1)*t).
+Response Time Bound in Round Robin: For n processes and quantum q, no process waits longer than (n - 1) * q time units.
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure Linux-CFS-Schedule(ReadyTree, CurrentTask):
+  1. Update runtime of current task: delta = CurrentTime() - CurrentTask.exec_start.
+  2. CurrentTask.vruntime += delta * (NICE_0_WEIGHT / CurrentTask.weight).
+  3. If CurrentTask is still runnable:
+       Re-insert CurrentTask into ReadyTree (Red-Black tree keyed on vruntime).
+  4. Select next task: next_task = ReadyTree.leftmostNode(). // Minimal vruntime
+  5. Remove next_task from ReadyTree.
+  6. ContextSwitch(CurrentTask, next_task).
+  7. next_task.exec_start = CurrentTime().
+
+5. Concrete Worked Example and Laboratory Trace
+Comparing FCFS versus Shortest Job First (SJF) on Digital Library API tasks:
+Task Set: P1 (Batch PDF OCR, burst = 24 ms), P2 (Search Query, burst = 3 ms), P3 (Book Details, burst = 3 ms).
+Arrival order: P1, P2, P3 at time 0.
+FCFS Schedule:
+  - P1 runs [0..24]. Wait = 0 ms.
+  - P2 runs [24..27]. Wait = 24 ms.
+  - P3 runs [27..30]. Wait = 27 ms.
+  - Average Waiting Time = (0 + 24 + 27) / 3 = 17.0 ms (Severe Convoy Effect!).
+SJF Schedule (P2, P3, P1):
+  - P2 runs [0..3]. Wait = 0 ms.
+  - P3 runs [3..6]. Wait = 3 ms.
+  - P1 runs [6..30]. Wait = 6 ms.
+  - Average Waiting Time = (0 + 3 + 6) / 3 = 3.0 ms.
+SJF reduces average waiting time by over 5.6x, highlighting the necessity of preemptive scheduling for interactive web services.
+
+6. Systems Applications and Industrial Use Cases
+Digital Library Query Prioritization: Prioritizing low-latency patron search queries ahead of long-running document indexing.
+Database Transaction Scheduling: Preventing lock-holding transactions from suffering long scheduling delays.
+Cloud Multi-Tenant Fair Sharing: Allocating proportional CPU shares to university department containers using cgroups.
+Real-Time Media Streaming: Scheduling audio/video transcoding threads with deterministic latency bounds.
+Embedded Library Scanners: Real-time deadline-driven scheduling of optical hardware camera feeds.
+
+7. Comparative Analysis and Architectural Trade-offs
+FCFS: Simple, zero scheduling overhead; poor average waiting time, suffers from convoy effect.
+Round Robin: Bounded interactive response time, fair; higher context-switch overhead if quantum is too small.
+SJF / SRTF: Mathematically optimal average wait time; requires predicting future burst lengths, starves long jobs.
+MLFQ: Adaptive, separates I/O-bound from CPU-bound tasks automatically; complex configuration of queue thresholds.
+Linux CFS: Completely fair, scalable O(log n) scheduling via Red-Black trees; optimal general-purpose workstation/server scheduler.
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Selecting a Round Robin quantum smaller than the context switch duration, causing the CPU to spend 50%+ time in overhead.
+Starvation in pure priority scheduling: low-priority batch indexing threads never executing under continuous search traffic.
+Failing to implement priority aging to gradually elevate starved tasks in the scheduling hierarchy.
+Ignoring multi-core NUMA (Non-Uniform Memory Access) effects when migrating threads between distant CPU sockets.
+Confusing process priority (nice value) with absolute CPU percentage: nice values determine proportional weight, not fixed limits.
+
+9. Frequently Asked Questions (FAQ)
+Q: What is the Convoy Effect?
+A: It occurs when a long CPU-bound process holds the processor while numerous short I/O-bound tasks wait behind it, causing idle I/O devices and high average wait times.
+Q: How does the Linux CFS scheduler achieve fairness?
+A: It tracks virtual runtime (vruntime) for each task; the task that has received the least CPU time (smallest vruntime) is always scheduled next.
+Q: What is the ideal Round Robin time quantum?
+A: Typically 10 to 100 milliseconds: long enough that context switch overhead is under 1% of the quantum, yet short enough to guarantee sub-second interactive response.
+Q: How does the digital library server manage task scheduling?
+A: The Java WebServer uses an ExecutorService thread pool, delegating thread scheduling to the operating system's fair multi-core scheduler.
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on Operating System Scheduling into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of Operating System Scheduling manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of Operating System Scheduling.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+CPU scheduling algorithms balance throughput, response latency, and fair resource distribution.
+FCFS, Round Robin, SJF, and MLFQ provide distinct trade-offs between simplicity and optimality.
+Linux CFS utilizes Red-Black trees to enforce proportional fairness based on virtual runtime.
+In digital libraries, prioritizing short interactive search queries prevents background indexing from degrading user experience.

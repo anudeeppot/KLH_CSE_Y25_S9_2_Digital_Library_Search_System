@@ -1,0 +1,142 @@
+Title: Distributed Systems
+Author: Suresh Rao
+ISBN: 978-93-10059-9
+Category: Computer Systems
+Year: 2025
+Content: Distributed Systems is an important topic in modern computer science. This document introduces distributed systems and discusses processes, memory, scheduling, storage, concurrency, fault tolerance, resource management. The subject is useful when a program must process structured information, make decisions efficiently, or manage computational resources under practical constraints. A typical study begins by defining the input, output, assumptions, and correctness conditions. Students should then identify the appropriate data representation and select an algorithm whose running time and memory requirements are suitable for the expected input size. Correctness can be checked using normal examples, boundary cases, empty inputs, invalid inputs, and carefully constructed cases that exercise the most important branches of the implementation. Complexity analysis provides an asymptotic view of performance, while benchmarking can reveal the effect of constant factors, memory access patterns, and input distributions. Documentation should describe the algorithm, important variables, assumptions, and limitations. In a digital library environment, this kind of document can be indexed and searched using exact pattern matching, while fuzzy text similarity can help users recover from spelling errors. The material also provides a useful basis for DSA laboratory experiments where students compare alternative approaches, inspect intermediate states, and verify outputs with independent test cases. Important study terms include processes, memory, scheduling, storage, concurrency, fault tolerance, resource management. A practical exercise is to modify the input size, record the resulting output, and compare the observed behavior with the expected complexity. Students should avoid choosing an algorithm only because it is advanced; the simplest correct method that satisfies the constraints is often the most maintainable solution.
+
+1. Theoretical Foundations and Historical Context
+Distributed systems emerged in the late 1960s with ARPANET, connecting geographically separated computer networks.
+Leslie Lamport introduced logical clocks in 1978 in his landmark paper 'Time, Clocks, and the Ordering of Events in a Distributed System'.
+In 1982, Lamport, Shostak, and Pease formalized the Byzantine Generals Problem for consensus in the presence of malicious faults.
+Fischer, Lynch, and Paterson published the FLP Impossibility Theorem in 1985, proving deterministic consensus is impossible in asynchronous networks with even one failure.
+Eric Brewer conjectured the CAP Theorem in 2000 (formalized by Gilbert and Lynch in 2002), stating that a distributed data store can guarantee at most two of Consistency, Availability, and Partition Tolerance.
+Leslie Lamport developed the Paxos consensus protocol in 1998; Diego Ongaro and John Ousterhout introduced Raft in 2014 for understandable consensus.
+Google introduced MapReduce (2004), Google File System (2003), and Bigtable (2006), revolutionizing large-scale distributed computing.
+In digital libraries, distributed systems replicate document archives across global mirrors, ensuring permanent preservation.
+
+2. Core Principles, Data Structures, and Invariants
+A distributed system is a collection of autonomous computing nodes that communicate over a network and appear to users as a single coherent system.
+Fallacies of Distributed Computing: Networks are NOT reliable, latency is NOT zero, bandwidth is NOT infinite, and topology DOES change.
+The CAP Theorem enforces an unavoidable trade-off: in the presence of a network partition (P), a system must choose between Consistency (C) and Availability (A).
+Strong Consistency (Linearizability) ensures that all read operations observe the most recent written value across all nodes.
+Eventual Consistency guarantees that in the absence of new updates, all replicas will eventually converge to identical states.
+Consensus protocols (Raft, Paxos) maintain a replicated state machine across independent nodes despite network delays and server crashes.
+Logical clocks (Lamport Timestamps, Vector Clocks) establish partial ordering of distributed events without requiring synchronized physical clocks.
+Two-Phase Commit (2PC) coordinates atomic distributed transactions across multiple database partitions; vulnerable to coordinator crashes.
+Data partitioning (Consistent Hashing) distributes documents across server nodes with minimal data migration during node additions/removals.
+In digital libraries, distributed replication protects rare manuscripts against catastrophic regional data center loss.
+
+3. Mathematical Analysis and Asymptotic Bounds
+CAP Theorem Invariant: A distributed data store can simultaneously provide at most two of: Consistency, Availability, Partition Tolerance.
+Since network partitions are physically inevitable in real-world networks, real systems choose between CP (Consistency over Availability) and AP (Availability over Consistency).
+PACELC Theorem Extension: If there is a Partition (P), trade off Availability (A) vs Consistency (C); Else (E), trade off Latency (L) vs Consistency (C).
+Quorum Consensus Formulation: Let N be total replicas, W be write quorum size, and R be read quorum size.
+  Strict Consistency Guarantee: W + R > N (Pigeonhole Principle ensures read and write quorums overlap by at least one node).
+Raft Consensus Fault Tolerance: A Raft cluster of 2f + 1 nodes can tolerate up to f node failures while maintaining safety.
+Vector Clock Invariant: Event a happens-before event b (a -> b) if and only if VC(a)[k] <= VC(b)[k] for all k, and VC(a)[i] < VC(b)[i] for at least one i.
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure Raft-Leader-AppendEntries(LeaderState, LogEntry):
+  1. Leader appends LogEntry to its local log at index = nextIndex.
+  2. Leader sends AppendEntries RPC to all follower nodes concurrently:
+       RPC params: (term = currentTerm, prevLogIndex, prevLogTerm, entries = [LogEntry], leaderCommit).
+  3. On receiving RPC responses from followers:
+       count_success = 1 (including leader).
+       For each follower response:
+         If response.success: count_success++.
+       If count_success >= (TotalNodes / 2) + 1:  // Majority quorum reached
+         Leader updates commitIndex = nextIndex.
+         Leader applies LogEntry to its State Machine.
+         Leader sends success response to client.
+       Else:
+         Retry AppendEntries RPC with decremented nextIndex for failing followers.
+  4. Return Result.
+
+5. Concrete Worked Example and Laboratory Trace
+Consistent Hashing for Distributing 100 Library Corpus Documents across 4 Server Nodes (NodeA, NodeB, NodeC, NodeD):
+Hash Ring: Circular integer space [0 .. 2^32 - 1].
+Nodes are placed on the ring via hash(Node_ID):
+  - NodeA at position 50,000,000.
+  - NodeB at position 1,200,000,000.
+  - NodeC at position 2,400,000,000.
+  - NodeD at position 3,600,000,000.
+Storing Document '1_kmp_algorithm.txt':
+  - hash('1_kmp_algorithm.txt') = 850,000,000.
+  - Walk clockwise on hash ring: first node encountered is NodeB (1,200,000,000).
+  - Document stored on NodeB (and replicated to clockwise successor NodeC).
+Node Addition: Adding NodeE at position 1,800,000,000 only moves keys in [1,200,000,001 .. 1,800,000,000] from NodeC to NodeE.
+Only 1/4 of documents migrate; remaining 3/4 remain completely untouched on their existing server nodes.
+
+6. Systems Applications and Industrial Use Cases
+Global Digital Library Mirroring: Replicating digital archives across continents (LOCKSS - Lots of Copies Keep Stuff Safe).
+Distributed Full-Text Search: Partitioning and searching billions of documents across Elasticsearch / Apache Solr clusters.
+Distributed Document Storage: Storing scanned book page images across Amazon S3, Google Cloud Storage, and Ceph.
+Interlibrary Loan Distributed Ledger: Tracking inter-institutional book transfers on decentralized distributed ledgers.
+High-Availability Catalog Databases: Deploying distributed consensus SQL databases (CockroachDB, Google Spanner) with multi-region replication.
+
+7. Comparative Analysis and Architectural Trade-offs
+CP Systems (Raft, ZooKeeper): Strict consistency; rejects requests or pauses during network partitions to prevent split-brain.
+AP Systems (Cassandra, DynamoDB): High availability; accepts writes during partitions, resolves conflicts eventually via timestamps or CRDTs.
+Linearizability: Strongest consistency model; operations appear to occur instantaneously at a single global point in time.
+Eventual Consistency: Weak consistency model; replicas converge over time, but clients may read stale data temporarily.
+Two-Phase Commit (2PC): Blocking protocol; if coordinator crashes during commit phase, all participating nodes remain locked.
+Raft vs Paxos: Identical formal safety guarantees; Raft decomposes consensus into leader election, log replication, and safety for understandability.
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Split-Brain: Two partitions of a cluster each believing they are the leader, accepting divergent conflicting writes.
+Relying on wall-clock physical timestamps (NTP) to order transactions, leading to clock skew corruption.
+Ignoring the CAP theorem: attempting to build a distributed system that claims 100% availability and strict consistency under partitions.
+Cascading Failures: One server failure overloading remaining servers, triggering a sequential collapse of the entire cluster.
+Network Partition Timeouts: Setting heartbeat timeouts too short, causing spurious leader elections under temporary network latency spikes.
+
+9. Frequently Asked Questions (FAQ)
+Q: What does the CAP Theorem state?
+A: It proves that in any distributed data system, network partitions cannot be prevented, forcing system architects to choose between Consistency and Availability during a partition.
+Q: Why is Raft preferred over Paxos in modern systems?
+A: Raft is specifically designed to be understandable, cleanly separating leader election, log replication, and membership changes into distinct sub-problems.
+Q: What is Consistent Hashing?
+A: A distributed hashing technique where adding or removing a node requires remapping only K/N keys on average, avoiding full cluster rebalancing.
+Q: How does the digital library achieve high availability?
+A: By replicating the document corpus across independent web servers and using load balancers to route queries away from failing nodes.
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on Distributed Systems into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of Distributed Systems manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of Distributed Systems.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+Distributed systems coordinate autonomous computing nodes across unreliable physical networks.
+The CAP theorem dictates fundamental trade-offs between consistency and availability during network partitions.
+Consensus protocols (Raft, Paxos) guarantee safety and fault tolerance in replicated state machines.
+In digital libraries, distributed replication ensures permanent preservation and high-availability global search.
+
+13. Fuzzy Search Test Variants and Typo Recovery
+In real-world digital library environments, users frequently type query terms with typographical errors.
+For testing Levenshtein fuzzy matching on Distributed Systems, the following controlled variants are recorded:
+- Typo Variant 'distrubuted' (Type: Longer Word Typo): corresponds to canonical 'distributed'.
+- Typo Variant 'consenss' (Type: Deletion): corresponds to canonical 'consensus'.
+- Typo Variant 'replcaton' (Type: Deletion): corresponds to canonical 'replication'.
+- Typo Variant 'falure' (Type: Deletion): corresponds to canonical 'failure'.
+- Typo Variant 'partiton' (Type: Deletion): corresponds to canonical 'partition'.
+The Levenshtein distance algorithm identifies queries like 'distrubuted' within edit threshold d <= 2.
+This guarantees that user typing mistakes are recovered while preserving complete accuracy in educational definitions.

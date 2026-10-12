@@ -1,0 +1,126 @@
+Title: Efficient Text Search
+Author: Text Processing Research Group
+Category: Text Search
+Year: 2026
+Content: Text search is the process of locating a pattern inside a larger body of text. Large digital collections make repeated comparison expensive. KMP reduces unnecessary comparisons by using information already obtained from the pattern during preprocessing.
+
+1. Theoretical Foundations and Historical Context
+Text search algorithms originated in the early days of computing for text editing and pattern matching in programming source code.
+The Naive brute-force string matching algorithm has been used since the 1950s, checking every character alignment sequentially.
+Knuth, Morris, and Pratt introduced the KMP algorithm in 1977, proving that string search can be performed in strictly linear O(n + m) time.
+Robert S. Boyer and J. Strother Moore published the Boyer-Moore algorithm in 1977, introducing sublinear average-case searching via right-to-left character scanning.
+Richard M. Karp and Michael O. Rabin introduced the Rabin-Karp randomized rolling-hash algorithm in 1987, excelling at multiple-pattern search.
+Udi Manber and Gene Myers published suffix arrays in 1993, offering a space-efficient alternative to suffix trees for repeated search queries.
+In our Digital Library Search System, string matching forms the core engine allowing instant keyword discovery across all catalog documents.
+Modern search engines combine exact string matchers, suffix data structures, and SIMD hardware acceleration.
+
+2. Core Principles, Data Structures, and Invariants
+Exact String Matching Problem: Given a text T of length n and a pattern P of length m, find all index alignments where P occurs within T.
+Brute Force Searching: Comparing P against T at every position from 0 to n - m; worst-case time complexity O((n - m + 1) * m).
+Prefix-Based Shift (KMP): Utilizing precomputed Longest Prefix Suffix (LPS) tables to shift the pattern forward without re-inspecting text characters.
+Suffix-Based Skip (Boyer-Moore): Comparing pattern characters from right to left, utilizing Bad Character and Good Suffix shift rules to skip characters in text.
+Rolling Hash Technique (Rabin-Karp): Computing hash values of sliding windows in O(1) time using modular arithmetic and Horner's rule.
+Multiple String Matching (Aho-Corasick): Constructing a finite state trie with failure transitions to search for thousands of dictionary patterns concurrently.
+Bit-Parallel Algorithms (Baeza-Yates-Gonnet Shift-And / Shift-Or): Simulating non-deterministic finite automata using CPU word bitwise operations.
+Memory Alignment and Cache Locality: Linear string scans leverage sequential memory access patterns and CPU hardware prefetchers.
+In our project, `KMP.java` implements pure linear-time exact searching, powering both single-term queries and multiple-occurrence counts.
+Deterministic performance ensures consistent sub-millisecond search latencies regardless of document corpus length.
+
+3. Mathematical Analysis and Asymptotic Bounds
+Naive Search Worst-Case Bound: T(n, m) = (n - m + 1) * m = O(n * m); occurs when both text and pattern consist of repeating identical characters ('AAA...A').
+KMP Search Time Complexity: Preprocessing time O(m) + Matching time O(n) = strictly O(n + m) character comparisons.
+Boyer-Moore Sublinear Best-Case Complexity: T_{best} = O(n / m); occurs when the text character aligned with pattern end never appears in pattern.
+Rabin-Karp Rolling Hash Formula: H(T[i+1..i+m]) = ((H(T[i..i+m-1]) - T[i] * b^{m-1}) * b + T[i+m]) pmod q.
+Hash Collision Probability: P(collision) = 1 / q; choosing large prime q (e.g. 10^9 + 7) minimizes spurious match verifications.
+Aho-Corasick Multi-Pattern Time Complexity: O(n + sum |P_i| + z), where z is total number of pattern occurrences.
+Maximum Number of Shifts in KMP: Total pattern backward shifts during search cannot exceed total forward advancements of the text pointer (<= n).
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure Execute-KMP-Search(text, pattern):
+  1. n = len(text); m = len(pattern).
+  2. If m == 0 or n < m: Return Empty-List().
+  3. lps = Compute-LPS(pattern, m).
+  4. Initialize i = 0 // text pointer.
+  5. Initialize j = 0 // pattern pointer.
+  6. Initialize match_indices = Empty-List().
+  7. While i < n:
+       If text[i] == pattern[j]:
+         i = i + 1; j = j + 1.
+         If j == m: // Complete match found
+           match_indices.append(i - j).
+           j = lps[j - 1] // Shift pattern using LPS table.
+       Else: // Mismatch
+         If j != 0:
+           j = lps[j - 1] // Fallback without advancing i.
+         Else:
+           i = i + 1.
+  8. Return match_indices // All zero-based starting positions of matches.
+
+5. Concrete Worked Example and Laboratory Trace
+KMP Search Execution Trace on Library Text:
+Text: 'Digital library search algorithms library'. Pattern: 'library'.
+m = 7. LPS for 'library': [0, 0, 0, 0, 0, 0, 0] (no repeating proper prefix-suffix).
+Step 1: i=0 ('D') != pattern[0] ('l') -> i advances to 8.
+Step 2: i=8: text[8..14] ('library') matches pattern[0..6] ('library') completely!
+Step 3: Occurrence recorded at index 8. j resets to lps[6] = 0.
+Step 4: Search resumes from i=15 (' '); advances to i=33.
+Step 5: i=33: text[33..39] ('library') matches pattern completely!
+Step 6: Occurrence recorded at index 33.
+Step 7: Search finishes at i=40 (end of text).
+Matches found at indices [8, 33] in 0.04 milliseconds.
+
+6. Systems Applications and Industrial Use Cases
+Keyword searching inside digitized books and scientific PDF transcripts.
+Source code pattern search within IDEs and developer repositories (grep, ripgrep).
+Bioinformatics nucleotide sequence alignment searching DNA FASTA files.
+Network packet deep-packet-inspection matching malicious payload signatures.
+
+7. Comparative Analysis and Architectural Trade-offs
+KMP vs Boyer-Moore: KMP scans left-to-right with guaranteed O(n) worst-case; Boyer-Moore scans right-to-left with O(n/m) best-case but complex precomputation.
+KMP vs Rabin-Karp: KMP is deterministic and excels at single-pattern search; Rabin-Karp uses hashing and excels at multi-pattern or 2D matrix matching.
+Exact Search vs Fuzzy Search: Exact search requires 100% character identity; fuzzy search permits minor typos, insertions, and deletions via edit distance.
+Online Search vs Index-Based Search: Online search scans raw text directly without prior indexing; index-based search requires upfront index construction but answers queries in O(1) term lookup.
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Worst-Case Naive Slowdown: Relying on naive `String.indexOf` or brute-force scanning on pathological texts causing CPU lockups.
+Corrupting Pointer States on Match: Forgetting to update `j = lps[j-1]` after finding a full match, causing the search to hang in an infinite loop.
+Case Sensitivity Mismatch: Searching for lowercase 'algorithm' in text containing 'Algorithm' without canonical lowercasing normalization.
+Character Encoding Bugs: Miscalculating byte vs character lengths when processing multi-byte UTF-8 Unicode characters.
+
+9. Frequently Asked Questions (FAQ)
+Q: Why is KMP guaranteed to run in linear time?
+A: Because the text pointer i never moves backward, and the pattern pointer j retreats at most as many times as it advanced forward, bounding total comparisons to 2n.
+Q: When is Boyer-Moore preferred over KMP?
+A: In natural language text searches with large alphabets and longer patterns, where Boyer-Moore can skip large blocks of characters without inspecting them.
+Q: How does our library search handle multiple occurrences of a term?
+A: Our KMP implementation accumulates all matching start indices into an `ArrayList<Integer>`, returning the exact count and locations to the caller.
+Q: Can KMP search across line breaks in documents?
+A: Yes, because the corpus loader concatenates document lines into a continuous text stream separated by single spaces.
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on Efficient Text Search into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of Efficient Text Search manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of Efficient Text Search.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+Exact text search algorithms are fundamental building blocks of digital information systems.
+Understanding the mechanics of linear-time matching algorithms like KMP guarantees high performance and predictable execution across library collections.

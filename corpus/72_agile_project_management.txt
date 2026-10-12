@@ -1,0 +1,124 @@
+Title: Agile Project Management
+Author: Harish Kumar
+ISBN: 978-93-10072-2
+Category: Software Engineering
+Year: 2020
+Content: Agile Project Management is an important topic in modern computer science. This document introduces agile project management and discusses requirements, architecture, testing, APIs, version control, interfaces, maintainability. The subject is useful when a program must process structured information, make decisions efficiently, or manage computational resources under practical constraints. A typical study begins by defining the input, output, assumptions, and correctness conditions. Students should then identify the appropriate data representation and select an algorithm whose running time and memory requirements are suitable for the expected input size. Correctness can be checked using normal examples, boundary cases, empty inputs, invalid inputs, and carefully constructed cases that exercise the most important branches of the implementation. Complexity analysis provides an asymptotic view of performance, while benchmarking can reveal the effect of constant factors, memory access patterns, and input distributions. Documentation should describe the algorithm, important variables, assumptions, and limitations. In a digital library environment, this kind of document can be indexed and searched using exact pattern matching, while fuzzy text similarity can help users recover from spelling errors. The material also provides a useful basis for DSA laboratory experiments where students compare alternative approaches, inspect intermediate states, and verify outputs with independent test cases. Important study terms include requirements, architecture, testing, APIs, version control, interfaces, maintainability. A practical exercise is to modify the input size, record the resulting output, and compare the observed behavior with the expected complexity. Students should avoid choosing an algorithm only because it is advanced; the simplest correct method that satisfies the constraints is often the most maintainable solution.
+
+1. Theoretical Foundations and Historical Context
+Agile project management emerged in response to the bureaucratic failures of traditional Waterfall methodologies in the 1990s.
+In February 2001, seventeen software leaders met in Snowbird, Utah, to publish the 'Manifesto for Agile Software Development'.
+Jeff Sutherland and Ken Schwaber formalized the Scrum framework in the early 1990s, introducing sprints, daily standups, and retrospectives.
+David J. Anderson adapted Kanban from Toyota's manufacturing system to knowledge work and software delivery in 2007.
+Extreme Programming (XP), formulated by Kent Beck, established technical engineering practices (pair programming, CI, TDD) within Agile.
+Scaled Agile frameworks (SAFe, LeSS) emerged in the 2010s to coordinate Agile teams across large enterprise organizations.
+In digital libraries, Agile management enables rapid, iterative feature delivery and continuous collaboration with faculty and students.
+Agile methods prioritize working software and responsiveness to change over rigid upfront planning.
+
+2. Core Principles, Data Structures, and Invariants
+The Four Core Values of the Agile Manifesto: 1. Individuals and interactions over processes and tools; 2. Working software over comprehensive documentation; 3. Customer collaboration over contract negotiation; 4. Responding to change over following a plan.
+Scrum organizes work into fixed-length iterations called Sprints (typically 1 to 4 weeks in duration).
+Scrum Roles: Product Owner (manages backlog priorities), Scrum Master (serves team and removes impediments), Developers (build product increments).
+Scrum Artifacts: Product Backlog, Sprint Backlog, and the Potentially Shippable Increment.
+Scrum Events: Sprint Planning, Daily Scrum (Standup), Sprint Review (demo), Sprint Retrospective.
+Kanban visualizes work on a board and strictly limits Work in Progress (WIP) to optimize flow and reduce cycle time.
+User Stories express customer requirements from the end-user perspective: 'As a [role], I want [feature], so that [benefit]'.
+Acceptance Criteria define clear, testable conditions of satisfaction for completing a User Story (Definition of Done).
+Continuous delivery and automated testing ensure that the software increment is always in a deployable state.
+In digital libraries, Agile sprints deliver incremental upgrades: from CLI exact search to modern web interfaces and fuzzy matching.
+
+3. Mathematical Analysis and Asymptotic Bounds
+Sprint Velocity Metric: Velocity = sum(Story Points of completed stories in Sprint).
+Burn-down Chart Trajectory: Remaining Work_t = Total_Points - sum_{i=1}^t Completed_Points_i.
+Little's Law for Kanban Flow: Average Cycle Time = Work In Progress (WIP) / Throughput.
+Example: If WIP is restricted to 4 user stories and team throughput is 2 stories/week, average cycle time is 4 / 2 = 2 weeks.
+Story Point Estimation (Modified Fibonacci Sequence): [1, 2, 3, 5, 8, 13, 21] reflects increasing estimation uncertainty for larger tasks.
+Sprint Predictability Index: Predictability = (Completed Story Points / Committed Story Points) * 100% (healthy range: 85-115%).
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure Agile-Sprint-Cycle():
+  1. Sprint Planning Event:
+       Product Owner presents prioritized Product Backlog.
+       Team forecasts capacity; selects stories into Sprint Backlog.
+       Team breaks stories into technical tasks.
+  2. Sprint Execution (Duration: 2 Weeks):
+       Daily Standup (15 mins): What did I do yesterday? What will I do today? What blockers exist?
+       Developers implement code using pair programming and TDD.
+       Continuous Integration verifies code commits automatically.
+  3. Sprint Review Event:
+       Team demonstrates working software increment to library stakeholders.
+       Collect feedback; update Product Backlog.
+  4. Sprint Retrospective Event:
+       Team reflects: What went well? What could be improved? Action items for next sprint.
+  5. Repeat cycle for next increment.
+
+5. Concrete Worked Example and Laboratory Trace
+Iterative Agile Evolution of the Digital Library Project Across Sprints:
+Sprint 1 Increment: Core Java Data Structures (KMP string search, CorpusReader, 100 documents loaded).
+Sprint 2 Increment: Dynamic Programming Algorithms (Levenshtein fuzzy matching, Needleman-Wunsch document alignment).
+Sprint 3 Increment: Graph Algorithms (Edmonds-Karp max-flow, Bipartite Matching for study rooms).
+Sprint 4 Increment: Modules 5 & 6 (Greedy Knapsack reading plan, Reservoir sampling discovery, Parallel search).
+Sprint 5 Increment: Modern Web Architecture (Vanilla HTML/CSS/JS frontend, HTTP REST server, dark mode toggle).
+Sprint 6 Increment: Corpus Content Expansion (Rich educational content in all 100 documents, controlled typo variants).
+Every sprint produced working, testable software increments that were verified before moving to the next feature.
+
+6. Systems Applications and Industrial Use Cases
+Digital Library Feature Delivery: Iteratively adding search features and algorithm modules based on viva requirements.
+University IT Project Management: Coordinating campus-wide student portal rollouts using 2-week Agile sprints.
+Open-Source Repository Collaboration: Managing GitHub issues, pull requests, and milestone releases.
+Continuous Usability Testing: Gathering student feedback on library search UI prototypes and iterating designs.
+Cross-Functional Team Coordination: Aligning backend Java engineers, frontend designers, and algorithm specialists.
+
+7. Comparative Analysis and Architectural Trade-offs
+Scrum: Prescriptive, fixed-duration sprints, designated roles (Scrum Master, PO), formal events.
+Kanban: Continuous flow, no fixed iterations, limits WIP directly, focuses on cycle time reduction.
+Waterfall: Sequential phases, heavy upfront requirements, late testing; fails when requirements change.
+Scrumban: Hybrid framework combining Scrum cadence with Kanban WIP limits and visual boards.
+Extreme Programming (XP): Focuses intensely on engineering practices (pair programming, continuous testing, refactoring).
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Zombie Scrum: Going through the motions of standups and sprints without delivering working software increments.
+Scope Creep: Adding un-estimated tasks mid-sprint without adjusting sprint goals or removing lower-priority stories.
+Treating Story Points as Hours: Confusing relative complexity estimates with absolute clock time.
+Neglecting the Retrospective: Skipping team retrospectives, missing opportunities to fix workflow friction.
+Lack of a clear Definition of Done, resulting in partially completed, untested features being marked complete.
+
+9. Frequently Asked Questions (FAQ)
+Q: What is a Story Point?
+A: A story point is a relative unit of measure representing the combined effort, complexity, and risk of implementing a user story.
+Q: What is the role of the Scrum Master?
+A: The Scrum Master is a servant-leader who coaches the team in Agile practices and actively removes organizational impediments blocking developers.
+Q: Why is 'working software' preferred over comprehensive documentation?
+A: Because working software provides verifiable value and immediate feedback, whereas speculative documentation does not prove a system functions.
+Q: How was Agile used in this project?
+A: The project was developed in iterative increments: core algorithms -> HTTP backend -> web frontend -> testing -> corpus expansion.
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on Agile Project Management into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of Agile Project Management manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of Agile Project Management.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+Agile project management delivers software in rapid, iterative increments based on user feedback.
+Scrum and Kanban provide lightweight frameworks for sprint planning, WIP limits, and team collaboration.
+User stories, burn-down charts, and velocity metrics guide continuous progress tracking.
+In digital libraries, Agile methodologies ensure responsive feature development and reliable release cadences.

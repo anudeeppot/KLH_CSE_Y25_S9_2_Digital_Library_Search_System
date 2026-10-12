@@ -1,0 +1,129 @@
+Title: API Design
+Author: Ishita Roy
+ISBN: 978-93-10075-5
+Category: Software Engineering
+Year: 2023
+Content: API Design is an important topic in modern computer science. This document introduces api design and discusses requirements, architecture, testing, APIs, version control, interfaces, maintainability. The subject is useful when a program must process structured information, make decisions efficiently, or manage computational resources under practical constraints. A typical study begins by defining the input, output, assumptions, and correctness conditions. Students should then identify the appropriate data representation and select an algorithm whose running time and memory requirements are suitable for the expected input size. Correctness can be checked using normal examples, boundary cases, empty inputs, invalid inputs, and carefully constructed cases that exercise the most important branches of the implementation. Complexity analysis provides an asymptotic view of performance, while benchmarking can reveal the effect of constant factors, memory access patterns, and input distributions. Documentation should describe the algorithm, important variables, assumptions, and limitations. In a digital library environment, this kind of document can be indexed and searched using exact pattern matching, while fuzzy text similarity can help users recover from spelling errors. The material also provides a useful basis for DSA laboratory experiments where students compare alternative approaches, inspect intermediate states, and verify outputs with independent test cases. Important study terms include requirements, architecture, testing, APIs, version control, interfaces, maintainability. A practical exercise is to modify the input size, record the resulting output, and compare the observed behavior with the expected complexity. Students should avoid choosing an algorithm only because it is advanced; the simplest correct method that satisfies the constraints is often the most maintainable solution.
+
+1. Theoretical Foundations and Historical Context
+Application Programming Interfaces (APIs) originated in library linking and operating system call conventions in the 1960s.
+Roy Fielding published his landmark doctoral dissertation in 2000, introducing Representational State Transfer (REST).
+SOAP (Simple Object Access Protocol) and XML-RPC dominated enterprise distributed web services during the early 2000s.
+Douglas Crockford formalized JSON (JavaScript Object Notation) in 2001, which rapidly superseded XML as the lingua franca of web APIs.
+OpenAPI Specification (Swagger) standardized machine-readable REST API contracts and interactive documentation in 2011.
+GraphQL emerged from Facebook in 2015, enabling clients to query arbitrary nested data schemas in a single request.
+In digital libraries, clean REST APIs connect web browser frontends to underlying Java algorithm execution engines.
+Well-designed APIs provide clean, consistent, and intuitive programmatic contracts between software components.
+
+2. Core Principles, Data Structures, and Invariants
+REST architectural constraints: Client-Server architecture, Statelessness, Cacheability, Uniform Interface, Layered System.
+Statelessness dictates that each HTTP request from client to server must contain all information necessary to understand and process the request.
+Resource-Oriented URIs: Endpoints represent nouns (resources) rather than verbs (e.g., /api/documents instead of /api/getDocuments).
+Standard HTTP Methods express CRUD operations: GET (retrieve), POST (create / execute action), PUT (replace), PATCH (modify), DELETE (remove).
+HTTP Idempotence: An operation is idempotent if executing it multiple times produces the identical server state (GET, PUT, DELETE are idempotent).
+Consistent HTTP Status Codes communicate execution outcomes: 200 OK, 201 Created, 400 Bad Request, 404 Not Found, 500 Server Error.
+Predictable JSON Response Schemas ensure that clients can parse success and error payloads consistently.
+API Versioning (via URI path /api/v1/ or headers) ensures backward compatibility as backend systems evolve.
+Input Validation: APIs must validate all parameter types, ranges, and encodings, returning descriptive 400 error messages.
+In digital libraries, ApiHandler routes REST requests to KMP, Levenshtein, Needleman-Wunsch, and Knapsack algorithms.
+
+3. Mathematical Analysis and Asymptotic Bounds
+API Rate Limiting Token Bucket Algorithm: Bucket capacity B tokens, refilled at rate r tokens/second; request permitted if bucket >= 1.
+Network Serialization Overhead: JSON ASCII payload overhead vs Protobuf binary encoding (JSON is typically 2x-5x larger, but human-readable).
+REST Cache Validation: ETag = MD5(ResourceContent); client sends 'If-None-Match: ETag'; server returns 304 Not Modified if unchanged, saving 100% bandwidth.
+P99 Latency SLA: 99% of API requests must complete in less than threshold T (e.g., T = 50 milliseconds).
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure REST-ApiHandler-Route(Exchange):
+  1. Handle CORS Pre-flight: if method == 'OPTIONS', return 204 No Content with CORS headers.
+  2. Extract path = Exchange.getRequestURI().getPath().
+  3. Dispatch by endpoint:
+       Case '/api/status': handleStatus(Exchange)  // Returns JSON system health
+       Case '/api/documents': handleDocuments(Exchange) // Returns document list
+       Case '/api/document': handleDocument(Exchange) // Returns single doc
+       Case '/api/search': handleSearch(Exchange) // Runs KMP search
+       Case '/api/fuzzy-search': handleFuzzySearch(Exchange) // Runs Levenshtein
+       Case '/api/compare': handleCompare(Exchange) // Runs Needleman-Wunsch
+       Case '/api/reading-plan': handleReadingPlan(Exchange) // Runs Knapsack
+       Case '/api/random-document': handleRandomDocument(Exchange) // Runs Reservoir
+       Default: return 404 JSON Error('Unknown endpoint').
+  4. Global Exception Handler: catch unexpected errors, return 500 JSON Error without stack traces.
+
+5. Concrete Worked Example and Laboratory Trace
+Contract for the Digital Library Fuzzy Search Endpoint:
+Endpoint: POST /api/fuzzy-search
+Request Body: { "query": "algoritm", "maxDistance": 2 }
+Response (HTTP 200 OK):
+  {
+    "query": "algoritm",
+    "exactMatch": false,
+    "maxDistance": 2,
+    "algorithm": "Levenshtein Distance DP",
+    "complexity": "Time O(n*m), Space O(n*m)",
+    "total": 1,
+    "suggestions": [
+      { "term": "algorithm", "distance": 1 }
+    ]
+  }
+Clean, predictable contract allows the frontend to render suggestions effortlessly.
+
+6. Systems Applications and Industrial Use Cases
+Digital Library REST Endpoints: Exposing search, document alignment, and reading plan algorithms over HTTP.
+Public Catalog API Integration: Allowing university campus apps to query library book availability.
+Microservice Communication: Interconnecting catalog indexers with search workers via clean API interfaces.
+Mobile Application Backends: Supplying structured JSON data to iOS and Android library apps.
+Automated Testing Interfaces: Enabling automated integration test scripts to exercise backend algorithms directly.
+
+7. Comparative Analysis and Architectural Trade-offs
+REST: Resource-oriented, human-readable JSON, HTTP standard; can suffer from over-fetching or under-fetching.
+GraphQL: Client specifies exact requested fields in single query; complex server caching and execution complexity.
+gRPC: High performance, binary Protobuf serialization, HTTP/2 streaming; not natively supported in browser JavaScript.
+SOAP: Heavy XML envelopes, strict WS-* enterprise standards; verbose, largely obsolete for modern web apps.
+Webhooks: Asynchronous push notifications from server to client; replaces inefficient periodic polling.
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Using HTTP 200 OK for error responses with error messages inside the JSON body, breaking standard HTTP client handling.
+Returning raw Java stack traces in 500 error responses, exposing internal code paths and database structures.
+Mixing plural and singular noun conventions unpredictably across endpoints (e.g., /book vs /documents).
+Failing to validate required JSON payload fields, causing NullPointerException on the backend server.
+Designing chatty APIs that require clients to make 10 sequential round-trip requests to display a single search page.
+
+9. Frequently Asked Questions (FAQ)
+Q: What makes an API RESTful?
+A: Adherence to REST constraints: resource-based URIs, stateless communication, standard HTTP methods (GET, POST), and uniform JSON representations.
+Q: Why should APIs use standard HTTP status codes?
+A: Status codes (200, 400, 404, 500) provide standardized semantics that HTTP caches, reverse proxies, and client libraries understand automatically.
+Q: How does ApiHandler serialize JSON without external libraries?
+A: It utilizes the lightweight JsonUtil class, safely building properly escaped JSON strings without external dependencies.
+Q: What endpoints are available in the Digital Library Search System?
+A: Key endpoints include /api/status, /api/documents, /api/search, /api/fuzzy-search, /api/compare, /api/reading-plan, and /api/random-document.
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on API Design into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of API Design manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of API Design.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+API design establishes intuitive, predictable contracts for software communication.
+RESTful architectures utilize resource-based URIs and standard HTTP methods and status codes.
+Stateless communication and consistent JSON schemas ensure client-side parsing reliability.
+In digital libraries, clean REST APIs connect browser user interfaces to underlying Java algorithms.

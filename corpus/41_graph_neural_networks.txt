@@ -1,0 +1,123 @@
+Title: Graph Neural Networks
+Author: Riya Sharma
+ISBN: 978-93-10041-1
+Category: Artificial Intelligence
+Year: 2025
+Content: Graph Neural Networks is an important topic in modern computer science. This document introduces graph neural networks and discusses agents, features, training data, inference, optimization, evaluation metrics, intelligent decision making. The subject is useful when a program must process structured information, make decisions efficiently, or manage computational resources under practical constraints. A typical study begins by defining the input, output, assumptions, and correctness conditions. Students should then identify the appropriate data representation and select an algorithm whose running time and memory requirements are suitable for the expected input size. Correctness can be checked using normal examples, boundary cases, empty inputs, invalid inputs, and carefully constructed cases that exercise the most important branches of the implementation. Complexity analysis provides an asymptotic view of performance, while benchmarking can reveal the effect of constant factors, memory access patterns, and input distributions. Documentation should describe the algorithm, important variables, assumptions, and limitations. In a digital library environment, this kind of document can be indexed and searched using exact pattern matching, while fuzzy text similarity can help users recover from spelling errors. The material also provides a useful basis for DSA laboratory experiments where students compare alternative approaches, inspect intermediate states, and verify outputs with independent test cases. Important study terms include agents, features, training data, inference, optimization, evaluation metrics, intelligent decision making. A practical exercise is to modify the input size, record the resulting output, and compare the observed behavior with the expected complexity. Students should avoid choosing an algorithm only because it is advanced; the simplest correct method that satisfies the constraints is often the most maintainable solution.
+
+1. Theoretical Foundations and Historical Context
+Graph Neural Networks (GNNs) emerged in the late 2000s to extend deep learning architectures to non-Euclidean graph-structured data.
+Marco Gori, Gabriele Monfardini, and Franco Scarselli introduced the initial GNN framework in 2005.
+Thomas Kipf and Max Welling revolutionized the field in 2016 with Graph Convolutional Networks (GCNs), utilizing first-order localized spectral approximations.
+Petar Velickovic et al. introduced Graph Attention Networks (GATs) in 2017, incorporating self-attention mechanisms to weigh neighbor contributions dynamically.
+William L. Hamilton, Rex Ying, and Jure Leskovec developed GraphSAGE in 2017, enabling inductive representation learning on massive evolving graphs.
+GNNs unify graph topology with node and edge feature representations through neural message passing.
+In digital libraries, GNNs model citation networks, author co-authorship graphs, and document-term bipartite structures.
+GNNs power state-of-the-art citation link prediction, academic paper recommendation, and document topic classification.
+
+2. Core Principles, Data Structures, and Invariants
+Graphs represent entities as nodes V and relational interactions as edges E, represented by an adjacency matrix A and feature matrix X.
+Standard convolutional neural networks require regular grid structures (images, text sequences); GNNs operate over arbitrary graph topologies.
+The Message Passing Paradigm defines GNN computation: each node iteratively aggregates transformed feature vectors from its neighbors.
+In layer k, node v aggregates messages from neighbors N(v): m_v^{(k)} = AGGREGATE({h_u^{(k-1)} : u in N(v)}).
+Node state update: h_v^{(k)} = COMBINE(h_v^{(k-1)}, m_v^{(k)}), parameterized by learnable neural weight matrices W^{(k)}.
+After K layers of message passing, node embedding h_v^{(K)} captures information from its K-hop network neighborhood.
+Permutation Equivariance requires that reordering graph node indices produces an identically reordered output embedding matrix.
+Over-smoothing occurs when stacking too many GNN layers (K > 4), causing node representations to converge to identical uniform vectors.
+Graph pooling (Readout) aggregates node embeddings into a single graph-level vector for whole-graph classification.
+In digital libraries, GNN embeddings capture both document textual semantics and citation graph structural context.
+
+3. Mathematical Analysis and Asymptotic Bounds
+Graph Convolutional Network (GCN) Layer Rule: H^{(k+1)} = sigma( D_tilde^{-1/2} * A_tilde * D_tilde^{-1/2} * H^{(k)} * W^{(k)} ).
+A_tilde = A + I_N represents the adjacency matrix with added self-loops; D_tilde is the corresponding diagonal degree matrix.
+Graph Attention Network (GAT) attention coefficients: alpha_{ij} = softmax_j( LeakyReLU( a^T [W*h_i || W*h_j] ) ).
+Aggregation under GAT: h_i^{(k+1)} = sigma( sum_{j in N(i)} alpha_{ij} * W * h_j^{(k)} ).
+Weisfeiler-Lehman (1-WL) Graph Isomorphism Test: Theoretical upper bound on the expressive power of message passing GNNs (Xu et al., GIN).
+Time complexity per GNN layer: O(|E| * d + |V| * d^2), where d is the embedding feature dimension.
+Link prediction objective: minimize binary cross-entropy loss over true edges (u, v) and negative sampled non-edges.
+
+4. Algorithmic Procedure and Execution Workflow
+Procedure GNN-Layer-Forward(A_norm, H_in, W_weight):
+  1. Input: normalized adjacency matrix A_norm of size N x N, node features H_in of size N x d_in, weights W of size d_in x d_out.
+  2. Feature transformation: Z = H_in * W_weight  // Size N x d_out
+  3. Neighborhood message aggregation: H_agg = A_norm * Z  // Matrix multiplication propagates along edges
+  4. Apply non-linear activation: H_out = ReLU(H_agg).
+  5. Return H_out.
+Procedure Citation-Link-Prediction(node_u, node_v, GNN_Model):
+  1. Compute final node embeddings H = GNN_Model.forward(Graph).
+  2. Extract embedding vectors h_u = H[node_u] and h_v = H[node_v].
+  3. Compute link probability: prob = Sigmoid(dot_product(h_u, h_v)).
+  4. Return prob.
+
+5. Concrete Worked Example and Laboratory Trace
+Predicting missing citation link between Paper 1 (KMP) and Paper 2 (Boyer-Moore):
+Graph: Nodes = Research Papers, Edges = Citations.
+Paper 1 has citation neighbors: ['Algorithms', 'String Processing'].
+Paper 2 has citation neighbors: ['String Processing', 'Pattern Matching'].
+After 2 layers of GCN message passing:
+  - Embedding h_1 encodes Paper 1 text features + neighbor semantics.
+  - Embedding h_2 encodes Paper 2 text features + neighbor semantics.
+Cosine similarity dot(h_1, h_2) = 0.93.
+Link prediction probability = Sigmoid(0.93) = 0.717 > threshold (0.5).
+System predicts high probability of citation relationship, suggesting Paper 2 as relevant related reading.
+
+6. Systems Applications and Industrial Use Cases
+Citation Recommendation: Predicting relevant research papers to cite during academic manuscript drafting.
+Author Co-Authorship Community Detection: Identifying emerging research lab collaborations across computer science disciplines.
+Document Subject Classification: Classifying research papers by combining abstract text with citation graph topology.
+Academic Fraud and Plagiarism Detection: Identifying suspicious citation rings and duplicated paper networks.
+Drug Discovery and Bioinformatics: Modeling molecular graphs and protein-protein interaction networks.
+
+7. Comparative Analysis and Architectural Trade-offs
+GCN: Fixed symmetric normalization, computationally fast; treats all neighbors with equal structural weight.
+GAT: Self-attention weights neighbor importance dynamically; computationally heavier, but more expressive.
+GraphSAGE: Samples fixed-size neighborhoods; enables mini-batch training and inductive generalization to unseen nodes.
+Node2Vec / DeepWalk: Shallow random-walk embeddings; cannot incorporate node text features or generalize to new nodes.
+Standard MLP: Ignores graph connectivity entirely; evaluates document text in complete isolation.
+
+8. Common Misconceptions, Pitfalls, and Edge Cases
+Over-smoothing: Stacking more than 3-4 message passing layers, causing all node embeddings to become indistinguishable.
+Scalability Bottlenecks: Attempting full-batch GCN training on millions of academic papers, causing GPU Out-Of-Memory errors.
+Negative Sampling Bias: Failing to sample representative negative non-edges during link prediction model training.
+Information Leakage: Including test set edges in the graph adjacency matrix during message passing training phases.
+Ignoring edge directionality in asymmetric citation graphs (citing vs being cited).
+
+9. Frequently Asked Questions (FAQ)
+Q: What is message passing in GNNs?
+A: It is the iterative process where nodes aggregate transformed feature vectors from neighboring nodes to update their own representations.
+Q: Why do standard CNNs fail on graph data?
+A: CNNs rely on fixed grid structures (pixels with constant 8 neighbors); graphs have arbitrary, irregular topologies and variable node degrees.
+Q: What causes over-smoothing in deep GNNs?
+A: Repeated Laplacian smoothing across layers acts as a low-pass filter, causing node features across connected components to converge to the same mean.
+Q: How do GNNs improve digital library search?
+A: They enrich document embeddings with citation context, enabling search engines to return papers that are conceptually central to an academic field.
+
+10. Engineering Implementation Guidelines and Performance Tuning
+When deploying solutions based on Graph Neural Networks into production digital library backends, memory allocation patterns govern real-time throughput.
+Pre-sizing internal data structures and reusing buffers prevents excessive generational garbage collection pauses during sustained search workloads.
+Maximizing CPU cache locality through contiguous array layouts enables hardware prefetchers to stream instructions and data efficiently.
+In concurrent multi-threaded server environments, maintaining immutable document models eliminates lock contention across reader threads.
+Defensive boundary checks and strict input sanitization protect algorithmic routines from null pointers and malformed query strings.
+Profiling hot execution paths using JVM diagnostic tools identifies opportunities for Just-In-Time (JIT) compilation optimizations.
+Automated unit and integration regression testing verifies that algorithmic invariants remain intact after refactoring or dependency updates.
+Maintaining clean architectural separation between domain logic and network serialization simplifies independent testing and code maintenance.
+Comprehensive logging of performance metrics (query latency, cache hit rates) enables proactive capacity planning.
+Adopting standard serialization formats ensures seamless interoperability across language boundaries.
+
+11. Practical Laboratory Exercises and Viva Discussion Topics
+Exercise 1: Trace the execution of Graph Neural Networks manually on paper using the sample inputs provided in Section 5.
+Exercise 2: Implement a standalone Java prototype and compare measured execution runtimes against theoretical asymptotic bounds.
+Exercise 3: Test boundary conditions, including empty inputs, single-element datasets, and pathological worst-case distributions.
+Viva Topic 1: Explain the primary mathematical invariants that guarantee the correctness of Graph Neural Networks.
+Viva Topic 2: Discuss the engineering trade-offs between memory footprint and query response latency for this component.
+Viva Topic 3: Describe how this topic integrates into the broader architecture of the Digital Library Search System.
+Viva Topic 4: How would you evaluate the empirical scaling behavior of this technique under high concurrent request volumes?
+Viva Topic 5: What alternative data structure or algorithmic strategy would you select if memory constraints were reduced by half?
+Viva Topic 6: How does this algorithm or structure prevent denial-of-service vulnerabilities from pathological inputs?
+Viva Topic 7: What metrics would you track in production to determine when this subsystem requires horizontal scaling?
+
+12. Summary and Key Takeaways
+Graph Neural Networks generalize deep learning to non-Euclidean graph topologies.
+Message passing iteratively aggregates structural and feature information from node neighborhoods.
+GCN, GAT, and GraphSAGE balance expressive power, attention mechanisms, and scalability.
+In digital libraries, GNNs power citation link prediction, document recommendation, and academic network analytics.
